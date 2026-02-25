@@ -5,14 +5,14 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui
 export function Logo() {
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton size="lg" className="[&>svg]:size-7 pointer-events-none">
-          <Blinds strokeWidth={1.15} />
-          <div className="grid flex-1 text-left text-sm leading-tight">
+      <SidebarMenuItem  className="[&>svg]:size-6 pointer-events-none flex items-center">
+          <Blinds strokeWidth={1.15} className="ml-1"/>
+          <div className="grid flex-1 text-left text-sm leading-tight ml-2">
             <span className="truncate  font-bold text-xl">SANTLUX</span>
           </div>
           <div></div>
-        </SidebarMenuButton>
+        {/* <SidebarMenuButton size="lg" className="[&>svg]:size-7 pointer-events-none">
+        </SidebarMenuButton> */}
       </SidebarMenuItem>
     </SidebarMenu>
   );

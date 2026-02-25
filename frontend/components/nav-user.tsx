@@ -74,9 +74,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="my-3 mx-1">
-              <LogoutButton />
-            </DropdownMenuItem>
+            <LogoutButton  />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

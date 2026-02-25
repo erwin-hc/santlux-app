@@ -67,20 +67,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <Logo />
       </SidebarHeader>
-      {/* <SidebarContent>
-        <NavMain items={data.navMain} />
-        {isAdmin ? (
-          <NavAdmin items={data.navAdm} />
-        ) : (
-          <div className="flex gap-4 ml-3 pt-3">
-            <Skeleton className="h-5 w-5 rounded-full p-3" />
-            <div className="flex flex-col items-start gap-1 ">
-              <Skeleton className="h-2.5 w-31.25" />
-              <Skeleton className="h-2.5 w-24" />
-            </div>
-          </div>
-        )}
-      </SidebarContent> */}
       <SidebarContent>
         <NavMain items={data.navMain} />
         {isLoading ? (

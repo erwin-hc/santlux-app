@@ -35,14 +35,13 @@ export function NavMain({
       <SidebarGroupLabel>Painel</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          // Verifica se a URL atual é exatamente igual à do item
           const active = pathname === item.url;
 
           return (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton 
                 asChild 
-                isActive={active} // Ativa o destaque azul do Shadcn
+                isActive={active} 
                 tooltip={item.title}
                 className="cursor-pointer"
               >
