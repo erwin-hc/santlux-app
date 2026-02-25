@@ -3,16 +3,22 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Separator } from "./ui/separator";
 
 export function DynamicBreadcrumb() {
   const pathname = usePathname();
 
   // Divide a URL em partes e remove itens vazios
   const pathSegments = pathname.split("/").filter((item) => item !== "");
+  const isMobile = useIsMobile()
 
   return (
-    <Breadcrumb>
-      <BreadcrumbList>
+     
+    <Breadcrumb >
+    {!isMobile &&
+      <BreadcrumbList >
+        <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
         {/* Link para a Home sempre visível */}
         {pathSegments.length > 0 && <BreadcrumbSeparator className="hidden md:block" />}
 
@@ -33,6 +39,10 @@ export function DynamicBreadcrumb() {
           );
         })}
       </BreadcrumbList>
-    </Breadcrumb>
+
+      
+      }
+      </Breadcrumb>
+   
   );
 }
