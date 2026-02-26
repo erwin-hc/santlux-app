@@ -1,31 +1,72 @@
-import { columns, Payment } from "./columns"
-import { DataTable } from "./data-table"
-import { getPedidos } from "@/lib/get-pedidos";
+"use client"
 
-async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
-  return [
-  {
-    "status": "F",
-    "data": "2026-01-09",
-    "con_nome": "CLEVERSON MORELLI ",
-    "registro": 70653,
-    "os": "2000014553065448",
-    "previsao": "2026-01-13",
-    "nnota": 38956
-  },
-  ]
+import { useState, useEffect } from "react";
+import { columns } from "./columns"
+import { DataTable } from "./data-table"
+
+interface PedidosResponse {
+  data: unknown[]; 
+  metadata: {
+    total: number;
+    total_pages: number;
+    limit: number;
+  };
 }
 
-export default async function Page() {
-  // const data = await getData()
-  const data = await getPedidos(0); // No fetch call to /api/pedidos!
+export default function Page() {
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [data, setData] = useState<unknown[]>([]);
+  const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(null);
+  const [loading, setLoading] = useState(true);
+ 
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/pedidos?page=${pagination.pageIndex}&limit=${pagination.pageSize}`);
+        const result = await response.json();
+        setData(result.data);
+        setMetadata(result.metadata);
+               
+        if (response) {
+          setData(result.data);
+          setMetadata(result.metadata);
+        } else {          
+          setData([]);
+          setMetadata(null);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar pedidos:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  if (!data) return <div>Redirecionando ou Erro de Login...</div>;
+    loadData();
+  }, [pagination.pageIndex,pagination.pageSize]);
 
   return (
-    <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+    <div className="container mx-auto py-10 ">
+      <div className={loading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
+
+        {/* {loading && (
+        <div className="text-center text-sm text-muted-foreground mt-2 animate-pulse">
+        Atualizando dados...
+        </div>
+        )} */}
+
+        <DataTable
+          columns={columns as []}
+          data={data}          
+          pageCount={metadata?.total_pages || 0}
+          pageIndex={pagination.pageIndex || 0}
+          pageSize={pagination.pageSize || 0}
+          regCount={metadata?.total || 0}
+          onPageChange={(newIndex) => 
+            setPagination(prev => ({ ...prev, pageIndex: newIndex }))
+          }
+        />
+      </div>
     </div>
   )
 }

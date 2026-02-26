@@ -2,8 +2,9 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
+import { formatDate } from "@/lib/utils"
 
-export type Payment = {
+export type TypePedidos = {
   status: string
   data: string
   registro: number
@@ -25,7 +26,7 @@ const statusConfig = {
 
 type StatusKey = keyof typeof statusConfig ;
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<TypePedidos>[] = [
   {
     accessorKey: "status",
     header: "Status",
@@ -39,6 +40,10 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "data",
     header: "Data",
+    cell: ({row}) => {
+      const data = row.getValue("data") as string
+      return formatDate(data) 
+    }
   },
   {
     accessorKey: "registro",
@@ -55,6 +60,10 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "previsao",
     header: "Previsao",
+      cell: ({row}) => {
+      const data = row.getValue("previsao") as string
+      return formatDate(data) 
+    }
   },    
   {
     accessorKey: "nnota",

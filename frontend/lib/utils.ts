@@ -1,3 +1,4 @@
+import { Data } from "@dnd-kit/core";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -19,4 +20,9 @@ export function formatFullName(fullName: string): string {
     .split(/\s+/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
+}
+
+export function formatDate(data: string) : string {
+  return new Date(data).toLocaleDateString()
+
 }

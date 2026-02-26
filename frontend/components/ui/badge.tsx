@@ -14,6 +14,7 @@ const badgeVariants = cva(
           aberto: "border-blue-500/5 bg-[#e9f2ff] text-blue-600  dark:text-blue-400 dark:bg-[#0c1522]",
           suspenso: "border-amber-500/5 bg-[#fff5e5] text-amber-600  dark:text-amber-400 dark:bg-[#221808]",
           entregue: "border-sky-500/5 bg-[#f0f9ff] text-sky-600  dark:text-sky-400 dark:bg-[#081622]",
+          neutral: "border-slate-500/5 bg-[#f8fafc] text-slate-600  dark:text-slate-400 dark:bg-[#0f172a]",
           // purple: "border-purple-500/5 bg-[#f5f0ff] text-purple-600  dark:text-purple-400 dark:bg-[#150e20]",
           // indigo: "border-indigo-500/5 bg-[#eff2ff] text-indigo-600  dark:text-indigo-400 dark:bg-[#0e1122]",
           // rose:   "border-rose-500/5 bg-[#fff1f2] text-rose-600  dark:text-rose-400 dark:bg-[#200e10]",
@@ -23,7 +24,6 @@ const badgeVariants = cva(
           // lime: "border-lime-500/5 bg-[#f7fee7] text-lime-600  dark:text-lime-400 dark:bg-[#121a08]",
           // fuchsia: "border-fuchsia-500/5 bg-[#fdf4ff] text-fuchsia-600  dark:text-fuchsia-400 dark:bg-[#1d0e20]",
 
-          // neutral: "border-slate-500/5 bg-[#f8fafc] text-slate-600  dark:text-slate-400 dark:bg-[#0f172a]",
       },
 
     },
