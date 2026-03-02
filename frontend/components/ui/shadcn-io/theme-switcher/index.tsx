@@ -67,7 +67,7 @@ export const ThemeSwitcher = ({ value, onChange, defaultValue = "system", classN
             className={cn(
               "relative flex h-7 w-7 items-center justify-center rounded-lg mx-1  transition-all",
               "hover:bg-sidebar-border cursor-pointer",
-              "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-blue-500 focus-visible:ring-offset-0 "
+              "rigcinza"
             )}
             key={key}
             onClick={() => handleThemeClick(key as "light" | "dark" | "system")}

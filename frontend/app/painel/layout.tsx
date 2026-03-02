@@ -15,7 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <SidebarInset>
         <header className="sticky top-0 left-0 z-30 bg-background border-b flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1 cursor-pointer focus-visible:ring-blue-500" variant={"ghost"}/>
+            <SidebarTrigger className="-ml-1 cursor-pointer rigcinza" variant={"ghost"}/>
             <ThemeToggle />
             
             <DynamicBreadcrumb />

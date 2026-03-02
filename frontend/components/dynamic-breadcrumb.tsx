@@ -32,7 +32,7 @@ export function DynamicBreadcrumb() {
           return (
             <React.Fragment key={href}>
               <BreadcrumbItem>
-                {isLast ? <BreadcrumbPage>{label}</BreadcrumbPage> : <BreadcrumbLink href={href}>{label}</BreadcrumbLink>}
+                {isLast ? <BreadcrumbPage>{label}</BreadcrumbPage> : <BreadcrumbLink className="rigcinza" href={href}>{label}</BreadcrumbLink>}
               </BreadcrumbItem>
               {!isLast && <BreadcrumbSeparator className="hidden md:block" />}
             </React.Fragment>

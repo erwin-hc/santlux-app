@@ -1,6 +1,6 @@
 "use client";
 import { Blinds } from "lucide-react";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
 
 export function Logo() {
   return (

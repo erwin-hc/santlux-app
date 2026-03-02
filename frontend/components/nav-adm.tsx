@@ -44,7 +44,7 @@ export function NavAdmin({
                 asChild 
                 isActive={active} // Aplica o destaque visual
                 tooltip={item.title}
-                className="cursor-pointer"
+                className="cursor-pointer rigcinza"
               >
                 <Link href={item.url} onClick={handleLinkClick}>
                   {item.icon && <item.icon />}

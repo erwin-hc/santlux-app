@@ -14,7 +14,7 @@ interface PedidosResponse {
 }
 
 export default function Page() {
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 15 });
   const [data, setData] = useState<unknown[]>([]);
   const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,27 +45,28 @@ export default function Page() {
     loadData();
   }, [pagination.pageIndex,pagination.pageSize]);
 
-  return (
-    <div className="container mx-auto py-10 ">
-      <div className={loading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
+  const handlePageSizeChange = (newSize: number) => {
+    setPagination({
+      pageIndex: 0, 
+      pageSize: newSize
+    });
+  };
 
-        {/* {loading && (
-        <div className="text-center text-sm text-muted-foreground mt-2 animate-pulse">
-        Atualizando dados...
-        </div>
-        )} */}
+  return (
+    <div className="container mx-auto py-1">
+      <div className={loading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
 
         <DataTable
           columns={columns as []}
-          data={data}          
+          data={data}
           pageCount={metadata?.total_pages || 0}
           pageIndex={pagination.pageIndex || 0}
           pageSize={pagination.pageSize || 0}
           regCount={metadata?.total || 0}
-          onPageChange={(newIndex) => 
-            setPagination(prev => ({ ...prev, pageIndex: newIndex }))
-          }
-        />
+          onPageChange={(newIndex) => setPagination(prev => ({ ...prev, pageIndex: newIndex }))}
+          onPageSizeChange={handlePageSizeChange}
+          loading={loading}
+          />
       </div>
     </div>
   )

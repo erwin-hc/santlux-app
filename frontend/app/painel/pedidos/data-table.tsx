@@ -1,6 +1,7 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight }  from "lucide-react";
+import SkeletonTable from "@/components/skeleton-table";
 
 import {
   ColumnDef,
@@ -29,6 +30,8 @@ interface DataTableProps<TData, TValue> {
   pageSize?: number
   regCount?: number
   onPageChange: (page: number) => void
+  onPageSizeChange: (pageSize: number) => void
+  loading?:boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -38,11 +41,13 @@ export function DataTable<TData, TValue>({
   pageIndex = 0,
   pageSize = 10,
   onPageChange,
+  onPageSizeChange,
+  loading,
 }: DataTableProps<TData, TValue>) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
-    columns,
+    columns,  
     pageCount: pageCount,    
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true, 
@@ -66,7 +71,7 @@ export function DataTable<TData, TValue>({
   return (
     <div>
     <div className="overflow-hidden rounded-md border">
-      <Table>
+      <Table >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -85,8 +90,20 @@ export function DataTable<TData, TValue>({
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
+
+         {loading ? 
+         (<TableBody>
+          <TableRow>
+            <TableCell colSpan={columns.length}>
+                <SkeletonTable/>
+                <SkeletonTable/>
+            </TableCell>
+          </TableRow>
+          </TableBody>) 
+         : 
+         (
+          <TableBody>
+          {table.getRowModel()?.rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -100,13 +117,18 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+            <TableRow className="">
+              <TableCell colSpan={columns.length} className="text-center h-24">
                 Sem resultados!
               </TableCell>
             </TableRow>
           )}
         </TableBody>
+
+         )
+         } 
+
+
           
           <TableFooter>
           <TableRow >
@@ -117,7 +139,7 @@ export function DataTable<TData, TValue>({
                     size="sm"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
-                    className="cursor-pointer"
+                    className="cursor-pointer rigcinza"
                     ><ArrowLeft/></Button>
 
                     <Button
@@ -125,16 +147,19 @@ export function DataTable<TData, TValue>({
                     size="sm"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
-                    className="cursor-pointer"
-                    ><ArrowRight/></Button>
+                    className="cursor-pointer rigcinza"
+                    ><ArrowRight /></Button>
                     <Badge variant={"neutral"}>{infoPagina}</Badge>
                   </div>
 
             </TableCell>
             <TableCell colSpan={2}>
               <div className="flex items-center justify-center gap-2">
-                <Badge>Pedidos por página</Badge>
-                <ComboboxCustomItems/>
+                <Badge variant={"neutral"}>Pedidos por página</Badge>
+                <ComboboxCustomItems 
+                value={pageSize} 
+                onSelect={onPageSizeChange}
+                />
 
               </div>
             </TableCell>

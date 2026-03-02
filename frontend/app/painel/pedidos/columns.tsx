@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
+import Link from "next/link"
 
 export type TypePedidos = {
   status: string
@@ -24,7 +25,18 @@ const statusConfig = {
   'S': { variant: "suspenso", label: "SUSPENSO" },
 } as const;
 
-type StatusKey = keyof typeof statusConfig ;
+const transpConfig = {
+  '11845': { variant: "ML", label: "MERCADO" },
+  '806': { variant: "RD", label: "RODONAVES" },
+  '018': { variant: "AC", label: "ACEVILLE" },
+  '484': { variant: "JD", label: "JADLOG" },
+  '13763': { variant: "JT", label: "J&T TRANSP" },
+  '13319': { variant: "FR", label: "FRENET" },
+  '13233': { variant: "LG", label: "LOGGI" },
+} as const;
+
+type StatusKey = keyof typeof statusConfig;
+type TranspKey = keyof typeof transpConfig;
 
 export const columns: ColumnDef<TypePedidos>[] = [
   {
@@ -38,12 +50,8 @@ export const columns: ColumnDef<TypePedidos>[] = [
     }
   },
   {
-    accessorKey: "data",
-    header: "Data",
-    cell: ({row}) => {
-      const data = row.getValue("data") as string
-      return formatDate(data) 
-    }
+    accessorKey: "con_nome",
+    header: "Nome",
   },
   {
     accessorKey: "registro",
@@ -52,17 +60,28 @@ export const columns: ColumnDef<TypePedidos>[] = [
   {
     accessorKey: "os",
     header: "OS",
+    cell: ({row})=> {
+      const os = row.getValue("os") as string
+      const url = `https://www.mercadolivre.com.br/vendas/${os}/detalhe`
+      return <Link className="p-2" href={url} target="_blank">{os}</Link>
+    }
   },  
-  {
-    accessorKey: "con_nome",
-    header: "Nome",
-  },
   {
     accessorKey: "previsao",
     header: "Previsao",
       cell: ({row}) => {
       const data = row.getValue("previsao") as string
       return formatDate(data) 
+    }
+  },
+    {
+    accessorKey: "transportadora",
+    header: "Transp.",
+    cell: ({row}) => {    
+      const transp = row.getValue("transportadora");
+      const transpKey = String(transp) as TranspKey;
+      const currentStatus = transpConfig[transpKey] || transpConfig['484'];
+      return <Badge variant={currentStatus.variant}><small className="font-bold tracking-wider">{currentStatus.label}</small></Badge>
     }
   },    
   {

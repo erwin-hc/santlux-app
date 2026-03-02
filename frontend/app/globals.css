@@ -124,3 +124,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.rigcinza {
+  @apply focus-visible:ring-slate-500 focus-visible:ring-3 focus-visible:ring-offset-0 focus-visible:outline-none
+}
