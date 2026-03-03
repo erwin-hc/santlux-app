@@ -46,7 +46,7 @@ export const ThemeSwitcher = ({ value, onChange, defaultValue = "system", classN
     [setTheme],
   );
 
-  // Prevent hydration mismatch
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
@@ -57,7 +57,7 @@ export const ThemeSwitcher = ({ value, onChange, defaultValue = "system", classN
   }
 
   return (
-    <div className={cn("relative isolate rounded-full bg-background flex items-center justify-center", className)}>
+    <div className={cn("relative w-24 isolate rounded-full bg-background flex items-center justify-center", className)}>
       {themes.map(({ key, icon: Icon, label }) => {
         const isActive = theme === key;
 

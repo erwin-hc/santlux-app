@@ -1,6 +1,6 @@
 "use client";
 // import * as React from "react";
-import { Truck, CalendarCog, PiggyBank, ScrollText, LayoutDashboard, User } from "lucide-react";
+import { Truck, CalendarCog, PiggyBank, ListChecks, LayoutDashboard, User } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
@@ -21,7 +21,7 @@ const data = {
     {
       title: "Pedidos",
       url: "/painel/pedidos",
-      icon: ScrollText,
+      icon: ListChecks,
     },
     {
       title: "Produção",

@@ -2,6 +2,8 @@
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight }  from "lucide-react";
 import SkeletonTable from "@/components/skeleton-table";
+import { useIsAdmin } from "@/hooks/use-admin";
+
 
 import {
   ColumnDef,
@@ -32,11 +34,12 @@ interface DataTableProps<TData, TValue> {
   onPageChange: (page: number) => void
   onPageSizeChange: (pageSize: number) => void
   loading?:boolean
+  isAdmin?:boolean
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
+  data,  
   pageCount = 0,
   pageIndex = 0,
   pageSize = 10,
@@ -44,10 +47,12 @@ export function DataTable<TData, TValue>({
   onPageSizeChange,
   loading,
 }: DataTableProps<TData, TValue>) {
+  const isAdmin = useIsAdmin();
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,  
+    meta: { isAdmin },
     pageCount: pageCount,    
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true, 
@@ -70,7 +75,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-    <div className="overflow-hidden rounded-md border">
+    <div className="overflow-hidden rounded-md border tracking-widest">
       <Table >
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -95,6 +100,7 @@ export function DataTable<TData, TValue>({
          (<TableBody>
           <TableRow>
             <TableCell colSpan={columns.length}>
+                <SkeletonTable/>
                 <SkeletonTable/>
                 <SkeletonTable/>
             </TableCell>

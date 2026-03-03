@@ -48,7 +48,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false, // Evita refresh na página para tratarmos o erro aqui
+        redirect: false, 
       });
 
       if (result?.error) {
@@ -74,7 +74,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               <Blinds strokeWidth={1.15} size={28} />
               <span className="ml-2 font-bold text-xl">SANTLUX</span>
             </div>
-            <div className="w-20">
+            <div className="">
               <ThemeToggle />
             </div>
           </div>

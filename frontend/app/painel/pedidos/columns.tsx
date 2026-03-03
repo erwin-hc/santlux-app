@@ -1,9 +1,18 @@
 "use client"
 
+import { Cable, SquarePen } from "lucide-react"
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
 import Link from "next/link"
+import { RowData } from "@tanstack/react-table"
+
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TData extends RowData> {
+    isAdmin?: boolean
+  }
+}
 
 export type TypePedidos = {
   status: string
@@ -13,6 +22,7 @@ export type TypePedidos = {
   con_nome: string
   previsao: string
   nnota: number
+  transportadora: string
 }
 
 const statusConfig = {
@@ -41,51 +51,75 @@ type TranspKey = keyof typeof transpConfig;
 export const columns: ColumnDef<TypePedidos>[] = [
   {
     accessorKey: "status",
-    header: "Status",
+    header: "STATUS",
     cell: ({row}) => {    
       const status = row.getValue("status");
       const statusKey = String(status) as StatusKey;
-      const currentStatus = statusConfig[statusKey] || statusConfig['*'];
+      const currentStatus = statusConfig[statusKey];
       return <Badge variant={currentStatus.variant}><small className="font-bold tracking-wider">{currentStatus.label}</small></Badge>
     }
   },
   {
     accessorKey: "con_nome",
-    header: "Nome",
-  },
-  {
-    accessorKey: "registro",
-    header: "Registro",
+    header: "NOME",
   },
   {
     accessorKey: "os",
     header: "OS",
-    cell: ({row})=> {
+    cell: ({row, table})=> {
+      const meta = table.options.meta;
+      const isAdmin = meta?.isAdmin;      
       const os = row.getValue("os") as string
       const url = `https://www.mercadolivre.com.br/vendas/${os}/detalhe`
-      return <Link className="p-2" href={url} target="_blank">{os}</Link>
+      return (
+        <>
+        {isAdmin ? (
+        <div className="flex items-center justify-start">
+          <span className="mr-2">{os}</span>
+          <Link className="p-1 rounded-lg rigcinza" href={url} target="_blank">
+            <Badge variant={"ML"} className="h-6 m-0"><Cable strokeWidth={1.50} size={28} /></Badge>
+          </Link>
+        </div>
+        ) : (<span>{os}</span>)}
+        </>
+      )
     }
   },  
   {
     accessorKey: "previsao",
-    header: "Previsao",
-      cell: ({row}) => {
+    header: "PREVISÃO",
+      cell: ({row, table}) => {
+      const meta = table.options.meta;
+      const isAdmin = meta?.isAdmin; 
       const data = row.getValue("previsao") as string
-      return formatDate(data) 
+      return (
+        <>
+          {isAdmin ? (
+            <div className="flex items-center justify-start">
+              <span className="mr-2">{formatDate(data)}</span>
+              <Link href={''} className="p-1 rounded-lg rigcinza" >
+                <Badge variant={"FR"} className="h-6 m-0"><SquarePen strokeWidth={1.50} size={28} /></Badge>
+              </Link >
+            </div>
+          ) : (formatDate(data))}  
+        
+        </>
+        
+       )
     }
   },
     {
     accessorKey: "transportadora",
-    header: "Transp.",
+    header: "TRANSP.",
     cell: ({row}) => {    
       const transp = row.getValue("transportadora");
       const transpKey = String(transp) as TranspKey;
-      const currentStatus = transpConfig[transpKey] || transpConfig['484'];
+      const currentStatus = transpConfig[transpKey];
       return <Badge variant={currentStatus.variant}><small className="font-bold tracking-wider">{currentStatus.label}</small></Badge>
     }
   },    
   {
     accessorKey: "nnota",
-    header: "Nota",
+    header: "NOTA",
   },
 ]
