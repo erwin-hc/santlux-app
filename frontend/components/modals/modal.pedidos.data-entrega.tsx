@@ -14,7 +14,6 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"
-import { useRouter } from "next/navigation";
 
 const DataScheme = z.object({
  dia: z.string().refine(val => {
@@ -43,8 +42,7 @@ interface PedidoData {
 }
 
 export function PedidoModalDataEntrega() {
-  const modal = useModal();
-  const router = useRouter();
+  const modal = useModal();  
   const data = modal.data as PedidoData;
   const registro = data.registro;
 
