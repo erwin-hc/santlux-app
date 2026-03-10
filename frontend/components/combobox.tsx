@@ -37,7 +37,7 @@ import {
       onValueChange={(item) => item && onSelect(Number(item.value))}
       
     >
-      <ComboboxInput placeholder={String(value)} className={"w-20 "} />
+      <ComboboxInput placeholder={String(value)} className={"w-20 cursor-pointer"} readOnly/>
       <ComboboxContent>
         <ComboboxList >
           {(framework) => (

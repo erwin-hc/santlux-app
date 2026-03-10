@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, HTTPException, Query, Depends, Path, Body
 from db.db_firebird import run_query
 from auth_utils import get_current_user
+from datetime import datetime
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"],dependencies=[Depends(get_current_user)])
 
@@ -48,12 +49,42 @@ async def listar_pedidos(page: int = Query(0, ge=0), limit: int = 10):
         print(f"ERRO CRÍTICO NO BANCO: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
 
-@router.get("/{registro}")
-async def obter_pedido(registro: int):
-    sql = "SELECT * FROM SKLLPPC WHERE REGISTRO = ?"
-    resultado = run_query(sql, (registro,))
-    
-    if not resultado:
-        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+
+@router.put("/{registro}")
+async def update_dtentrega(
+    registro: int = Path(..., description="ID do registro"), 
+    data: str = Body(..., embed=True)
+):
+    try:
+        # Conversão da data vinda do JSON (ex: "25/12/2024")
+        date_obj = datetime.strptime(data, "%d/%m/%Y")
+        firebird_date = date_obj.strftime("%Y-%m-%d")
+
+        query = """
+            UPDATE SKLLPPC
+            SET DTENTREGA = ?
+            WHERE REGISTRO = ?
+        """
         
-    return resultado[0]
+        # Agora o run_query já faz o commit internamente!
+        resultado = run_query(query, (firebird_date, registro))
+        
+        # Verifica se alguma linha foi realmente alterada
+        if resultado.get("rows_affected") == 0:
+            raise HTTPException(status_code=404, detail="Registro não encontrado")
+
+        return {
+            "status": "sucesso",
+            "registro": registro,
+            "nova_data": firebird_date
+        }
+
+    except ValueError:
+        raise HTTPException(
+            status_code=400, 
+            detail="Formato inválido. Use DD/MM/YY"
+        )
+    except Exception as e:
+        logging.error(f"Erro ao atualizar: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no banco")

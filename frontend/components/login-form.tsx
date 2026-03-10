@@ -3,7 +3,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import ThemeToggle from "./theme-toggle";
 import { Blinds, Mail, Lock, Loader2 } from "lucide-react";
@@ -14,7 +13,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useMessages } from "@/providers/MessageProvider";
+import { useMessages } from "@/providers/message-provider";
 
 export const LoginFormSchema = z.object({
   email: z.string().email({

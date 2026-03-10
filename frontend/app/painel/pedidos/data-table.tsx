@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight }  from "lucide-react";
 import SkeletonTable from "@/components/skeleton-table";
 import { useIsAdmin } from "@/hooks/use-admin";
-
+import { useModal as useModalHook } from "@/providers/modal-provider";
 
 import {
   ColumnDef,
@@ -48,12 +48,14 @@ export function DataTable<TData, TValue>({
   loading,
 }: DataTableProps<TData, TValue>) {
   const isAdmin = useIsAdmin();
+  const modalContext = useModalHook();
+  
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,  
-    meta: { isAdmin },
-    pageCount: pageCount,    
+    meta: { isAdmin, modal: modalContext },
+    pageCount: pageCount,      
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true, 
     state: {
@@ -68,7 +70,6 @@ export function DataTable<TData, TValue>({
         onPageChange(newState.pageIndex)
       }
     },
-    
   })
 
   const infoPagina = `Página ${pageIndex + 1} de ${pageCount}`
@@ -133,9 +134,7 @@ export function DataTable<TData, TValue>({
 
          )
          } 
-
-
-          
+                   
           <TableFooter>
           <TableRow >
             <TableCell colSpan={columns.length -2}>    

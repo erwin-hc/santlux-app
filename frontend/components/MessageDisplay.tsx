@@ -1,6 +1,6 @@
 // components/MessageDisplay.tsx
 "use client";
-import { useMessages } from "@/providers/MessageProvider";
+import { useMessages } from "@/providers/message-provider";
 import { motion, AnimatePresence } from "framer-motion";
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon } from "lucide-react";
 

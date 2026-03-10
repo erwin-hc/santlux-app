@@ -26,14 +26,22 @@ def get_db():
         if conn:
             conn.close()
 
+
 def run_query(query: str, params: tuple = ()):
-    """Executa SQL e retorna uma lista de dicionários."""
+    
     with get_db() as conn:
         cur = conn.cursor()
         cur.execute(query, params)
         
-        # Mapeia nomes das colunas para os resultados
+        upper_query = query.strip().upper()
+        is_modifying = any(upper_query.startswith(word) for word in ["UPDATE", "INSERT", "DELETE"])
+
+        if is_modifying:
+            conn.commit()
+            return {"rows_affected": cur.rowcount}
+        
         if cur.description:
             columns = [col[0].lower() for col in cur.description]
             return [dict(zip(columns, row)) for row in cur.fetchall()]
-        return []
+        
+        return []        

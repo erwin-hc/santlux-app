@@ -6,11 +6,14 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/lib/utils"
 import Link from "next/link"
 import { RowData } from "@tanstack/react-table"
+import { ModalContextData } from "@/providers/modal-provider"
+import { Button } from "@base-ui/react"
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
     isAdmin?: boolean
+    modal?: ModalContextData
   }
 }
 
@@ -76,7 +79,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
         {isAdmin ? (
         <div className="flex items-center justify-start">
           <span className="mr-2">{os}</span>
-          <Link className="p-1 rounded-lg rigcinza" href={url} target="_blank">
+          <Link className="rounded-md p-1 cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0" href={url} target="_blank">
             <Badge variant={"ML"} className="h-6 m-0"><Cable strokeWidth={1.50} size={28} /></Badge>
           </Link>
         </div>
@@ -91,15 +94,19 @@ export const columns: ColumnDef<TypePedidos>[] = [
       cell: ({row, table}) => {
       const meta = table.options.meta;
       const isAdmin = meta?.isAdmin; 
+      const modal = meta?.modal;
       const data = row.getValue("previsao") as string
+      
+
       return (
         <>
           {isAdmin ? (
             <div className="flex items-center justify-start">
               <span className="mr-2">{formatDate(data)}</span>
-              <Link href={''} className="p-1 rounded-lg rigcinza" >
+              <Button  onClick={() => modal?.openModal("PedidoModalDataEntrega", row.original)} className="rounded-md p-1 cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0" >
                 <Badge variant={"FR"} className="h-6 m-0"><SquarePen strokeWidth={1.50} size={28} /></Badge>
-              </Link >
+              </Button >
+
             </div>
           ) : (formatDate(data))}  
         
@@ -119,7 +126,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     }
   },    
   {
-    accessorKey: "nnota",
-    header: "NOTA",
+    accessorKey: "registro",
+    header: "REGISTRO",
   },
 ]

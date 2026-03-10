@@ -1,4 +1,3 @@
-import { Data } from "@dnd-kit/core";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -23,6 +22,5 @@ export function formatFullName(fullName: string): string {
 }
 
 export function formatDate(data: string) : string {
-  return new Date(data).toLocaleDateString()
-
+  return new Date(data).toLocaleDateString("pt-BR", { timeZone: "UTC" })
 }

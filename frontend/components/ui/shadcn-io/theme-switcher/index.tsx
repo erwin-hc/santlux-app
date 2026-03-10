@@ -57,7 +57,7 @@ export const ThemeSwitcher = ({ value, onChange, defaultValue = "system", classN
   }
 
   return (
-    <div className={cn("relative w-24 isolate rounded-full bg-background flex items-center justify-center", className)}>
+    <div className={cn("relative isolate rounded-md bg-background flex items-center justify-center", className)}>
       {themes.map(({ key, icon: Icon, label }) => {
         const isActive = theme === key;
 
@@ -65,22 +65,21 @@ export const ThemeSwitcher = ({ value, onChange, defaultValue = "system", classN
           <button
             aria-label={label}
             className={cn(
-              "relative flex h-7 w-7 items-center justify-center rounded-lg mx-1  transition-all",
-              "hover:bg-sidebar-border cursor-pointer",
-              "rigcinza"
+              "relative flex h-8 w-8 items-center justify-center rounded-md   transition-all",
+              "hover:bg-sidebar-border cursor-pointer",    
+            "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"         
             )}
             key={key}
             onClick={() => handleThemeClick(key as "light" | "dark" | "system")}
             type="button"
           >
             {isActive && (
-              <motion.div
-                className=""
-                layoutId="activeTheme"
-                transition={{ type: "spring", duration: 0.5 }}
+              <motion.div                
+                layoutId="activeTheme"                
+                transition={{ type: "spring", duration: 0.5 }}                
               />
             )}
-            <Icon className={cn("relative z-10 m-auto h-4 w-4 cursor-pointer", isActive ? "text-foreground" : "text-muted-foreground")} />
+            <Icon className={cn("relative z-10 m-auto h-4 w-4 cursor-pointer ", isActive ? "text-foreground" : "text-muted-foreground")} />
           </button>
 
           
