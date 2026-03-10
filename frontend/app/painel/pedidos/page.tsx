@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
@@ -16,38 +16,37 @@ interface PedidosResponse {
 export default function Page() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 15 });
   const [data, setData] = useState<unknown[]>([]);
-  const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(
-    null,
-  );
+  const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadData() {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `/api/pedidos?page=${pagination.pageIndex}&limit=${pagination.pageSize}`,
-        );
-        const result = await response.json();
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/pedidos?page=${pagination.pageIndex}&limit=${pagination.pageSize}`);
+      const result = await response.json();
+
+      if (response.ok) {
         setData(result.data);
         setMetadata(result.metadata);
-
-        if (response) {
-          setData(result.data);
-          setMetadata(result.metadata);
-        } else {
-          setData([]);
-          setMetadata(null);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar pedidos:", error);
-      } finally {
-        setLoading(false);
+      } else {
+        setData([]);
+        setMetadata(null);
       }
+    } catch (error) {
+      console.error("Erro ao buscar pedidos:", error);
+    } finally {
+      setLoading(false);
     }
-
-    loadData();
   }, [pagination.pageIndex, pagination.pageSize]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    window.addEventListener("refresh-pedidos", fetchData);
+    return () => window.removeEventListener("refresh-pedidos", fetchData);
+  }, [fetchData]);
 
   const handlePageSizeChange = (newSize: number) => {
     setPagination({
@@ -58,13 +57,7 @@ export default function Page() {
 
   return (
     <div className="container mx-auto py-1">
-      <div
-        className={
-          loading
-            ? "opacity-50 pointer-events-none transition-opacity"
-            : "transition-opacity"
-        }
-      >
+      <div className={loading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
         <DataTable
           columns={columns as []}
           data={data}
@@ -72,9 +65,7 @@ export default function Page() {
           pageIndex={pagination.pageIndex || 0}
           pageSize={pagination.pageSize || 0}
           regCount={metadata?.total || 0}
-          onPageChange={(newIndex) =>
-            setPagination((prev) => ({ ...prev, pageIndex: newIndex }))
-          }
+          onPageChange={(newIndex) => setPagination((prev) => ({ ...prev, pageIndex: newIndex }))}
           onPageSizeChange={handlePageSizeChange}
           loading={loading}
         />
