@@ -8,7 +8,13 @@ type ThemeValue = "light" | "dark" | "system";
 const ThemeToggle = () => {
   const { theme, setTheme } = useTheme();
 
-  return <ThemeSwitcher defaultValue="system" onChange={setTheme} value={theme as ThemeValue} />;
+  return (
+    <ThemeSwitcher
+      defaultValue="system"
+      onChange={setTheme}
+      value={theme as ThemeValue}
+    />
+  );
 };
 
 export default ThemeToggle;

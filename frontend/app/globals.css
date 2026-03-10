@@ -125,19 +125,17 @@
   }
 }
 
-
-
-@layer base {  
+@layer base {
   input:-webkit-autofill,
-  input:-webkit-autofill:hover, 
-  input:-webkit-autofill:focus, 
-  input:-webkit-autofill:active {    
-    transition: background-color 99999s ease-in-out 0s !important;        
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    transition: background-color 99999s ease-in-out 0s !important;
     /* -webkit-box-shadow: 0 0 0px 1000px hsl(var(--input)) inset !important;        */
     -webkit-text-fill-color: hsl(var(--foreground)) !important;
   }
 }
 
 .custom-ring {
-  @apply focus:opacity-100 focus:border-sidebar-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0
+  @apply focus:opacity-100 focus:border-sidebar-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0;
 }

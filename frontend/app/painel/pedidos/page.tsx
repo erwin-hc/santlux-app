@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 import { useState, useEffect } from "react";
-import { columns } from "./columns"
-import { DataTable } from "./data-table"
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
 
 interface PedidosResponse {
-  data: unknown[]; 
+  data: unknown[];
   metadata: {
     total: number;
     total_pages: number;
@@ -16,22 +16,26 @@ interface PedidosResponse {
 export default function Page() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 15 });
   const [data, setData] = useState<unknown[]>([]);
-  const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(null);
+  const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
- 
+
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       try {
-        const response = await fetch(`/api/pedidos?page=${pagination.pageIndex}&limit=${pagination.pageSize}`);
+        const response = await fetch(
+          `/api/pedidos?page=${pagination.pageIndex}&limit=${pagination.pageSize}`,
+        );
         const result = await response.json();
         setData(result.data);
         setMetadata(result.metadata);
-               
+
         if (response) {
           setData(result.data);
           setMetadata(result.metadata);
-        } else {          
+        } else {
           setData([]);
           setMetadata(null);
         }
@@ -43,19 +47,24 @@ export default function Page() {
     }
 
     loadData();
-  }, [pagination.pageIndex,pagination.pageSize]);
+  }, [pagination.pageIndex, pagination.pageSize]);
 
   const handlePageSizeChange = (newSize: number) => {
     setPagination({
-      pageIndex: 0, 
-      pageSize: newSize
+      pageIndex: 0,
+      pageSize: newSize,
     });
   };
 
   return (
     <div className="container mx-auto py-1">
-      <div className={loading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
-
+      <div
+        className={
+          loading
+            ? "opacity-50 pointer-events-none transition-opacity"
+            : "transition-opacity"
+        }
+      >
         <DataTable
           columns={columns as []}
           data={data}
@@ -63,11 +72,13 @@ export default function Page() {
           pageIndex={pagination.pageIndex || 0}
           pageSize={pagination.pageSize || 0}
           regCount={metadata?.total || 0}
-          onPageChange={(newIndex) => setPagination(prev => ({ ...prev, pageIndex: newIndex }))}
+          onPageChange={(newIndex) =>
+            setPagination((prev) => ({ ...prev, pageIndex: newIndex }))
+          }
           onPageSizeChange={handlePageSizeChange}
           loading={loading}
-          />
+        />
       </div>
     </div>
-  )
+  );
 }

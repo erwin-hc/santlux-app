@@ -4,10 +4,9 @@ import { NextResponse } from "next/server";
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ registro: string }> } 
+  { params }: { params: Promise<{ registro: string }> },
 ) {
-
-  const { registro } = await params; 
+  const { registro } = await params;
 
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -17,16 +16,16 @@ export async function PUT(
   try {
     const body = await request.json();
     const backendUrl = process.env.NEXT_PUBLIC_URLBACKEND;
-    
+
     const registroId = parseInt(registro);
 
     const resp = await fetch(`${backendUrl}/pedidos/${registroId}`, {
-      method: 'PUT',
-      headers: { 
-        'Authorization': `Bearer ${session.user.accessToken}`,
-        'Content-Type': 'application/json'
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${session.user.accessToken}`,
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(body) 
+      body: JSON.stringify(body),
     });
 
     const data = await resp.json();
@@ -38,6 +37,9 @@ export async function PUT(
     return NextResponse.json(data);
   } catch (error) {
     console.error("Erro no Route Handler:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

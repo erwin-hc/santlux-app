@@ -1,5 +1,11 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
 
 interface Message {
   id: number;
@@ -15,7 +21,9 @@ interface MessageContextType {
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
 
-export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const MessageProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [messages, setMessages] = useState<Message[]>([]);
 
   const removeMessage = useCallback((id: number) => {
@@ -41,7 +49,11 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
     removeMessage,
   };
 
-  return <MessageContext.Provider value={contextValue}>{children}</MessageContext.Provider>;
+  return (
+    <MessageContext.Provider value={contextValue}>
+      {children}
+    </MessageContext.Provider>
+  );
 };
 
 export const useMessages = () => {

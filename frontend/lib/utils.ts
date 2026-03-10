@@ -21,6 +21,6 @@ export function formatFullName(fullName: string): string {
     .join(" ");
 }
 
-export function formatDate(data: string) : string {
-  return new Date(data).toLocaleDateString("pt-BR", { timeZone: "UTC" })
+export function formatDate(data: string): string {
+  return new Date(data).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }

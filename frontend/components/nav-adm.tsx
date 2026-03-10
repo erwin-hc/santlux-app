@@ -2,13 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import { LucideIcon } from "lucide-react";
-import { 
-  SidebarGroup, 
-  SidebarGroupLabel, 
-  SidebarMenu, 
-  SidebarMenuButton, 
-  SidebarMenuItem, 
-  useSidebar 
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 
@@ -40,8 +40,8 @@ export function NavAdmin({
 
           return (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton 
-                asChild 
+              <SidebarMenuButton
+                asChild
                 isActive={active} // Aplica o destaque visual
                 tooltip={item.title}
                 className="cursor-pointer rigcinza"

@@ -20,17 +20,22 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`antialiased`}>
-      <ModalProvider>
-       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ModalProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
             <MessageProvider>
               <AuthProvider>
-                 {children}
-                 <ModalManager />
+                {children}
+                <ModalManager />
               </AuthProvider>
-            <MessageDisplay />
-          </MessageProvider>
-       </ThemeProvider>
-      </ModalProvider>
+              <MessageDisplay />
+            </MessageProvider>
+          </ThemeProvider>
+        </ModalProvider>
       </body>
     </html>
   );

@@ -2,8 +2,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-
-export const authOptions: NextAuthOptions = ({
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -15,7 +14,9 @@ export const authOptions: NextAuthOptions = ({
         const backendUrl = process.env.NEXT_PUBLIC_URLBACKEND;
 
         if (!backendUrl) {
-          console.error("ERRO: Variável NEXT_PUBLIC_URLBACKEND não encontrada no .env.local");
+          console.error(
+            "ERRO: Variável NEXT_PUBLIC_URLBACKEND não encontrada no .env.local",
+          );
           return null;
         }
 
@@ -45,7 +46,10 @@ export const authOptions: NextAuthOptions = ({
             };
           }
 
-          console.error("Falha no login:", data.detail || "Credenciais inválidas");
+          console.error(
+            "Falha no login:",
+            data.detail || "Credenciais inválidas",
+          );
           return null;
         } catch (error) {
           console.error("Erro ao conectar no servidor:", error);
@@ -76,4 +80,4 @@ export const authOptions: NextAuthOptions = ({
     signIn: "/",
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};

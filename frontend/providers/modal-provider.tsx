@@ -2,7 +2,11 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Define the available modal types
-export type ModalType = "PedidoModalDataEntrega" | "deletePedido" | "createUser" | null;
+export type ModalType =
+  | "PedidoModalDataEntrega"
+  | "deletePedido"
+  | "createUser"
+  | null;
 
 export interface ModalContextData {
   isOpen: boolean;
@@ -32,7 +36,9 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ModalContext.Provider value={{ isOpen, type, data, openModal, closeModal }}>
+    <ModalContext.Provider
+      value={{ isOpen, type, data, openModal, closeModal }}
+    >
       {children}
     </ModalContext.Provider>
   );

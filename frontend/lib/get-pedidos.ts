@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
 export interface PedidosResponse {
-  data: unknown[]; 
+  data: unknown[];
   metadata: {
     total: number;
     page: number;
@@ -11,24 +11,30 @@ export interface PedidosResponse {
   };
 }
 
-export async function getPedidos(page: number = 0, limit: number = 10): Promise<PedidosResponse | null> {
+export async function getPedidos(
+  page: number = 0,
+  limit: number = 10,
+): Promise<PedidosResponse | null> {
   const session = await getServerSession(authOptions);
   const token = session?.user?.accessToken;
 
-  if (!session || !token) return null ;
+  if (!session || !token) return null;
 
-  const backendUrl = process.env.NEXT_PUBLIC_URLBACKEND || 'http://127.0.0.1:8000';
+  const backendUrl =
+    process.env.NEXT_PUBLIC_URLBACKEND || "http://127.0.0.1:8000";
 
   try {
-    const resp = await fetch(`${backendUrl}/pedidos/?page=${page}&limit=${limit}`, {
-      headers: { 
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const resp = await fetch(
+      `${backendUrl}/pedidos/?page=${page}&limit=${limit}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
       },
-      cache: 'no-store'
-    });
+    );
 
-    
     if (!resp.ok) {
       console.error("Erro na API:", resp.status, resp.statusText);
       return null;
