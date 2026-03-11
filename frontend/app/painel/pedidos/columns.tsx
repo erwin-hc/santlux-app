@@ -8,6 +8,7 @@ import Link from "next/link";
 import { RowData } from "@tanstack/react-table";
 import { ModalContextData } from "@/providers/modal-provider";
 import { Button } from "@base-ui/react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -53,6 +54,19 @@ type TranspKey = keyof typeof transpConfig;
 
 export const columns: ColumnDef<TypePedidos>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "status",
     header: "STATUS",
     cell: ({ row }) => {
@@ -61,9 +75,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const currentStatus = statusConfig[statusKey];
       return (
         <Badge variant={currentStatus.variant}>
-          <small className="font-bold tracking-wider">
-            {currentStatus.label}
-          </small>
+          <small className="font-bold tracking-wider">{currentStatus.label}</small>
         </Badge>
       );
     },
@@ -117,9 +129,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
             <div className="flex items-center justify-start">
               <span className="mr-2">{formatDate(data)}</span>
               <Button
-                onClick={() =>
-                  modal?.openModal("PedidoModalDataEntrega", row.original)
-                }
+                onClick={() => modal?.openModal("PedidoModalDataEntrega", row.original)}
                 className="rounded-md p-1 cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
               >
                 <Badge variant={"FR"} className="h-6 m-0">
@@ -143,9 +153,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const currentStatus = transpConfig[transpKey];
       return (
         <Badge variant={currentStatus.variant}>
-          <small className="font-bold tracking-wider">
-            {currentStatus.label}
-          </small>
+          <small className="font-bold tracking-wider">{currentStatus.label}</small>
         </Badge>
       );
     },

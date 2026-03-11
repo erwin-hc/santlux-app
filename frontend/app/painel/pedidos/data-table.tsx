@@ -4,23 +4,11 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import SkeletonTable from "@/components/skeleton-table";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { useModal as useModalHook } from "@/providers/modal-provider";
+import { useState } from "react";
 
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ComboboxCustomItems } from "@/components/combobox";
 
@@ -47,6 +35,8 @@ export function DataTable<TData, TValue>({
   onPageSizeChange,
   loading,
 }: DataTableProps<TData, TValue>) {
+  const [rowSelection, setRowSelection] = useState({});
+
   const isAdmin = useIsAdmin();
   const modalContext = useModalHook();
 
@@ -57,8 +47,10 @@ export function DataTable<TData, TValue>({
     meta: { isAdmin, modal: modalContext },
     pageCount: pageCount,
     getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: setRowSelection,
     manualPagination: true,
     state: {
+      rowSelection,
       pagination: {
         pageIndex,
         pageSize,
@@ -84,12 +76,7 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -111,26 +98,15 @@ export function DataTable<TData, TValue>({
             <TableBody>
               {table.getRowModel()?.rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
+                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
+                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow className="">
-                  <TableCell
-                    colSpan={columns.length}
-                    className="text-center h-24"
-                  >
+                  <TableCell colSpan={columns.length} className="text-center h-24">
                     Sem resultados!
                   </TableCell>
                 </TableRow>
@@ -162,15 +138,16 @@ export function DataTable<TData, TValue>({
                     <ArrowRight />
                   </Button>
                   <Badge variant={"neutral"}>{infoPagina}</Badge>
+                  <Badge variant={"entregue"}>
+                    {table.getFilteredSelectedRowModel().rows.length} de {table.getFilteredRowModel().rows.length} Registro(s) Selecionado(s)
+                  </Badge>
                 </div>
               </TableCell>
+
               <TableCell colSpan={2}>
                 <div className="flex items-center justify-center gap-2">
                   <Badge variant={"neutral"}>Pedidos por página</Badge>
-                  <ComboboxCustomItems
-                    value={pageSize}
-                    onSelect={onPageSizeChange}
-                  />
+                  <ComboboxCustomItems value={pageSize} onSelect={onPageSizeChange} />
                 </div>
               </TableCell>
             </TableRow>

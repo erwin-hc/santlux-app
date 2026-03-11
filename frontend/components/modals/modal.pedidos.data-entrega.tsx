@@ -78,13 +78,11 @@ export function PedidoModalDataEntrega() {
       });
 
       if (response.ok) {
-        // window.location.reload();
         window.dispatchEvent(new Event("refresh-pedidos"));
-        addMessage("success", "Data atualizada com sucesso!");
+        addMessage("success", "Atualizado com sucesso!");
         modal.closeModal();
       } else {
-        const errorData = await response.json();
-        console.log(`Erro: ${errorData.detail || "Falha ao atualizar"}`);
+        addMessage("error", "Algo deu errado!");
       }
     } catch (error) {
       console.error("Erro na requisição:", error);
@@ -146,7 +144,6 @@ export function PedidoModalDataEntrega() {
                 )}
               />
 
-              {/* MÊS */}
               <FormField
                 control={form.control}
                 name="mes"
