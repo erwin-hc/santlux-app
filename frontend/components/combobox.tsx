@@ -1,10 +1,4 @@
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
+import { Combobox, ComboboxContent, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox";
 
 type Framework = {
   label: string;
@@ -18,13 +12,7 @@ const frameworks: Framework[] = [
   { label: "100", value: "100" },
 ];
 
-export function ComboboxCustomItems({
-  value,
-  onSelect,
-}: {
-  value: number;
-  onSelect: (val: number) => void;
-}) {
+export function ComboboxCustomItems({ value, onSelect }: { value: number; onSelect: (val: number) => void }) {
   const selectedFramework = frameworks.find((f) => f.value === String(value));
 
   return (
@@ -34,11 +22,7 @@ export function ComboboxCustomItems({
       value={selectedFramework ?? null}
       onValueChange={(item) => item && onSelect(Number(item.value))}
     >
-      <ComboboxInput
-        placeholder={String(value)}
-        className={"w-20 cursor-pointer"}
-        readOnly
-      />
+      <ComboboxInput placeholder={String(value)} className={"w-20 h-8 cursor-pointer"} readOnly />
       <ComboboxContent>
         <ComboboxList>
           {(framework) => (

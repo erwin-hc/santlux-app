@@ -16,6 +16,7 @@ const badgeVariants = cva(
    w-fit 
    whitespace-nowrap 
    shrink-0 
+   backdrop-blur-sm
    [&>svg]:size-3.5 gap-1 
    [&>svg]:pointer-events-none 
    transition-[color,box-shadow] overflow-hidden`,
@@ -23,27 +24,21 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        producao:
-          "border-emerald-500/5 bg-[#e5f8f2] text-emerald-600  dark:text-emerald-400 dark:bg-[#081b15]",
-        cancelado:
-          "border-destructive bg-[#fdecec] text-destructive  dark:text-red-400 dark:bg-[#150b0b]",
-        aberto:
-          "border-blue-500/5 bg-[#e9f2ff] text-blue-600  dark:text-blue-400 dark:bg-[#0c1522]",
-        suspenso:
-          "border-amber-500/5 bg-[#fff5e5] text-amber-600  dark:text-amber-400 dark:bg-[#221808]",
-        entregue:
-          "border-sky-500/5 bg-[#f0f9ff] text-sky-600  dark:text-sky-400 dark:bg-[#081622]",
-        neutral:
-          "border-slate-500/5 bg-[#f8fafc] text-slate-600  dark:text-slate-400 dark:bg-[#0f172a]",
+        producao: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 dark:bg-emerald-500/15 dark:border-emerald-400/20",
+        cancelado: "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 dark:bg-red-500/15 dark:border-red-400/20",
+        aberto: "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400 dark:bg-blue-500/15 dark:border-blue-400/20",
+        suspenso: "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 dark:bg-amber-500/15 dark:border-amber-400/20",
+        entregue: "border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400 dark:bg-sky-500/15 dark:border-sky-400/20",
+        neutral: "border-slate-500/30 bg-slate-500/10 text-slate-600 dark:text-slate-400 dark:bg-slate-500/15 dark:border-slate-400/20",
 
-        ML: "border-amber-500/5 bg-[#fef3c7] text-amber-600  dark:text-amber-400 dark:bg-[#fef3c720]",
-        RD: "border-indigo-500/5 bg-[#eff2ff] text-indigo-600  dark:text-indigo-400 dark:bg-[#0e1122]",
-        AC: "border-rose-500/5 bg-[#fff1f2] text-rose-600  dark:text-rose-400 dark:bg-[#200e10]",
-        JD: "border-orange-500/5 bg-[#fff7ed] text-orange-600  dark:text-orange-400 dark:bg-[#221308]",
-        JT: "border-teal-500/5 bg-[#f0fdfa] text-teal-600  dark:text-teal-400 dark:bg-[#081a17]",
-        FR: "border-cyan-500/5 bg-[#ecfeff] text-cyan-600  dark:text-cyan-400 dark:bg-[#081a1c]",
-        LG: "border-lime-500/5 bg-[#f7fee7] text-lime-600  dark:text-lime-400 dark:bg-[#121a08]",
-        // fuchsia: "border-fuchsia-500/5 bg-[#fdf4ff] text-fuchsia-600  dark:text-fuchsia-400 dark:bg-[#1d0e20]",
+        ML: "border-amber-400/30 bg-amber-400/10 text-amber-700 dark:text-amber-300 dark:bg-amber-400/10 dark:border-amber-400/20",
+        RD: "border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 dark:bg-indigo-500/15 dark:border-indigo-400/20",
+        AC: "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 dark:bg-rose-500/15 dark:border-rose-400/20",
+        JD: "border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-400 dark:bg-orange-500/15 dark:border-orange-400/20",
+        JT: "border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400 dark:bg-teal-500/15 dark:border-teal-400/20",
+        FR: "border-cyan-500/30 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:bg-cyan-500/15 dark:border-cyan-400/20",
+        LG: "border-lime-500/30 bg-lime-500/10 text-lime-600 dark:text-lime-400 dark:bg-lime-500/15 dark:border-lime-400/20",
+        AF: "border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-400 dark:bg-orange-500/15 dark:border-orange-400/20",
       },
     },
     defaultVariants: {
@@ -57,17 +52,10 @@ function Badge({
   variant,
   asChild = false,
   ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+}: React.ComponentProps<"span"> & VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
   const Comp = asChild ? Slot : "span";
 
-  return (
-    <Comp
-      data-slot="badge"
-      className={cn(badgeVariants({ variant }), className)}
-      {...props}
-    />
-  );
+  return <Comp data-slot="badge" className={cn(badgeVariants({ variant }), className)} {...props} />;
 }
 
 export { Badge, badgeVariants };

@@ -1,6 +1,6 @@
 "use client";
 
-import { Cable, SquarePen } from "lucide-react";
+import { Cable, CalendarCog } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
@@ -47,6 +47,7 @@ const transpConfig = {
   "13763": { variant: "JT", label: "J&T TRANSP" },
   "13319": { variant: "FR", label: "FRENET" },
   "13233": { variant: "LG", label: "LOGGI" },
+  "11795": { variant: "AF", label: "ALFA" },
 } as const;
 
 type StatusKey = keyof typeof statusConfig;
@@ -60,9 +61,12 @@ export const columns: ColumnDef<TypePedidos>[] = [
         checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
+        className="ml-2"
       />
     ),
-    cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
+    cell: ({ row }) => (
+      <Checkbox className="ml-2" checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
+    ),
     enableSorting: false,
     enableHiding: false,
   },
@@ -73,11 +77,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const status = row.getValue("status");
       const statusKey = String(status) as StatusKey;
       const currentStatus = statusConfig[statusKey];
-      return (
-        <Badge variant={currentStatus.variant}>
-          <small className="font-bold tracking-wider">{currentStatus.label}</small>
-        </Badge>
-      );
+      return <Badge variant={currentStatus.variant}>{currentStatus.label}</Badge>;
     },
   },
   {
@@ -102,8 +102,8 @@ export const columns: ColumnDef<TypePedidos>[] = [
                 href={url}
                 target="_blank"
               >
-                <Badge variant={"ML"} className="h-6 m-0">
-                  <Cable strokeWidth={1.5} size={28} />
+                <Badge variant={"ML"} className="h-6">
+                  <Cable strokeWidth={2} />
                 </Badge>
               </Link>
             </div>
@@ -132,8 +132,8 @@ export const columns: ColumnDef<TypePedidos>[] = [
                 onClick={() => modal?.openModal("PedidoModalDataEntrega", row.original)}
                 className="rounded-md p-1 cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
               >
-                <Badge variant={"FR"} className="h-6 m-0">
-                  <SquarePen strokeWidth={1.5} size={28} />
+                <Badge variant={"neutral"} className="h-6">
+                  <CalendarCog strokeWidth={2} />
                 </Badge>
               </Button>
             </div>
@@ -148,18 +148,19 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "transportadora",
     header: "TRANSP.",
     cell: ({ row }) => {
-      const transp = row.getValue("transportadora");
-      const transpKey = String(transp) as TranspKey;
+      const transp = row.getValue("transportadora") as string | undefined;
+      const transpKey = String(transp ?? "").toUpperCase() as TranspKey;
       const currentStatus = transpConfig[transpKey];
-      return (
-        <Badge variant={currentStatus.variant}>
-          <small className="font-bold tracking-wider">{currentStatus.label}</small>
-        </Badge>
-      );
+
+      return <Badge variant={currentStatus?.variant ?? "secondary"}>{currentStatus?.label ?? "Desconhecido"}</Badge>;
     },
   },
   {
     accessorKey: "registro",
     header: "REGISTRO",
+  },
+  {
+    accessorKey: "nnota",
+    header: "NOTA",
   },
 ];

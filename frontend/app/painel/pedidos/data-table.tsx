@@ -1,15 +1,14 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import SkeletonTable from "@/components/skeleton-table";
+import { ArrowLeft, ArrowRight, FileX, Search } from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { useModal as useModalHook } from "@/providers/modal-provider";
 import { useState } from "react";
-
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable, ColumnFiltersState, getFilteredRowModel } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import SkeletonTable from "@/components/skeleton-table";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { ComboboxCustomItems } from "@/components/combobox";
 
 interface DataTableProps<TData, TValue> {
@@ -23,6 +22,9 @@ interface DataTableProps<TData, TValue> {
   onPageSizeChange: (pageSize: number) => void;
   loading?: boolean;
   isAdmin?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -34,8 +36,12 @@ export function DataTable<TData, TValue>({
   onPageChange,
   onPageSizeChange,
   loading,
+  inputRef,
+  searchTerm,
+  onSearchChange,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const isAdmin = useIsAdmin();
   const modalContext = useModalHook();
@@ -48,9 +54,12 @@ export function DataTable<TData, TValue>({
     pageCount: pageCount,
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
     manualPagination: true,
     state: {
       rowSelection,
+      columnFilters,
       pagination: {
         pageIndex,
         pageSize,
@@ -68,8 +77,21 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="overflow-hidden rounded-md border tracking-widest">
-        <Table>
+      <div className="relative flex items-center py-4">
+        <Search className="absolute ml-2 text-sidebar-ring/80 " />
+        <Input
+          ref={inputRef}
+          id="imput-search-pedidos"
+          placeholder="Procurar..."
+          value={searchTerm}
+          className="max-w-2xl pl-12 placeholder:text-sidebar-ring/50"
+          onChange={(e) => onSearchChange(e.target.value)}
+          onFocus={(e) => (e.target.placeholder = "")}
+          onBlur={(e) => (e.target.placeholder = "Procurar...")}
+        />
+      </div>
+      <div className="overflow-hidden rounded-md border tracking-widest ">
+        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-8">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -106,8 +128,11 @@ export function DataTable<TData, TValue>({
                 ))
               ) : (
                 <TableRow className="">
-                  <TableCell colSpan={columns.length} className="text-center h-24">
-                    Sem resultados!
+                  <TableCell colSpan={columns.length} className="w-full ">
+                    <div className="flex justify-start items-center gap-2 min-h-50 px-20">
+                      <FileX className="text-foreground" strokeWidth={0.75} size={40} />
+                      <span>Sem resultados!</span>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}
@@ -123,7 +148,7 @@ export function DataTable<TData, TValue>({
                     size="sm"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
-                    className="cursor-pointer rigcinza"
+                    className="cursor-pointer h-8"
                   >
                     <ArrowLeft />
                   </Button>
@@ -133,7 +158,7 @@ export function DataTable<TData, TValue>({
                     size="sm"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}
-                    className="cursor-pointer rigcinza"
+                    className="cursor-pointer h-8"
                   >
                     <ArrowRight />
                   </Button>
@@ -146,7 +171,9 @@ export function DataTable<TData, TValue>({
 
               <TableCell colSpan={2}>
                 <div className="flex items-center justify-center gap-2">
-                  <Badge variant={"neutral"}>Pedidos por página</Badge>
+                  <Badge className="h-8" variant={"neutral"}>
+                    Pedidos por página
+                  </Badge>
                   <ComboboxCustomItems value={pageSize} onSelect={onPageSizeChange} />
                 </div>
               </TableCell>

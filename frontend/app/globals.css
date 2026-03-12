@@ -111,7 +111,7 @@
   --sidebar-primary: hsl(0, 0%, 45%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
   --sidebar-accent: hsl(0 0% 14.9%);
-  --sidebar-accent-foreground: hsl(0 0% 96.1%);
+  --sidebar-accent-foreground: hsl(0, 0%, 96%);
   --sidebar-border: hsl(0 0% 14.9%);
   --sidebar-ring: hsl(0, 0%, 45%);
 }

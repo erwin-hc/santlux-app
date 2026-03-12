@@ -72,7 +72,7 @@ export default function Page() {
 
   const linkClass = `
     custom-ring bg-muted relative rounded-xl p-12 flex flex-col justify-center 
-    opacity-50 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-black
+    opacity-50 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-sidebar-ring
     hover:opacity-100 hover:cursor-pointer transition-all
   `;
 

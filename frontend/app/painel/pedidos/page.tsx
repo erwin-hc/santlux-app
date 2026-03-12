@@ -1,72 +1,85 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
-interface PedidosResponse {
-  data: unknown[];
-  metadata: {
-    total: number;
-    total_pages: number;
-    limit: number;
-  };
-}
-
 export default function Page() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 15 });
-  const [data, setData] = useState<unknown[]>([]);
-  const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(null);
+  const [data, setData] = useState<any[]>([]);
+  const [metadata, setMetadata] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/pedidos?page=${pagination.pageIndex}&limit=${pagination.pageSize}`);
-      const result = await response.json();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-      if (response.ok) {
-        setData(result.data);
-        setMetadata(result.metadata);
-      } else {
-        setData([]);
-        setMetadata(null);
+  // --- FETCH LOGIC ---
+  const getPedidos = useCallback(
+    async (query?: string) => {
+      setLoading(true);
+      try {
+        // Construct the URL for our Next.js API Proxy
+        const url =
+          query && query.trim().length > 2
+            ? `/api/pedidos?search=${encodeURIComponent(query)}`
+            : `/api/pedidos?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
+
+        const response = await fetch(url);
+        const result = await response.json();
+
+        if (response.ok) {
+          setData(result.data || []);
+          setMetadata(result.metadata || null);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Erro ao buscar pedidos:", error);
-    } finally {
-      setLoading(false);
+    },
+    [pagination.pageIndex, pagination.pageSize],
+  );
+
+  // --- DEBOUNCE EFFECT ---
+  useEffect(() => {
+    const query = searchTerm.trim();
+
+    // 1. If searching (more than 2 chars)
+    if (query.length > 2) {
+      const delayDebounceFn = setTimeout(() => {
+        getPedidos(query);
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     }
-  }, [pagination.pageIndex, pagination.pageSize]);
 
+    // 2. If search is empty, go back to normal list
+    if (query.length === 0) {
+      getPedidos();
+    }
+  }, [searchTerm, getPedidos]);
+
+  // --- REFRESH LISTENER ---
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  useEffect(() => {
-    window.addEventListener("refresh-pedidos", fetchData);
-    return () => window.removeEventListener("refresh-pedidos", fetchData);
-  }, [fetchData]);
-
-  const handlePageSizeChange = (newSize: number) => {
-    setPagination({
-      pageIndex: 0,
-      pageSize: newSize,
-    });
-  };
+    const refresh = () => getPedidos(searchTerm.length > 2 ? searchTerm : undefined);
+    window.addEventListener("refresh-pedidos", refresh);
+    return () => window.removeEventListener("refresh-pedidos", refresh);
+  }, [getPedidos, searchTerm]);
 
   return (
     <div className="container mx-auto py-1">
-      <div className={loading ? "opacity-50 pointer-events-none transition-opacity" : "transition-opacity"}>
+      <div className={loading ? "opacity-50 pointer-events-none" : ""}>
         <DataTable
-          columns={columns as []}
+          columns={columns as any}
           data={data}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          inputRef={inputRef}
           pageCount={metadata?.total_pages || 0}
-          pageIndex={pagination.pageIndex || 0}
-          pageSize={pagination.pageSize || 0}
+          pageIndex={pagination.pageIndex}
+          pageSize={pagination.pageSize}
           regCount={metadata?.total || 0}
-          onPageChange={(newIndex) => setPagination((prev) => ({ ...prev, pageIndex: newIndex }))}
-          onPageSizeChange={handlePageSizeChange}
+          onPageChange={(idx) => setPagination((prev) => ({ ...prev, pageIndex: idx }))}
+          onPageSizeChange={(size) => setPagination({ pageIndex: 0, pageSize: size })}
           loading={loading}
         />
       </div>
