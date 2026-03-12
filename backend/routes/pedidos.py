@@ -11,7 +11,7 @@ async def update_dtentrega(
     data: str = Body(..., embed=True)
 ):
     try:
-        # Conversão da data vinda do JSON (ex: "25/12/2024")
+        
         date_obj = datetime.strptime(data, "%d/%m/%Y")
         firebird_date = date_obj.strftime("%Y-%m-%d")
 
@@ -21,10 +21,10 @@ async def update_dtentrega(
             WHERE REGISTRO = ?
         """
         
-        # Agora o run_query já faz o commit internamente!
+        
         resultado = run_query(query, (firebird_date, registro))
         
-        # Verifica se alguma linha foi realmente alterada
+        
         if resultado.get("rows_affected") == 0:
             raise HTTPException(status_code=404, detail="Registro não encontrado")
 
@@ -51,8 +51,7 @@ async def listar_pedidos(
     search: str | None = Query(None)
 ):
 
-    if search is not None and search.strip() != "":
-        
+    if search is not None and search.strip() != "":        
         search = search.upper()
         search_terms = [term.strip() for term in search.split(",") if term.strip()]
         
@@ -107,7 +106,7 @@ async def listar_pedidos(
 
     print("SEARCH RECEBIDO:", search)    
 
-    # PAGINATION NORMAL
+    
     skip = page * limit
 
     total = run_query(

@@ -4,21 +4,40 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
+export type TypePedidos = {
+  status: string;
+  data: string;
+  registro: number;
+  os: string;
+  con_nome: string;
+  previsao: string;
+  nnota: number;
+  transportadora: string;
+};
+
+type PedidosResponse = {
+  data: TypePedidos[];
+  metadata: {
+    total: number;
+    page: number;
+    limit: number;
+    total_pages: number;
+  };
+};
+
 export default function Page() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 15 });
-  const [data, setData] = useState<any[]>([]);
-  const [metadata, setMetadata] = useState<any>(null);
+  const [data, setData] = useState<TypePedidos[]>([]);
+  const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // --- FETCH LOGIC ---
   const getPedidos = useCallback(
     async (query?: string) => {
       setLoading(true);
       try {
-        // Construct the URL for our Next.js API Proxy
         const url =
           query && query.trim().length > 2
             ? `/api/pedidos?search=${encodeURIComponent(query)}`
@@ -40,36 +59,50 @@ export default function Page() {
     [pagination.pageIndex, pagination.pageSize],
   );
 
-  // --- DEBOUNCE EFFECT ---
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   useEffect(() => {
     const query = searchTerm.trim();
 
-    // 1. If searching (more than 2 chars)
-    if (query.length > 2) {
+    if (query.length > 3) {
       const delayDebounceFn = setTimeout(() => {
         getPedidos(query);
       }, 500);
       return () => clearTimeout(delayDebounceFn);
     }
 
-    // 2. If search is empty, go back to normal list
     if (query.length === 0) {
       getPedidos();
     }
   }, [searchTerm, getPedidos]);
 
-  // --- REFRESH LISTENER ---
   useEffect(() => {
     const refresh = () => getPedidos(searchTerm.length > 2 ? searchTerm : undefined);
     window.addEventListener("refresh-pedidos", refresh);
     return () => window.removeEventListener("refresh-pedidos", refresh);
   }, [getPedidos, searchTerm]);
 
+  useEffect(() => {
+    const refresh = () => {
+      getPedidos(searchTerm.length > 2 ? searchTerm : undefined);
+
+      // espera o modal desmontar
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 150);
+    };
+
+    window.addEventListener("refresh-pedidos", refresh);
+
+    return () => window.removeEventListener("refresh-pedidos", refresh);
+  }, [getPedidos, searchTerm]);
   return (
     <div className="container mx-auto py-1">
       <div className={loading ? "opacity-50 pointer-events-none" : ""}>
-        <DataTable
-          columns={columns as any}
+        <DataTable<TypePedidos, unknown>
+          columns={columns}
           data={data}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
