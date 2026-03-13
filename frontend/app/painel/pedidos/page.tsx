@@ -26,7 +26,7 @@ type PedidosResponse = {
 };
 
 export default function Page() {
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 15 });
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [data, setData] = useState<TypePedidos[]>([]);
   const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,7 +66,7 @@ export default function Page() {
   useEffect(() => {
     const query = searchTerm.trim();
 
-    if (query.length > 3) {
+    if (query.length > 2) {
       const delayDebounceFn = setTimeout(() => {
         getPedidos(query);
       }, 500);
@@ -88,7 +88,6 @@ export default function Page() {
     const refresh = () => {
       getPedidos(searchTerm.length > 2 ? searchTerm : undefined);
 
-      // espera o modal desmontar
       setTimeout(() => {
         inputRef.current?.focus();
       }, 150);

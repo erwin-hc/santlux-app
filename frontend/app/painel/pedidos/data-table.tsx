@@ -85,13 +85,16 @@ export function DataTable<TData, TValue>({
           placeholder="Procurar..."
           value={searchTerm}
           className="max-w-2xl pl-12 placeholder:text-sidebar-ring/50"
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value.toUpperCase().replace(/\./g, ",");
+            onSearchChange(value);
+          }}
           onFocus={(e) => (e.target.placeholder = "")}
           onBlur={(e) => (e.target.placeholder = "Procurar...")}
         />
       </div>
       <div className="overflow-hidden rounded-md border tracking-widest ">
-        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-8">
+        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-8 ">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

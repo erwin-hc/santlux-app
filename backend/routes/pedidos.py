@@ -77,6 +77,10 @@ async def listar_pedidos(
 
         where_clause = " OR ".join(search_conditions)
 
+        status_filter = ""
+        if len(search_terms) > 1:
+            status_filter = " AND PPC.STATUS NOT LIKE 'E'"
+
         sql = f"""
         SELECT
             PPC.STATUS, PPC.DATA, PPC.CON_NOME, PPC.REGISTRO,
@@ -89,6 +93,7 @@ async def listar_pedidos(
         LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
         WHERE ({where_clause})
         AND PPC.OS STARTING WITH '20000'
+        {status_filter}
         ORDER BY PPC.REGISTRO DESC
         """
 
