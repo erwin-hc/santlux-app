@@ -2,10 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ registro: string }> },
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ registro: string }> }) {
   const { registro } = await params;
 
   const session = await getServerSession(authOptions);
@@ -19,7 +16,7 @@ export async function PUT(
 
     const registroId = parseInt(registro);
 
-    const resp = await fetch(`${backendUrl}/pedidos/${registroId}`, {
+    const resp = await fetch(`${backendUrl}/pedidos/previsao/${registroId}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${session.user.accessToken}`,
@@ -37,9 +34,6 @@ export async function PUT(
     return NextResponse.json(data);
   } catch (error) {
     console.error("Erro no Route Handler:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

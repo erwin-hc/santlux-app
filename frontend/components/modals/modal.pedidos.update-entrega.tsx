@@ -45,7 +45,7 @@ interface PedidoData {
   registro?: number;
 }
 
-export function PedidoModalDataEntrega() {
+export function ModalUpdateEntrega() {
   const { addMessage } = useMessages();
   const modal = useModal();
   const data = modal.data as PedidoData;
@@ -100,7 +100,7 @@ export function PedidoModalDataEntrega() {
         <DialogHeader>
           <DialogTitle className="flex items-center justify-start gap-4">
             <CalendarCog />
-            <span className="text-2xl font-bold underline underline-offset-4 uppercase">Data de Entrega</span>
+            <span className="text-2xl font-bold underline underline-offset-4 uppercase">ENTREGUE</span>
           </DialogTitle>
         </DialogHeader>
 

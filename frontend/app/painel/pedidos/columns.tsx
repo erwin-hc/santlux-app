@@ -1,6 +1,6 @@
 "use client";
 
-import { Cable, CalendarCog } from "lucide-react";
+import { Cable, Calendar, CalendarCog, ListTodo, Settings2, Truck, User } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
@@ -9,6 +9,7 @@ import { RowData } from "@tanstack/react-table";
 import { ModalContextData } from "@/providers/modal-provider";
 import { Button } from "@base-ui/react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SwitchEntregue } from "@/components/switch";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -27,6 +28,7 @@ export type TypePedidos = {
   previsao: string;
   nnota: number;
   transportadora: string;
+  entdata: string;
 };
 
 const statusConfig = {
@@ -72,7 +74,14 @@ export const columns: ColumnDef<TypePedidos>[] = [
   },
   {
     accessorKey: "status",
-    header: "STATUS",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <ListTodo size={16} />
+          <span>STATUS</span>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const status = row.getValue("status");
       const statusKey = String(status) as StatusKey;
@@ -82,11 +91,25 @@ export const columns: ColumnDef<TypePedidos>[] = [
   },
   {
     accessorKey: "con_nome",
-    header: "NOME",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <User size={16} />
+          <span>NOME</span>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "os",
-    header: "OS",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <ListTodo size={16} />
+          <span>OS</span>
+        </div>
+      );
+    },
     cell: ({ row, table }) => {
       const meta = table.options.meta;
       const isAdmin = meta?.isAdmin;
@@ -95,15 +118,15 @@ export const columns: ColumnDef<TypePedidos>[] = [
       return (
         <>
           {isAdmin ? (
-            <div className="flex items-center justify-start">
+            <div className="w-50 flex items-center justify-between">
               <span className="mr-2">{os}</span>
               <Link
-                className="rounded-md p-1 cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
+                className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
                 href={url}
                 target="_blank"
               >
                 <Badge variant={"ML"} className="h-6">
-                  <Cable strokeWidth={2} />
+                  <Cable size={16} strokeWidth={1.5} />
                 </Badge>
               </Link>
             </div>
@@ -116,7 +139,14 @@ export const columns: ColumnDef<TypePedidos>[] = [
   },
   {
     accessorKey: "previsao",
-    header: "PREVISÃO",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <Calendar size={16} />
+          <span>PREVISÃO</span>
+        </div>
+      );
+    },
     cell: ({ row, table }) => {
       const meta = table.options.meta;
       const isAdmin = meta?.isAdmin;
@@ -129,8 +159,8 @@ export const columns: ColumnDef<TypePedidos>[] = [
             <div className="flex items-center justify-start">
               <span className="mr-2">{formatDate(data)}</span>
               <Button
-                onClick={() => modal?.openModal("PedidoModalDataEntrega", row.original)}
-                className="rounded-md p-1 cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
+                onClick={() => modal?.openModal("updatePrevisao", row.original)}
+                className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
               >
                 <Badge variant={"neutral"} className="h-6">
                   <CalendarCog strokeWidth={2} />
@@ -138,7 +168,10 @@ export const columns: ColumnDef<TypePedidos>[] = [
               </Button>
             </div>
           ) : (
-            formatDate(data)
+            <div className="flex items-center justify-start">
+              <span className="mr-2">{formatDate(data)}</span>
+              <div className="rounded-md focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"></div>
+            </div>
           )}
         </>
       );
@@ -146,21 +179,73 @@ export const columns: ColumnDef<TypePedidos>[] = [
   },
   {
     accessorKey: "transportadora",
-    header: "TRANSP.",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <Truck size={16} />
+          <span>TRANSP</span>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const transp = row.getValue("transportadora") as string | undefined;
       const transpKey = String(transp ?? "").toUpperCase() as TranspKey;
       const currentStatus = transpConfig[transpKey];
 
-      return <Badge variant={currentStatus?.variant ?? "secondary"}>{currentStatus?.label ?? "Desconhecido"}</Badge>;
+      return <Badge variant={currentStatus?.variant ?? "secondary"}>{currentStatus?.label ?? ""}</Badge>;
     },
   },
   {
     accessorKey: "registro",
-    header: "REGISTRO",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <ListTodo size={16} />
+          <span>PEDIDO</span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "entdata",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <Calendar size={16} />
+          <span>ENTREGUE</span>
+        </div>
+      );
+    },
+    cell: ({ row, table }) => {
+      const data = row.getValue("entdata") as string;
+      const meta = table.options.meta;
+      const isAdmin = meta?.isAdmin;
+      const modal = meta?.modal;
+
+      if (!isAdmin) {
+        return data ? formatDate(data) : <Settings2 strokeWidth={1.5} size={16} />;
+      }
+
+      const handleClick = () => {
+        modal?.openModal("updateEntrega", row.original);
+      };
+
+      return data ? (
+        <SwitchEntregue label={formatDate(data)} isChecked={true} />
+      ) : (
+        <SwitchEntregue handleClick={handleClick} isChecked={false} icon={Settings2} />
+      );
+    },
   },
   {
     accessorKey: "nnota",
-    header: "NOTA",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <User size={16} />
+          <span>NF</span>
+        </div>
+      );
+    },
   },
 ];

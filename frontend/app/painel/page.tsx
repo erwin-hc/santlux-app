@@ -1,5 +1,5 @@
 "use client";
-import { Truck, CalendarCog, PiggyBank, ListChecks } from "lucide-react";
+import { Truck, CalendarCog, PiggyBank, ListTodo } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, SVGProps, KeyboardEvent } from "react";
 
@@ -88,7 +88,7 @@ export default function Page() {
           className={linkClass}
         >
           <SVGchart className="absolute bottom-4 right-4 w-36 h-36 text-orange-300 rotate-12 pointer-events-none" />
-          <ListChecks className="" size={75} strokeWidth={0.75} />
+          <ListTodo className="" size={75} strokeWidth={0.75} />
           <h2 className="text-xl m-2">Pedidos</h2>
         </Link>
 

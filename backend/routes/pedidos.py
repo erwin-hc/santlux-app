@@ -2,16 +2,16 @@ from fastapi import APIRouter, HTTPException, Query, Depends, Path, Body
 from db.db_firebird import run_query
 from auth_utils import get_current_user
 from datetime import datetime
+import logging
 
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"],dependencies=[Depends(get_current_user)])
 
-@router.put("/{registro}")
-async def update_dtentrega(
+@router.put("/previsao/{registro}")
+async def update_previsao(
     registro: int = Path(..., description="ID do registro"), 
     data: str = Body(..., embed=True)
 ):
-    try:
-        
+    try:        
         date_obj = datetime.strptime(data, "%d/%m/%Y")
         firebird_date = date_obj.strftime("%Y-%m-%d")
 
@@ -19,11 +19,9 @@ async def update_dtentrega(
             UPDATE SKLLPPC
             SET DTENTREGA = ?
             WHERE REGISTRO = ?
-        """
+        """       
         
-        
-        resultado = run_query(query, (firebird_date, registro))
-        
+        resultado = run_query(query, (firebird_date, registro))        
         
         if resultado.get("rows_affected") == 0:
             raise HTTPException(status_code=404, detail="Registro não encontrado")
@@ -43,6 +41,95 @@ async def update_dtentrega(
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
 
+@router.put("/entrega/{notafiscal}")
+async def update_entrega(
+    notafiscal: int = Path(..., description="ID do NFe"), 
+    data: str = Body(..., embed=True)
+):
+    try:        
+        date_obj = datetime.strptime(data, "%d/%m/%Y")
+        firebird_date = date_obj.strftime("%Y-%m-%d")
+
+        query1 = """
+            UPDATE SKLLPDS PDS
+            SET PDS.ENTREGUE = 'ENTREGUE', 
+                PDS.DTENTREGA = ?
+            WHERE PDS.NNOTA = ?
+        """
+
+        query2 = """
+            UPDATE SKLLPPC PPC
+            SET PPC.STATUS = 'E',
+                PPC.ENTDATA = ? 
+            WHERE PPC.PEDIDO IN (
+                SELECT PDS.PEDIDO 
+                FROM SKLLPDS PDS
+                WHERE PDS.NNOTA = ?
+            )
+        """      
+
+        res1 = run_query(query1, (firebird_date, notafiscal)) 
+        if res1.get("rows_affected") == 0:
+            raise HTTPException(status_code=404, detail="Registro não encontrado")
+
+        res2 = run_query(query2, (firebird_date, notafiscal)) 
+        if res2.get("rows_affected") == 0:
+            raise HTTPException(status_code=404, detail="Registro não encontrado")    
+
+        return {
+            "status": "sucesso",
+            "notafiscal": notafiscal,
+            "nova_data": firebird_date
+        }
+
+    except ValueError:
+        raise HTTPException(
+            status_code=400, 
+            detail="Formato inválido. Use DD/MM/YYYY"
+        )
+    except Exception as e:
+        logging.error(f"Erro ao atualizar: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no banco")
+
+
+@router.put("/naoentregue/{notafiscal}")
+async def update_entrega(
+    notafiscal: int = Path(..., description="ID do NFe")    
+):
+    try:        
+        query1 = """
+            UPDATE SKLLPDS PDS
+            SET PDS.ENTREGUE = 'N', 
+                PDS.DTENTREGA = NULL
+            WHERE PDS.NNOTA = ?
+        """
+
+        query2 = """
+            UPDATE SKLLPPC PPC
+            SET PPC.STATUS = 'F',
+                PPC.ENTDATA = NULL 
+            WHERE PPC.PEDIDO IN (
+                SELECT PDS.PEDIDO 
+                FROM SKLLPDS PDS
+                WHERE PDS.NNOTA = ?
+            )
+        """      
+
+        res1 = run_query(query1, (notafiscal,))
+        if res1.get("rows_affected") == 0:
+            raise HTTPException(status_code=404, detail="Registro não encontrado")
+
+        res2 = run_query(query2, (notafiscal,)) 
+
+        return {
+            "status": "sucesso",
+            "notafiscal": notafiscal,
+            "mensagem": "Entrega estornada com sucesso (campos zerados)",
+        }
+
+    except Exception as e:
+        logging.error(f"Erro ao atualizar: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no banco")
 
 @router.get("/")
 async def listar_pedidos(
@@ -88,7 +175,7 @@ async def listar_pedidos(
             PPC.TRANSPORTADORA,
             PDS.NNOTA,
             PDS.VOLNUMERO,
-            PPC.ENTDATA AS ENTREGUE
+            PPC.ENTDATA 
         FROM SKLLPPC PPC
         LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
         WHERE ({where_clause})
@@ -123,7 +210,8 @@ async def listar_pedidos(
         PPC.STATUS, PPC.DATA, PPC.CON_NOME, PPC.REGISTRO,
         PPC.OS, PPC.DTENTREGA AS PREVISAO,
         PPC.TRANSPORTADORA,
-        PDS.NNOTA
+        PDS.NNOTA,
+        PPC.ENTDATA
     FROM SKLLPPC PPC
     LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
     WHERE PPC.OS STARTING WITH '20000'

@@ -13,6 +13,7 @@ export type TypePedidos = {
   previsao: string;
   nnota: number;
   transportadora: string;
+  entdata: string;
 };
 
 type PedidosResponse = {
@@ -49,6 +50,7 @@ export default function Page() {
         if (response.ok) {
           setData(result.data || []);
           setMetadata(result.metadata || null);
+          console.log(result.data);
         }
       } catch (error) {
         console.error("Fetch error:", error);

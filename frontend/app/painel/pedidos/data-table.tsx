@@ -77,7 +77,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="relative flex items-center py-4">
+      <div className="relative flex items-center py-2">
         <Search className="absolute ml-2 text-sidebar-ring/80 " />
         <Input
           ref={inputRef}
@@ -93,8 +93,8 @@ export function DataTable<TData, TValue>({
           onBlur={(e) => (e.target.placeholder = "Procurar...")}
         />
       </div>
-      <div className="overflow-hidden rounded-md border tracking-widest ">
-        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-8 ">
+      <div className="overflow-hidden rounded-md border">
+        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-10.5  ">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -112,8 +112,7 @@ export function DataTable<TData, TValue>({
           {loading ? (
             <TableBody>
               <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <SkeletonTable />
+                <TableCell colSpan={columns.length} className="m-0">
                   <SkeletonTable />
                   <SkeletonTable />
                 </TableCell>
@@ -166,7 +165,7 @@ export function DataTable<TData, TValue>({
                     <ArrowRight />
                   </Button>
                   <Badge variant={"neutral"}>{infoPagina}</Badge>
-                  <Badge variant={"entregue"}>
+                  <Badge variant={"neutral"}>
                     {table.getFilteredSelectedRowModel().rows.length} de {table.getFilteredRowModel().rows.length} Registro(s) Selecionado(s)
                   </Badge>
                 </div>
