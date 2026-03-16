@@ -8,7 +8,7 @@ import Link from "next/link";
 import { RowData } from "@tanstack/react-table";
 import { ModalContextData } from "@/providers/modal-provider";
 import { Button } from "@base-ui/react";
-import { Checkbox } from "@/components/ui/checkbox";
+// import { Checkbox } from "@/components/ui/checkbox";
 import { SwitchEntregue } from "@/components/switch";
 
 declare module "@tanstack/react-table" {
@@ -56,27 +56,27 @@ type StatusKey = keyof typeof statusConfig;
 type TranspKey = keyof typeof transpConfig;
 
 export const columns: ColumnDef<TypePedidos>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="ml-2"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox className="ml-2" checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //       className="ml-2"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox className="ml-2" checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "status",
     header: () => {
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-2">
           <ListTodo size={16} />
           <span>STATUS</span>
         </div>
@@ -86,7 +86,11 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const status = row.getValue("status");
       const statusKey = String(status) as StatusKey;
       const currentStatus = statusConfig[statusKey];
-      return <Badge variant={currentStatus.variant}>{currentStatus.label}</Badge>;
+      return (
+        <Badge className="ml-2" variant={currentStatus.variant}>
+          {currentStatus.label}
+        </Badge>
+      );
     },
   },
   {
@@ -207,6 +211,17 @@ export const columns: ColumnDef<TypePedidos>[] = [
     },
   },
   {
+    accessorKey: "nnota",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <User size={16} />
+          <span>NF</span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "entdata",
     header: () => {
       return (
@@ -250,17 +265,6 @@ export const columns: ColumnDef<TypePedidos>[] = [
         <SwitchEntregue handleClick={naoentregue} label={formatDate(data)} isChecked={true} />
       ) : (
         <SwitchEntregue handleClick={entregue} isChecked={false} icon={Settings2} />
-      );
-    },
-  },
-  {
-    accessorKey: "nnota",
-    header: () => {
-      return (
-        <div className="flex items-center gap-2">
-          <User size={16} />
-          <span>NF</span>
-        </div>
       );
     },
   },
