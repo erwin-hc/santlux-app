@@ -196,8 +196,6 @@ async def listar_pedidos(
             }
         }
 
-    print("SEARCH RECEBIDO:", search)    
-
     
     skip = page * limit
 

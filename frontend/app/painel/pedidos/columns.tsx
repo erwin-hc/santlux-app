@@ -226,14 +226,30 @@ export const columns: ColumnDef<TypePedidos>[] = [
         return data ? formatDate(data) : <Settings2 strokeWidth={1.5} size={16} />;
       }
 
-      const handleClick = () => {
+      const entregue = () => {
         modal?.openModal("updateEntrega", row.original);
       };
 
+      const naoentregue = async () => {
+        try {
+          const response = await fetch(`/api/pedidos/naoentregue/${row.getValue("nnota")}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data: new Date() }),
+          });
+
+          if (response.ok) {
+            window.dispatchEvent(new Event("refresh-pedidos"));
+          }
+        } catch (error) {
+          console.error("Erro na requisição:", error);
+        }
+      };
+
       return data ? (
-        <SwitchEntregue label={formatDate(data)} isChecked={true} />
+        <SwitchEntregue handleClick={naoentregue} label={formatDate(data)} isChecked={true} />
       ) : (
-        <SwitchEntregue handleClick={handleClick} isChecked={false} icon={Settings2} />
+        <SwitchEntregue handleClick={entregue} isChecked={false} icon={Settings2} />
       );
     },
   },

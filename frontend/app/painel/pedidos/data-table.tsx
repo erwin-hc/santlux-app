@@ -77,7 +77,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="relative flex items-center py-2">
+      <div className="relative flex items-center pb-2">
         <Search className="absolute ml-2 text-sidebar-ring/80 " />
         <Input
           ref={inputRef}

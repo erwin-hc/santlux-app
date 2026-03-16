@@ -79,7 +79,7 @@ export function ModalUpdatePrevisao() {
 
       if (response.ok) {
         window.dispatchEvent(new Event("refresh-pedidos"));
-        addMessage("success", "Atualizado com sucesso!");
+        addMessage("success", "Previsão, atualizada!");
         modal.closeModal();
       } else {
         addMessage("error", "Algo deu errado!");

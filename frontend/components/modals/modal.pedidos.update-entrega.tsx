@@ -43,16 +43,16 @@ interface PedidoData {
   con_nome?: string;
   previsao?: string;
   registro?: number;
+  nnota?: number;
 }
 
 export function ModalUpdateEntrega() {
   const { addMessage } = useMessages();
   const modal = useModal();
   const data = modal.data as PedidoData;
-  const registro = data.registro;
+  const notafiscal = data.nnota;
 
-  const dataString = data.previsao;
-  const dateObj = dataString ? new Date(dataString) : new Date();
+  const dateObj = new Date();
   const dia = String(dateObj.getUTCDate()).padStart(2, "0");
   const mes = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
   const ano = String(dateObj.getUTCFullYear());
@@ -69,9 +69,9 @@ export function ModalUpdateEntrega() {
 
   if (!modal) return null;
 
-  const atualizarEntrega = async (registro: number, novaData: string) => {
+  const atualizarEntrega = async (notafiscal: number, novaData: string) => {
     try {
-      const response = await fetch(`/api/pedidos/${registro}`, {
+      const response = await fetch(`/api/pedidos/entrega/${notafiscal}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ data: novaData }),
@@ -79,7 +79,7 @@ export function ModalUpdateEntrega() {
 
       if (response.ok) {
         window.dispatchEvent(new Event("refresh-pedidos"));
-        addMessage("success", "Atualizado com sucesso!");
+        addMessage("success", "Data Entrega, atualizada!");
         modal.closeModal();
       } else {
         addMessage("error", "Algo deu errado!");
@@ -91,7 +91,7 @@ export function ModalUpdateEntrega() {
 
   const onSubmit: SubmitHandler<DataFormValues> = async (values) => {
     const data = `${values.dia.padStart(2, "0")}/${values.mes.padStart(2, "0")}/${values.ano}`;
-    await atualizarEntrega(registro!, data);
+    await atualizarEntrega(notafiscal!, data);
   };
 
   return (

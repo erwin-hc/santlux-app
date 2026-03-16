@@ -100,7 +100,7 @@ export default function Page() {
     return () => window.removeEventListener("refresh-pedidos", refresh);
   }, [getPedidos, searchTerm]);
   return (
-    <div className="container mx-auto py-1">
+    <div className="container mx-auto ">
       <div className={loading ? "opacity-50 pointer-events-none" : ""}>
         <DataTable<TypePedidos, unknown>
           columns={columns}
