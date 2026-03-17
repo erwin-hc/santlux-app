@@ -2,7 +2,7 @@
 import { useModal } from "@/providers/modal-provider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CalendarCog, ListTodo, User } from "lucide-react";
+import { CalendarCog, ListTodo } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { SubmitHandler, useForm } from "react-hook-form";
