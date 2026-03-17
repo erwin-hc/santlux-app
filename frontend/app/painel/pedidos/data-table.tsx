@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ComboboxCustomItems } from "@/components/combobox";
+import { SwitchEntregue } from "@/components/switch";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -50,7 +51,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    meta: { isAdmin, modal: modalContext },
+    meta: { isAdmin, modal: modalContext, isSearching: searchTerm.length > 0 },
     pageCount: pageCount,
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
@@ -94,7 +95,7 @@ export function DataTable<TData, TValue>({
         />
       </div>
       <div className="overflow-hidden rounded-md border">
-        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-10.5  ">
+        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-10.5 mb-3 ">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -165,9 +166,23 @@ export function DataTable<TData, TValue>({
                     <ArrowRight />
                   </Button>
                   <Badge variant={"neutral"}>{infoPagina}</Badge>
-                  <Badge variant={"neutral"}>
-                    {table.getFilteredSelectedRowModel().rows.length} de {table.getFilteredRowModel().rows.length} Registro(s) Selecionado(s)
-                  </Badge>
+
+                  {table.options.meta?.isSearching && table.getFilteredRowModel().rows.length > 1 && (
+                    <div className="flex items-center">
+                      {table.getFilteredSelectedRowModel().rows.length > 0 && (
+                        <Badge variant={"LG"} className="gap-2 h-8 animate-in fade-in slide-in-from-left-2">
+                          <SwitchEntregue
+                            isChecked={false}
+                            handleClick={() => {
+                              const selectedData = table.getFilteredSelectedRowModel().rows.map((row) => row.original);
+                              table.options.meta?.modal?.openModal("updateEntregaSelecao", selectedData);
+                            }}
+                          />
+                          <span className="cursor-default">Marcar {table.getFilteredSelectedRowModel().rows.length} como Entregue?</span>
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </div>
               </TableCell>
 

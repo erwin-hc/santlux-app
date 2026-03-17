@@ -10,12 +10,14 @@ import { ModalContextData } from "@/providers/modal-provider";
 import { Button } from "@base-ui/react";
 // import { Checkbox } from "@/components/ui/checkbox";
 import { SwitchEntregue } from "@/components/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface TableMeta<TData extends RowData> {
     isAdmin?: boolean;
     modal?: ModalContextData;
+    isSearching?: boolean;
   }
 }
 
@@ -56,22 +58,42 @@ type StatusKey = keyof typeof statusConfig;
 type TranspKey = keyof typeof transpConfig;
 
 export const columns: ColumnDef<TypePedidos>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //       className="ml-2"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox className="ml-2" checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
+  {
+    id: "select",
+    header: ({ table }) => {
+      const meta = table.options.meta;
+      const rowCount = table.getFilteredRowModel().rows.length;
+      const shouldShow = meta?.isSearching && rowCount > 1;
+
+      if (!shouldShow) return null;
+
+      return (
+        <>
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+            className="ml-2"
+          />
+        </>
+      );
+    },
+    cell: ({ row, table }) => {
+      const meta = table.options.meta;
+      const rowCount = table.getFilteredRowModel().rows.length;
+      const shouldShow = meta?.isSearching && rowCount > 1;
+
+      if (!shouldShow) return null;
+
+      return (
+        <>
+          <Checkbox className="ml-2" checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
+        </>
+      );
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "status",
     header: () => {
@@ -141,6 +163,29 @@ export const columns: ColumnDef<TypePedidos>[] = [
       );
     },
   },
+
+  {
+    accessorKey: "registro",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <ListTodo size={16} />
+          <span>PEDIDO</span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "nnota",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2 min-w-18">
+          <ListTodo size={16} />
+          <span>NFe</span>
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "previsao",
     header: () => {
@@ -197,28 +242,6 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const currentStatus = transpConfig[transpKey];
 
       return <Badge variant={currentStatus?.variant ?? "secondary"}>{currentStatus?.label ?? ""}</Badge>;
-    },
-  },
-  {
-    accessorKey: "registro",
-    header: () => {
-      return (
-        <div className="flex items-center gap-2">
-          <ListTodo size={16} />
-          <span>PEDIDO</span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "nnota",
-    header: () => {
-      return (
-        <div className="flex items-center gap-2">
-          <User size={16} />
-          <span>NF</span>
-        </div>
-      );
     },
   },
   {

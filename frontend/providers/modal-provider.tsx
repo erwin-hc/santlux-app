@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Define the available modal types
-export type ModalType = "updatePrevisao" | "updateEntrega" | null;
+export type ModalType = "updatePrevisao" | "updateEntrega" | "updateEntregaSelecao" | null;
 
 export interface ModalContextData {
   isOpen: boolean;
