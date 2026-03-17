@@ -2,7 +2,7 @@
 import { useModal } from "@/providers/modal-provider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CalendarCog, ListTodo } from "lucide-react";
+import { CalendarCog, CircleCheckBig } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -97,21 +97,21 @@ export function ModalUpdateSelecionadosEntrega() {
     <Dialog open={modal.isOpen} onOpenChange={(open) => !open && modal.closeModal()}>
       <DialogContent className="sm:max-w-125 w-[95vw] overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-start gap-4">
+          <DialogTitle className="flex items-center justify-start ">
             <CalendarCog />
-            <span className="text-2xl font-bold underline underline-offset-4 uppercase">SELEÇÃO ENTREGUE</span>
+            <span className="text-2xl font-bold underline underline-offset-8 uppercase">SELEÇÃO ENTREGUE</span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="max-h-48 overflow-y-auto my-4 rounded-md border border-border">
+        <div className="max-h-48 overflow-y-auto my-1 rounded-md border border-border">
           <Table>
             <TableBody>
               {selectedItems.map((i) => (
-                <TableRow key={i.nnota} className="hover:bg-transparent">
+                <TableRow key={i.nnota} className="hover:bg-transparent [&_tr]:h-8 [&_td]:py-1 [&_td]:px-05">
                   <TableCell className="py-2">
                     <div className="flex justify-start">
                       <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
-                        <ListTodo size={16} />
+                        <CircleCheckBig size={16} className="mr-2 text-emerald-500/50" />
                         {i.nnota}
                       </span>
                       <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">

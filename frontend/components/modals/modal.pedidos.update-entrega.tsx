@@ -2,13 +2,14 @@
 import { useModal } from "@/providers/modal-provider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CalendarCog } from "lucide-react";
+import { CalendarCog, CircleCheckBig } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMessages } from "@/providers/message-provider";
+import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 
 const DataScheme = z.object({
   dia: z.string().refine(
@@ -104,13 +105,25 @@ export function ModalUpdateEntrega() {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="border-y py-4">
-          <div className="grid items-baseline p-0">
-            <span className="font-semibold text-foreground text-xl tracking-wider ">{data?.con_nome}</span>
-          </div>
-          <div className="grid items-baseline p-0">
-            <span className="text-foreground tracking-wider ">{data?.os}</span>
-          </div>
+        <div className="max-h-48 overflow-y-auto my-1 rounded-md border border-border">
+          <Table>
+            <TableBody>
+              <TableRow key={data?.os} className="hover:bg-transparent [&_tr]:h-8 [&_td]:py-1 [&_td]:px-05">
+                <TableCell className="py-2">
+                  <div className="flex justify-start">
+                    <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
+                      <CircleCheckBig size={16} className="mr-2 text-emerald-500/50" />
+                      {data?.nnota}
+                    </span>
+                    <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
+                      <span className="px-2"> - </span>
+                      {data?.con_nome}
+                    </span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </div>
 
         <Form {...form}>
