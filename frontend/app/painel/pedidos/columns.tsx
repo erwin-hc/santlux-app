@@ -1,6 +1,6 @@
 "use client";
 
-import { Cable, Calendar, CalendarCog, ListTodo, Settings2, Truck, User } from "lucide-react";
+import { Cable, Calendar, CalendarCog, Eye, ListTodo, Settings2, Truck, User } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { Button } from "@base-ui/react";
 // import { Checkbox } from "@/components/ui/checkbox";
 import { SwitchEntregue } from "@/components/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { table } from "console";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -98,7 +99,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "status",
     header: () => {
       return (
-        <div className="flex items-center gap-2 ml-2">
+        <div className="flex items-center gap-1 ml-2">
           <ListTodo size={16} />
           <span>STATUS</span>
         </div>
@@ -119,7 +120,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "con_nome",
     header: () => {
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <User size={16} />
           <span>NOME</span>
         </div>
@@ -130,7 +131,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "os",
     header: () => {
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <ListTodo size={16} />
           <span>OS</span>
         </div>
@@ -144,8 +145,8 @@ export const columns: ColumnDef<TypePedidos>[] = [
       return (
         <>
           {isAdmin ? (
-            <div className="w-50 flex items-center justify-between">
-              <span className="mr-2">{os}</span>
+            <div className="w-43 flex items-center justify-between">
+              <span className="gap-1">{os}</span>
               <Link
                 className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
                 href={url}
@@ -168,9 +169,27 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "registro",
     header: () => {
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-end mr-2 gap-1">
           <ListTodo size={16} />
           <span>PEDIDO</span>
+        </div>
+      );
+    },
+    cell: ({ row, table }) => {
+      const meta = table.options.meta;
+      const modal = meta?.modal;
+
+      return (
+        <div className="flex items-center justify-end mr-2 gap-1">
+          <span className="">{row.getValue("registro")}</span>
+          <Button
+            onClick={() => modal?.openModal("viewPedido", row.getValue("registro"))}
+            className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
+          >
+            <Badge variant={"RD"} className="h-6">
+              <Eye size={16} />
+            </Badge>
+          </Button>
         </div>
       );
     },
@@ -179,9 +198,16 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "nnota",
     header: () => {
       return (
-        <div className="flex items-center gap-2 min-w-18">
+        <div className="flex items-center justify-end mr-2 gap-1">
           <ListTodo size={16} />
           <span>NFe</span>
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center justify-end mr-2">
+          <span className="">{row.getValue("nnota")}</span>
         </div>
       );
     },
@@ -190,7 +216,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "previsao",
     header: () => {
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Calendar size={16} />
           <span>PREVISÃO</span>
         </div>
@@ -230,7 +256,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "transportadora",
     header: () => {
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Truck size={16} />
           <span>TRANSP</span>
         </div>
@@ -248,7 +274,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "entdata",
     header: () => {
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <Calendar size={16} />
           <span>ENTREGUE</span>
         </div>

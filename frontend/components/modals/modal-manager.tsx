@@ -3,6 +3,7 @@ import { useModal } from "@/providers/modal-provider";
 import { ModalUpdatePrevisao } from "./modal.pedidos.update-previsao";
 import { ModalUpdateEntrega } from "./modal.pedidos.update-entrega";
 import { ModalUpdateSelecionadosEntrega } from "./modal.pedidos.update-selecao-entrega";
+import { ModalViewPedido } from "./modal.pedidos.view-pedido";
 
 export const ModalManager = () => {
   const { type, isOpen } = useModal();
@@ -14,6 +15,7 @@ export const ModalManager = () => {
       {type === "updatePrevisao" && <ModalUpdatePrevisao />}
       {type === "updateEntrega" && <ModalUpdateEntrega />}
       {type === "updateEntregaSelecao" && <ModalUpdateSelecionadosEntrega />}
+      {type === "viewPedido" && <ModalViewPedido />}
     </>
   );
 };

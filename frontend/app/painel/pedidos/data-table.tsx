@@ -176,6 +176,8 @@ export function DataTable<TData, TValue>({
                             handleClick={() => {
                               const selectedData = table.getFilteredSelectedRowModel().rows.map((row) => row.original);
                               table.options.meta?.modal?.openModal("updateEntregaSelecao", selectedData);
+                              onSearchChange("");
+                              table.resetRowSelection();
                             }}
                           />
                           <span className="cursor-default">Marcar {table.getFilteredSelectedRowModel().rows.length} como Entregue?</span>
