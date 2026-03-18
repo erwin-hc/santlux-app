@@ -162,11 +162,13 @@ async def listar_pedidos(
             PPC.TRANSPORTADORA,
             PDS.NNOTA,
             PDS.VOLNUMERO,
-            PPC.ENTDATA 
+            PPC.ENTDATA,
+            EMP.EMPRESA 
         FROM SKLLPPC PPC
-        LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
+            LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
+            LEFT JOIN SKLLEMP EMP ON PPC.SIGLA = EMP.SIGLA
         WHERE ({where_clause})
-        AND PPC.OS STARTING WITH '20000'
+            AND PPC.OS STARTING WITH '20000'
         {status_filter}
         ORDER BY PPC.REGISTRO DESC
         """
@@ -195,9 +197,11 @@ async def listar_pedidos(
         PPC.OS, PPC.DTENTREGA AS PREVISAO,
         PPC.TRANSPORTADORA,
         PDS.NNOTA,
-        PPC.ENTDATA
+        PPC.ENTDATA,
+        EMP.EMPRESA
     FROM SKLLPPC PPC
-    LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
+        LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
+        LEFT JOIN SKLLEMP EMP ON PPC.SIGLA = EMP.SIGLA
     WHERE PPC.OS STARTING WITH '20000'
     ORDER BY PPC.REGISTRO DESC
     """
@@ -222,6 +226,7 @@ async def view_pedido(registro: int = Path(..., description="ID do Registro")):
             EMP.EMPRESA, 
             EMP.SIGLA,                   
             PPC.REGISTRO, 
+            PPC.DATA,
             PPC.OS, 
             PPC.CON_NOME, 
             PPC.SETOR_PPM, 
@@ -230,6 +235,7 @@ async def view_pedido(registro: int = Path(..., description="ID do Registro")):
             PPC.DTENTREGA,                  
             PDS.NNOTA,                         
             PPI.NOME, 
+            PPI.QUANT,
             PPI.OBS, 
             PPI.LARG, 
             PPI.ALT, 

@@ -8,10 +8,9 @@ import Link from "next/link";
 import { RowData } from "@tanstack/react-table";
 import { ModalContextData } from "@/providers/modal-provider";
 import { Button } from "@base-ui/react";
-// import { Checkbox } from "@/components/ui/checkbox";
+
 import { SwitchEntregue } from "@/components/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { table } from "console";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -32,10 +31,11 @@ export type TypePedidos = {
   nnota: number;
   transportadora: string;
   entdata: string;
+  empresa: string;
 };
 
-const statusConfig = {
-  "*": { variant: "aberto", label: "ABERTO" },
+export const statusConfig = {
+  "*": { variant: "neutral", label: "ABERTO" },
   F: { variant: "producao", label: "PRODUÇÃO" },
   "6": { variant: "producao", label: "PRODUÇÃO" },
   "8": { variant: "producao", label: "PRODUÇÃO" },
@@ -44,7 +44,7 @@ const statusConfig = {
   S: { variant: "suspenso", label: "SUSPENSO" },
 } as const;
 
-const transpConfig = {
+export const transpConfig = {
   "11845": { variant: "ML", label: "MERCADO" },
   "806": { variant: "RD", label: "RODONAVES" },
   "018": { variant: "AC", label: "ACEVILLE" },
@@ -53,6 +53,7 @@ const transpConfig = {
   "13319": { variant: "FR", label: "FRENET" },
   "13233": { variant: "LG", label: "LOGGI" },
   "11795": { variant: "AF", label: "ALFA" },
+  default: { variant: "neutral", label: "N/A" },
 } as const;
 
 type StatusKey = keyof typeof statusConfig;
@@ -80,9 +81,12 @@ export const columns: ColumnDef<TypePedidos>[] = [
       );
     },
     cell: ({ row, table }) => {
+      const nota = row.original.nnota;
       const meta = table.options.meta;
       const rowCount = table.getFilteredRowModel().rows.length;
       const shouldShow = meta?.isSearching && rowCount > 1;
+
+      if (!nota) return;
 
       if (!shouldShow) return null;
 
@@ -123,6 +127,26 @@ export const columns: ColumnDef<TypePedidos>[] = [
         <div className="flex items-center gap-1">
           <User size={16} />
           <span>NOME</span>
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const nome = row.original.con_nome;
+      const empresa = row.original.empresa;
+
+      if (!nome) {
+        return (
+          <div className="flex items-center gap-1">
+            <User size={16} />
+            <span>{empresa}</span>
+          </div>
+        );
+      }
+
+      return (
+        <div className="flex items-center gap-1">
+          <User size={16} />
+          <span>{nome}</span>
         </div>
       );
     },
@@ -205,9 +229,17 @@ export const columns: ColumnDef<TypePedidos>[] = [
       );
     },
     cell: ({ row }) => {
+      const nota = row.original.nnota;
+      if (!nota) {
+        return (
+          <div className="flex items-center justify-end mr-2">
+            <span className="font-semibold italic">N/A</span>
+          </div>
+        );
+      }
       return (
         <div className="flex items-center justify-end mr-2">
-          <span className="">{row.getValue("nnota")}</span>
+          <span className="">{nota}</span>
         </div>
       );
     },
@@ -264,10 +296,17 @@ export const columns: ColumnDef<TypePedidos>[] = [
     },
     cell: ({ row }) => {
       const transp = row.getValue("transportadora") as string | undefined;
-      const transpKey = String(transp ?? "").toUpperCase() as TranspKey;
+      const transpKey = (transp?.toUpperCase() || "DEFAULT") as TranspKey;
       const currentStatus = transpConfig[transpKey];
 
-      return <Badge variant={currentStatus?.variant ?? "secondary"}>{currentStatus?.label ?? ""}</Badge>;
+      if (!transp) {
+        return (
+          <div className="flex items-center mr-2">
+            <span className="font-semibold italic">N/A</span>
+          </div>
+        );
+      }
+      return <Badge variant={currentStatus?.variant ?? "neutral"}>{currentStatus?.label ?? "Não Informado"}</Badge>;
     },
   },
   {
@@ -281,10 +320,13 @@ export const columns: ColumnDef<TypePedidos>[] = [
       );
     },
     cell: ({ row, table }) => {
+      const nota = row.original.nnota;
       const data = row.getValue("entdata") as string;
       const meta = table.options.meta;
       const isAdmin = meta?.isAdmin;
       const modal = meta?.modal;
+
+      if (!nota) return;
 
       if (!isAdmin) {
         return data ? formatDate(data) : <Settings2 strokeWidth={1.5} size={16} />;

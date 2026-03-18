@@ -57,6 +57,12 @@ export function DataTable<TData, TValue>({
     onRowSelectionChange: setRowSelection,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    enableRowSelection: (row) => {
+      const data = row.original as TData & { nnota?: unknown };
+      const temNota = !!data.nnota;
+      const isSearching = searchTerm.length > 0;
+      return temNota && isSearching;
+    },
     manualPagination: true,
     state: {
       rowSelection,

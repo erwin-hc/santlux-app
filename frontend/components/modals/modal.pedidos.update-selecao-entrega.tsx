@@ -45,6 +45,7 @@ interface PedidoData {
   previsao?: string;
   registro?: number;
   nnota?: number;
+  empresa?: string;
 }
 
 export function ModalUpdateSelecionadosEntrega() {
@@ -112,11 +113,11 @@ export function ModalUpdateSelecionadosEntrega() {
                     <div className="flex justify-start">
                       <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
                         <CircleCheckBig size={16} className="mr-2 text-emerald-500/50" />
-                        {i.nnota}
+                        {!i.nnota ? <span>{i?.os}</span> : <span>{i?.nnota}</span>}
                       </span>
                       <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
                         <span className="px-2"> - </span>
-                        {i.con_nome}
+                        {!i.con_nome ? <span>{i?.empresa}</span> : <span>{i?.con_nome}</span>}
                       </span>
                     </div>
                   </TableCell>

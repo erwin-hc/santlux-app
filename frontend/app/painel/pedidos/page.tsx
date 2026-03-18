@@ -14,6 +14,7 @@ export type TypePedidos = {
   nnota: number;
   transportadora: string;
   entdata: string;
+  empresa: string;
 };
 
 type PedidosResponse = {

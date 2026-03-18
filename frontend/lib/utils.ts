@@ -24,3 +24,10 @@ export function formatFullName(fullName: string): string {
 export function formatDate(data: string): string {
   return new Date(data).toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
+
+export function formatDecimal(number: number): string {
+  const value = number;
+  const scaledValue = value * 1000;
+  const formatted = scaledValue.toLocaleString("en-US");
+  return formatted;
+}
