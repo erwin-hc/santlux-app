@@ -137,7 +137,6 @@ export const columns: ColumnDef<TypePedidos>[] = [
       if (!nome) {
         return (
           <div className="flex items-center gap-1">
-            <User size={16} />
             <span>{empresa}</span>
           </div>
         );
@@ -145,7 +144,6 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       return (
         <div className="flex items-center gap-1">
-          <User size={16} />
           <span>{nome}</span>
         </div>
       );

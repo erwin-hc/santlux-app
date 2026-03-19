@@ -31,3 +31,14 @@ export function formatDecimal(number: number): string {
   const formatted = scaledValue.toLocaleString("en-US");
   return formatted;
 }
+
+export const formatMedidas = (valor: number | string | null | undefined): string => {
+  const num = Number(valor);
+
+  if (isNaN(num)) return "0,00";
+
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3,
+  }).format(num);
+};

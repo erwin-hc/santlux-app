@@ -1,17 +1,17 @@
 "use client";
 
 import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const themes = [
-  {
-    key: "system",
-    icon: Monitor,
-    label: "System theme",
-  },
+  // {
+  //   key: "system",
+  //   icon: Monitor,
+  //   label: "System theme",
+  // },
   {
     key: "light",
     icon: Sun,
@@ -31,12 +31,7 @@ export type ThemeSwitcherProps = {
   className?: string;
 };
 
-export const ThemeSwitcher = ({
-  value,
-  onChange,
-  defaultValue = "system",
-  className,
-}: ThemeSwitcherProps) => {
+export const ThemeSwitcher = ({ value, onChange, defaultValue = "system", className }: ThemeSwitcherProps) => {
   const [theme, setTheme] = useControllableState({
     defaultProp: defaultValue,
     prop: value,
@@ -61,12 +56,7 @@ export const ThemeSwitcher = ({
   }
 
   return (
-    <div
-      className={cn(
-        "relative isolate rounded-md bg-background flex items-center justify-center",
-        className,
-      )}
-    >
+    <div className={cn("relative isolate rounded-md bg-background flex items-center justify-center", className)}>
       {themes.map(({ key, icon: Icon, label }) => {
         const isActive = theme === key;
 
@@ -82,18 +72,8 @@ export const ThemeSwitcher = ({
             onClick={() => handleThemeClick(key as "light" | "dark" | "system")}
             type="button"
           >
-            {isActive && (
-              <motion.div
-                layoutId="activeTheme"
-                transition={{ type: "spring", duration: 0.5 }}
-              />
-            )}
-            <Icon
-              className={cn(
-                "relative z-10 m-auto h-4 w-4 cursor-pointer ",
-                isActive ? "text-foreground" : "text-muted-foreground",
-              )}
-            />
+            {isActive && <motion.div layoutId="activeTheme" transition={{ type: "spring", duration: 0.5 }} />}
+            <Icon className={cn("relative z-10 m-auto h-4 w-4 cursor-pointer ", isActive ? "text-foreground" : "text-muted-foreground")} />
           </button>
         );
       })}

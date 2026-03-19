@@ -1,13 +1,15 @@
 "use client";
 import { useModal } from "@/providers/modal-provider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Calendar, ListTodo, User } from "lucide-react";
+import { Calendar, ListTodo, Printer, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import { Spinner } from "../ui/spinner";
 import { transpConfig, statusConfig } from "../../app/painel/pedidos/columns";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/table";
-import { formatDate, formatDecimal } from "@/lib/utils";
+import { formatDate, formatMedidas } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { TextAreaObs } from "../ui/text-area-obs";
 
 export interface ItensPedido {
   empresa: string;
@@ -30,6 +32,10 @@ export interface ItensPedido {
   tp: string | null;
   seq: number | null;
   quant: number | null;
+  latd: number | null;
+  late: number | null;
+  compr: number | null;
+  capaobs: string;
 }
 
 export function ModalViewPedido() {
@@ -47,7 +53,6 @@ export function ModalViewPedido() {
           const response = await fetch(`/api/pedidos/view/${registro}`);
           const result = await response.json();
 
-          // Garante que 'data' seja sempre um array, mesmo que venha um objeto único
           const formattedData = Array.isArray(result.data) ? result.data : [result.data];
           setData(formattedData);
         } catch (e) {
@@ -63,10 +68,9 @@ export function ModalViewPedido() {
   if (!modal.isOpen) return null;
 
   const info = data && data.length > 0 ? data[0] : null;
-
-  const persianas = data?.filter((tp) => tp.tp === "A");
-  const bandos = data?.filter((tp) => tp.tp === "B");
-  const acessorios = data?.filter((tp) => tp.tp === "C");
+  const persianas = data?.filter((item) => item.tp === "A") ?? [];
+  const bandos = data?.filter((item) => item.tp === "B") ?? [];
+  const acessorios = data?.filter((item) => item.tp === "C") ?? [];
 
   if (!modal) return null;
 
@@ -81,14 +85,29 @@ export function ModalViewPedido() {
   const transpKey = String(transp ?? "").toUpperCase() as TranspKey;
   const currentTransp = transpConfig[transpKey];
 
+  const handlePrint = () => {
+    document.body.classList.add("is-printing");
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove("is-printing");
+    }, 1000);
+  };
+
   return (
     <Dialog open={modal.isOpen} onOpenChange={(open) => !open && modal.closeModal()}>
-      <DialogContent className="sm:max-w-[80%] w-162.5 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[80%] w-162.5 max-h-[90vh] overflow-y-auto print-container print:max-h-none print:overflow-visible">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl font-bold border-b pb-4">
-            <ListTodo className="w-8 h-8 " />
-            <span className="underline underline-offset-4">PEDIDO:</span>
-            <span className="">#{registro as string}</span>
+          <DialogTitle className="flex items-center justify-between text-2xl font-bold border-b pb-4 pt-8">
+            <div className="flex items-center justify-center gap-2">
+              <ListTodo size={32} />
+              <span className="underline underline-offset-4">PEDIDO:</span>
+              <span className="">#{registro as string}</span>
+            </div>
+            <div className="no-print">
+              <Button onClick={handlePrint} className="cursor-pointer has-[>svg]:px-4 has-[>svg]:py-2 ">
+                <Printer size={32} />
+              </Button>
+            </div>
           </DialogTitle>
         </DialogHeader>
 
@@ -99,27 +118,31 @@ export function ModalViewPedido() {
             <div className=" border p-2 ">
               <div id="row1" className=" flex items-center justify-start gap-2 h-6.25">
                 <User size={18} />
-                <p className="text-sm font-semibold">{info.con_nome}</p>
+                <p className="text-sm font-semibold">{!info.con_nome ? info.empresa : info.con_nome}</p>
               </div>
               <div id="row2" className=" flex items-center justify-between ">
                 <div className="flex items-center justify-start gap-2">
                   <ListTodo size={18} />
-                  <p className="text-sm ">{info.os}</p>
+                  <p className="text-sm ">OS: {info.os}</p>
                 </div>
                 <div className="flex items-center justify-between gap-2 my-2">
                   <div className="flex items-center justify-center gap-2">
                     <Badge className="ml-2" variant={currentStatus.variant}>
                       {currentStatus.label}
                     </Badge>
-                    <Badge variant={currentTransp?.variant ?? "secondary"}>{currentTransp?.label ?? ""}</Badge>
+                    {!currentTransp ? "" : <Badge variant={currentTransp?.variant}>{currentTransp?.label}</Badge>}
                   </div>
                 </div>
               </div>
               <div id="row3" className=" flex items-start justify-between gap-2">
-                <div className="flex items-center justify-start gap-2">
-                  <ListTodo size={18} />
-                  {info.nnota}
-                </div>
+                {!info.nnota ? (
+                  <div></div>
+                ) : (
+                  <div className="flex items-center justify-start gap-2">
+                    <ListTodo size={18} />
+                    NFe: {info.nnota}
+                  </div>
+                )}
                 <div className="flex items-center justify-start gap-2">
                   <div className="grid grid-cols-1 p-1.5 border rounded-lg">
                     <small className="">Emissão</small>
@@ -139,6 +162,10 @@ export function ModalViewPedido() {
               </div>
             </div>
 
+            <div className="my-4">
+              <TextAreaObs variant={currentStatus.variant}>{info.capaobs}</TextAreaObs>
+            </div>
+
             {persianas && persianas.length > 0 && (
               <div className="mt-4">
                 <div className="bg-muted pl-2 text-lg underline underline-offset-4 font-bold border border-b-0 p-2">PERSIANAS</div>
@@ -147,11 +174,11 @@ export function ModalViewPedido() {
                   <TableHeader>
                     <>
                       <TableRow>
-                        <TableCell className="font-mono w-10">QTD</TableCell>
-                        <TableCell className="font-mono">NOME</TableCell>
-                        <TableCell className="font-mono">LARG.</TableCell>
-                        <TableCell className="font-mono">ALT.</TableCell>
-                        <TableCell className="font-mono">MODELO</TableCell>
+                        <TableCell className="w-[5%]">QTD</TableCell>
+                        <TableCell className="w-[65%]">NOME</TableCell>
+                        <TableCell className="text-right w-[10%]">LARG</TableCell>
+                        <TableCell className="text-right w-[10%]">ALT</TableCell>
+                        <TableCell className="text-right w-[10%]">MOD</TableCell>
                       </TableRow>
                     </>
                   </TableHeader>
@@ -159,8 +186,8 @@ export function ModalViewPedido() {
                     {persianas?.map((item, idx) => (
                       <React.Fragment key={idx}>
                         <TableRow className="border-t">
-                          <TableCell className="font-mono w-10">{item.quant}</TableCell>
-                          <TableCell className="font-mono font-semibold">
+                          <TableCell className="w-[5%]">{item.quant}</TableCell>
+                          <TableCell className="w-[65%] font-semibold">
                             {item.nome}
                             {item.obs && (
                               <div className="text-[10px]">
@@ -168,9 +195,49 @@ export function ModalViewPedido() {
                               </div>
                             )}
                           </TableCell>
-                          <TableCell className="font-mono ">{formatDecimal(Number(item.larg))}</TableCell>
-                          <TableCell className="font-mono ">{formatDecimal(Number(item.alt))}</TableCell>
-                          <TableCell className="font-mono font-semibold text-center ">{item.modelo}</TableCell>
+                          <TableCell className="text-right w-[10%]">{formatMedidas(Number(item.larg))}</TableCell>
+                          <TableCell className="text-right w-[10%]">{formatMedidas(Number(item.alt))}</TableCell>
+                          <TableCell className="text-right w-[10%]  font-semibold">{item.modelo}</TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+
+            {bandos && bandos.length > 0 && (
+              <div className="mt-4">
+                <div className="bg-muted pl-2 text-lg underline underline-offset-4 font-bold border border-b-0 p-2">BANDÔS</div>
+
+                <Table className="border text-[12px]">
+                  <TableHeader>
+                    <>
+                      <TableRow>
+                        <TableCell className="w-[5%]">QTD</TableCell>
+                        <TableCell className="w-[65%]">NOME</TableCell>
+                        <TableCell className="text-right w-[10%]">LATE</TableCell>
+                        <TableCell className="text-right w-[10%]">LATD</TableCell>
+                        <TableCell className="text-right w-[10%]">COMP</TableCell>
+                      </TableRow>
+                    </>
+                  </TableHeader>
+                  <TableBody>
+                    {bandos?.map((item, idx) => (
+                      <React.Fragment key={idx}>
+                        <TableRow className="border-t">
+                          <TableCell className="w-[5%]">{item.quant}</TableCell>
+                          <TableCell className="w-[65%]  font-semibold">
+                            {item.nome}
+                            {item.obs && (
+                              <div className="text-[10px]">
+                                <span className="bg-muted py-1">{item.obs}</span>
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell className="w-[10%] text-right">{formatMedidas(Number(item.late))}</TableCell>
+                          <TableCell className="w-[10%] text-right">{formatMedidas(Number(item.latd))}</TableCell>
+                          <TableCell className="w-[10%] text-right  font-semibold">{item.compr}</TableCell>
                         </TableRow>
                       </React.Fragment>
                     ))}
@@ -186,8 +253,8 @@ export function ModalViewPedido() {
                   <TableHeader>
                     <>
                       <TableRow>
-                        <TableCell className="font-mono w-10">QTD</TableCell>
-                        <TableCell className="font-mono">NOME</TableCell>
+                        <TableCell className="w-[5%]">QTD</TableCell>
+                        <TableCell className="w-[95%]">NOME</TableCell>
                       </TableRow>
                     </>
                   </TableHeader>
@@ -195,8 +262,8 @@ export function ModalViewPedido() {
                     {acessorios?.map((item, idx) => (
                       <React.Fragment key={idx}>
                         <TableRow className="border-t">
-                          <TableCell className="font-mono w-10">{item.quant}</TableCell>
-                          <TableCell className="font-mono font-semibold">
+                          <TableCell className="w-[5%]">{item.quant}</TableCell>
+                          <TableCell className="w-[95%] font-semibold">
                             {item.nome}
                             {item.obs && (
                               <div className="text-[10px]">
