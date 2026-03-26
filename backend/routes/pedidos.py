@@ -163,6 +163,7 @@ async def listar_pedidos(
             PPC.OS, PPC.DTENTREGA AS PREVISAO,
             PPC.TRANSPORTADORA,
             PDS.NNOTA,
+            PDS.PEDIDO,
             PDS.VOLNUMERO,
             PPC.ENTDATA,
             EMP.EMPRESA 
@@ -200,6 +201,8 @@ async def listar_pedidos(
         PPC.TRANSPORTADORA,
         PDS.NNOTA,
         PPC.ENTDATA,
+        PDS.VOLNUMERO,
+        PDS.PEDIDO,
         EMP.EMPRESA
     FROM SKLLPPC PPC
         LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
@@ -260,3 +263,32 @@ async def view_pedido(registro: int = Path(..., description="ID do Registro")):
     return {
         "data": dados if dados is not None else [],
     }
+
+
+@router.put("/qtvolume/{pedido}")
+async def update_volume(
+    pedido: int = Path(..., description="ID do pedido"),
+    volnumero: str = Body(..., embed=True),
+):
+    try:
+        query = """
+            UPDATE SKLLPDS
+                SET VOLNUMERO = ?
+            WHERE PEDIDO = ?
+            """
+
+        res = run_query(query, (volnumero, pedido))
+        if res.get("rows_affected") == 0:
+            raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+        return {
+            "status": "sucesso",
+            "notafiscal": pedido,
+            "mensagem": "Volume alterado!",
+        }
+
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Erro!")
+    except Exception as e:
+        logging.error(f"Erro ao atualizar: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no banco")

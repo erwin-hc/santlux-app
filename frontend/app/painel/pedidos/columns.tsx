@@ -1,6 +1,6 @@
 "use client";
 
-import { Cable, Calendar, CalendarCog, Eye, ListTodo, Settings2, Truck, User } from "lucide-react";
+import { Cable, CalendarCog, Eye, ListTodo, Package, Settings2, Truck, User } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
@@ -32,6 +32,8 @@ export type TypePedidos = {
   transportadora: string;
   entdata: string;
   empresa: string;
+  volnumero: number;
+  pedido: string;
 };
 
 export const statusConfig = {
@@ -62,6 +64,7 @@ type TranspKey = keyof typeof transpConfig;
 export const columns: ColumnDef<TypePedidos>[] = [
   {
     id: "select",
+    accessorKey: "",
     header: ({ table }) => {
       const meta = table.options.meta;
       const rowCount = table.getFilteredRowModel().rows.length;
@@ -162,8 +165,11 @@ export const columns: ColumnDef<TypePedidos>[] = [
     cell: ({ row, table }) => {
       const meta = table.options.meta;
       const isAdmin = meta?.isAdmin;
-      const os = row.getValue("os") as string;
+      const os = row.original.os;
       const url = `https://www.mercadolivre.com.br/vendas/${os}/detalhe`;
+
+      if (!os) return;
+
       return (
         <>
           {isAdmin ? (
@@ -193,22 +199,25 @@ export const columns: ColumnDef<TypePedidos>[] = [
       return (
         <div className="flex items-center justify-end mr-2 gap-1">
           <ListTodo size={16} />
-          <span>PEDIDO</span>
+          <span>REGISTRO</span>
         </div>
       );
     },
     cell: ({ row, table }) => {
       const meta = table.options.meta;
       const modal = meta?.modal;
+      const registro = row.original.registro;
+
+      if (!registro) return;
 
       return (
         <div className="flex items-center justify-end mr-2 gap-1">
-          <span className="">{row.getValue("registro")}</span>
+          <span className="">{registro}</span>
           <Button
-            onClick={() => modal?.openModal("viewPedido", row.getValue("registro"))}
+            onClick={() => modal?.openModal("viewPedido", registro)}
             className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
           >
-            <Badge variant={"RD"} className="h-6">
+            <Badge variant={"neutral"} className="h-6">
               <Eye size={16} />
             </Badge>
           </Button>
@@ -222,19 +231,14 @@ export const columns: ColumnDef<TypePedidos>[] = [
       return (
         <div className="flex items-center justify-end mr-2 gap-1">
           <ListTodo size={16} />
-          <span>NFe</span>
+          <span>NF</span>
         </div>
       );
     },
     cell: ({ row }) => {
       const nota = row.original.nnota;
-      if (!nota) {
-        return (
-          <div className="flex items-center justify-end mr-2">
-            <span className="font-semibold italic">N/A</span>
-          </div>
-        );
-      }
+      if (!nota) return;
+
       return (
         <div className="flex items-center justify-end mr-2">
           <span className="">{nota}</span>
@@ -243,11 +247,53 @@ export const columns: ColumnDef<TypePedidos>[] = [
     },
   },
   {
+    accessorKey: "volnumero",
+    header: () => {
+      return (
+        <div className="flex items-center gap-1">
+          <Package size={16} />
+          <span>VOL</span>
+        </div>
+      );
+    },
+    cell: ({ row, table }) => {
+      const meta = table.options.meta;
+      const isAdmin = meta?.isAdmin;
+      const modal = meta?.modal;
+      const qtvol = row.original.volnumero;
+
+      if (!qtvol) return;
+
+      return (
+        <>
+          {isAdmin ? (
+            <div className="flex items-center justify-between w-14 mx-2">
+              <span>{qtvol}</span>
+              <Button
+                onClick={() => modal?.openModal("updateVolume", row.original)}
+                className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
+              >
+                <Badge variant={"neutral"} className="h-6">
+                  <Package strokeWidth={2} />
+                </Badge>
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-start">
+              <span className="mr-2">{qtvol}</span>
+              <div className="rounded-md focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"></div>
+            </div>
+          )}
+        </>
+      );
+    },
+  },
+  {
     accessorKey: "previsao",
     header: () => {
       return (
         <div className="flex items-center gap-1">
-          <Calendar size={16} />
+          <CalendarCog size={16} />
           <span>PREVISÃO</span>
         </div>
       );
@@ -256,13 +302,15 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const meta = table.options.meta;
       const isAdmin = meta?.isAdmin;
       const modal = meta?.modal;
-      const data = row.getValue("previsao") as string;
+      const previsao = row.original.previsao;
+
+      if (!previsao) return;
 
       return (
         <>
           {isAdmin ? (
             <div className="flex items-center justify-start">
-              <span className="mr-2">{formatDate(data)}</span>
+              <span className="mr-2">{formatDate(previsao)}</span>
               <Button
                 onClick={() => modal?.openModal("updatePrevisao", row.original)}
                 className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
@@ -274,7 +322,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
             </div>
           ) : (
             <div className="flex items-center justify-start">
-              <span className="mr-2">{formatDate(data)}</span>
+              <span className="mr-2">{formatDate(previsao)}</span>
               <div className="rounded-md focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"></div>
             </div>
           )}
@@ -297,13 +345,8 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const transpKey = (transp?.toUpperCase() || "DEFAULT") as TranspKey;
       const currentStatus = transpConfig[transpKey];
 
-      if (!transp) {
-        return (
-          <div className="flex items-center mr-2">
-            <span className="font-semibold italic">N/A</span>
-          </div>
-        );
-      }
+      if (!transp) return;
+
       return <Badge variant={currentStatus?.variant ?? "neutral"}>{currentStatus?.label ?? "Não Informado"}</Badge>;
     },
   },
@@ -312,7 +355,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     header: () => {
       return (
         <div className="flex items-center gap-1">
-          <Calendar size={16} />
+          <CalendarCog size={16} />
           <span>ENTREGUE</span>
         </div>
       );
@@ -357,4 +400,13 @@ export const columns: ColumnDef<TypePedidos>[] = [
       );
     },
   },
+  // {
+  //   accessorKey: "pedido",
+  //   header: () => {
+  //     return "PEDIDO";
+  //   },
+  //   cell: ({ row }) => {
+  //     return row.original.pedido;
+  //   },
+  // },
 ];

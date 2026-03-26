@@ -12,33 +12,17 @@ import { useMessages } from "@/providers/message-provider";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
 import { useState } from "react";
 
-const DataScheme = z.object({
-  dia: z.string().refine(
+const VolumeScheme = z.object({
+  volnumero: z.string().refine(
     (val) => {
       const n = Number(val);
-      return n >= 1 && n <= 31;
+      return n >= 1 && n <= 99;
     },
-    { message: "Dia inválido" },
-  ),
-
-  mes: z.string().refine(
-    (val) => {
-      const n = Number(val);
-      return n >= 1 && n <= 12;
-    },
-    { message: "Mês inválido" },
-  ),
-
-  ano: z.string().refine(
-    (val) => {
-      const n = Number(val);
-      return n >= 2000 && n <= 2199;
-    },
-    { message: "Ano inválido" },
+    { message: "Quantidade inválida" },
   ),
 });
 
-export type DataFormValues = z.input<typeof DataScheme>;
+export type VolumeFormValues = z.input<typeof VolumeScheme>;
 
 interface PedidoData {
   os?: string;
@@ -47,61 +31,52 @@ interface PedidoData {
   registro?: number;
   nnota?: number;
   empresa?: string;
+  volnumero?: string;
+  pedido?: string;
 }
 
-export function ModalUpdatePrevisao() {
+export function ModalUpdateVolume() {
   const { addMessage } = useMessages();
   const modal = useModal();
   const data = modal.data as PedidoData;
-  const registro = data.registro;
+  const pedido = data.pedido;
 
   const [, setIsUpdating] = useState(false);
   const [isDone, setIsDone] = useState(false);
 
-  const dataString = data.previsao;
-  const dateObj = dataString ? new Date(dataString) : new Date();
-  const dia = String(dateObj.getUTCDate()).padStart(2, "0");
-  const mes = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
-  const ano = String(dateObj.getUTCFullYear());
-
-  const form = useForm<DataFormValues>({
-    resolver: zodResolver(DataScheme),
+  const form = useForm<VolumeFormValues>({
+    resolver: zodResolver(VolumeScheme),
     mode: "onBlur",
     defaultValues: {
-      dia: dia,
-      mes: mes,
-      ano: ano,
+      volnumero: String(data.volnumero),
     },
   });
 
   if (!modal) return null;
 
-  const onSubmit: SubmitHandler<DataFormValues> = async (values) => {
-    const dataFormatada = `${values.dia.padStart(2, "0")}/${values.mes.padStart(2, "0")}/${values.ano}`;
-
+  const onSubmit: SubmitHandler<VolumeFormValues> = async (formData) => {
     setIsUpdating(true);
 
     try {
-      const response = await fetch(`/api/pedidos/previsao/${registro}`, {
+      const response = await fetch(`/api/pedidos/qtvolume/${pedido}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: dataFormatada }),
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         setIsDone(true);
-
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         window.dispatchEvent(new Event("refresh-pedidos"));
-        addMessage("success", "Previsão atualizada!");
+        addMessage("success", "Volume atualizado!");
         modal.closeModal();
       } else {
         addMessage("error", "Algo deu errado!");
       }
     } catch (error) {
       console.error("Erro na requisição:", error);
-      addMessage("error", "Erro ao conectar com o servidor.");
+      addMessage("error", "Erro de conexão.");
     } finally {
       setIsUpdating(false);
     }
@@ -113,7 +88,7 @@ export function ModalUpdatePrevisao() {
         <DialogHeader>
           <DialogTitle className="flex items-center justify-start gap-4">
             <CalendarCog />
-            <span className="text-2xl font-bold underline underline-offset-4 uppercase">PREVISÃO</span>
+            <span className="text-2xl font-bold underline underline-offset-4 uppercase">VOLUMES</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -143,82 +118,25 @@ export function ModalUpdatePrevisao() {
             <div className="flex w-full items-start gap-3 ">
               <FormField
                 control={form.control}
-                name="dia"
+                name="volnumero"
                 render={({ field }) => (
                   <FormItem className="flex-1 min-w-15">
-                    <FormLabel className="font-bold  uppercase block text-center">Dia</FormLabel>
+                    <FormLabel className="font-bold  uppercase block text-center">Qtd.Volumes</FormLabel>
                     <FormControl>
                       <Input
                         autoComplete="off"
                         className="text-center h-12 text-2xl! tracking-widest"
                         inputMode="numeric"
-                        maxLength={2}
+                        maxLength={3}
                         {...field}
                         onFocus={() => {
-                          if (form.formState.errors.dia) {
-                            form.setValue("dia", "");
-                            form.clearErrors("dia");
+                          if (form.formState.errors.volnumero) {
+                            form.setValue("volnumero", "");
+                            form.clearErrors("volnumero");
                           }
                         }}
                       />
                     </FormControl>
-                    <div className="h-6 flex items-center justify-center">
-                      <FormMessage className=" text-base" />
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="mes"
-                render={({ field }) => (
-                  <FormItem className="flex-1 min-w-15">
-                    <FormLabel className="font-bold  uppercase block text-center">Mês</FormLabel>
-                    <FormControl>
-                      <Input
-                        autoComplete="off"
-                        className="text-center h-12 text-2xl! tracking-widest"
-                        inputMode="numeric"
-                        maxLength={2}
-                        {...field}
-                        onFocus={() => {
-                          if (form.formState.errors.mes) {
-                            form.setValue("mes", "");
-                            form.clearErrors("mes");
-                          }
-                        }}
-                      />
-                    </FormControl>
-                    <div className="h-6 flex items-center justify-center">
-                      <FormMessage className=" text-base" />
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="ano"
-                render={({ field }) => (
-                  <FormItem className="flex-[1.5] min-w-20">
-                    <FormLabel className="font-bold  uppercase block text-center">Ano</FormLabel>
-                    <FormControl>
-                      <Input
-                        autoComplete="off"
-                        className="text-center h-12 text-2xl! tracking-widest"
-                        inputMode="numeric"
-                        maxLength={4}
-                        {...field}
-                        onFocus={() => {
-                          if (form.formState.errors.ano) {
-                            form.setValue("ano", "");
-                            form.clearErrors("ano");
-                          }
-                        }}
-                      />
-                    </FormControl>
-
                     <div className="h-6 flex items-center justify-center">
                       <FormMessage className=" text-base" />
                     </div>

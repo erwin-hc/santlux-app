@@ -1,16 +1,18 @@
-import firebirdsql as fb
-from contextlib import contextmanager
 import logging
+from contextlib import contextmanager
+
+import firebirdsql as fb
 
 # Configurações de conexão
 BD_CONFIG = {
-    "host": "10.0.0.35",
+    "host": "10.0.0.40",
     "database": r"C:\TESTE.FDB",
     "port": 3050,
     "user": "sysdba",
     "password": "masterkey",
-    "charset": "latin1"
+    "charset": "latin1",
 }
+
 
 @contextmanager
 def get_db():
@@ -28,20 +30,22 @@ def get_db():
 
 
 def run_query(query: str, params: tuple = ()):
-    
+
     with get_db() as conn:
         cur = conn.cursor()
         cur.execute(query, params)
-        
+
         upper_query = query.strip().upper()
-        is_modifying = any(upper_query.startswith(word) for word in ["UPDATE", "INSERT", "DELETE"])
+        is_modifying = any(
+            upper_query.startswith(word) for word in ["UPDATE", "INSERT", "DELETE"]
+        )
 
         if is_modifying:
             conn.commit()
             return {"rows_affected": cur.rowcount}
-        
+
         if cur.description:
             columns = [col[0].lower() for col in cur.description]
             return [dict(zip(columns, row)) for row in cur.fetchall()]
-        
-        return []        
+
+        return []

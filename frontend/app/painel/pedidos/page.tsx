@@ -1,21 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { columns } from "./columns";
+import { TypePedidos, columns } from "./columns";
 import { DataTable } from "./data-table";
-
-export type TypePedidos = {
-  status: string;
-  data: string;
-  registro: number;
-  os: string;
-  con_nome: string;
-  previsao: string;
-  nnota: number;
-  transportadora: string;
-  entdata: string;
-  empresa: string;
-};
 
 type PedidosResponse = {
   data: TypePedidos[];

@@ -1,5 +1,5 @@
 "use client";
-import { ArrowLeft, ArrowRight, FileX, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileX, Search, Trash2 } from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { useModal as useModalHook } from "@/providers/modal-provider";
 import { useState } from "react";
@@ -8,9 +8,9 @@ import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, Table
 import SkeletonTable from "@/components/skeleton-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { ComboboxCustomItems } from "@/components/combobox";
 import { SwitchEntregue } from "@/components/switch";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -85,23 +85,45 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="relative flex items-center pb-2">
-        <Search className="absolute ml-2 text-sidebar-ring/80 " />
-        <Input
-          ref={inputRef}
-          id="imput-search-pedidos"
-          placeholder="Procurar..."
-          value={searchTerm}
-          className="max-w-2xl pl-12 placeholder:text-sidebar-ring/50"
-          onChange={(e) => {
-            const value = e.target.value.toUpperCase().replace(/\./g, ",");
-            onSearchChange(value);
-          }}
-          onFocus={(e) => (e.target.placeholder = "")}
-          onBlur={(e) => (e.target.placeholder = "Procurar...")}
-        />
+        <InputGroup className="max-w-xl h-11">
+          <InputGroupAddon align="inline-start">
+            <Search />
+          </InputGroupAddon>
+
+          <InputGroupInput
+            ref={inputRef}
+            id="imput-search-pedidos"
+            placeholder="Procurar..."
+            value={searchTerm}
+            className="placeholder:text-sidebar-ring/50"
+            onChange={(e) => {
+              const value = e.target.value.toUpperCase().replace(/\./g, ",");
+              onSearchChange(value);
+            }}
+            onFocus={(e) => (e.target.placeholder = "")}
+            onBlur={(e) => (e.target.placeholder = "Procurar...")}
+          />
+          <InputGroupAddon align="inline-end">
+            <Button
+              variant={"ghost"}
+              size={"icon-sm"}
+              className="cursor-pointer"
+              onClick={() => {
+                onSearchChange("");
+                table.resetColumnFilters();
+                table.resetRowSelection();
+                setTimeout(() => {
+                  window.dispatchEvent(new Event("refresh-pedidos"));
+                }, 0);
+              }}
+            >
+              <Trash2 />
+            </Button>
+          </InputGroupAddon>
+        </InputGroup>
       </div>
       <div className="overflow-hidden rounded-md border">
-        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-10.5 mb-3 ">
+        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-10.5">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -117,7 +139,7 @@ export function DataTable<TData, TValue>({
           </TableHeader>
 
           {loading ? (
-            <TableBody>
+            <TableBody className="divide-y divide-border">
               <TableRow>
                 <TableCell colSpan={columns.length} className="m-0">
                   <SkeletonTable />

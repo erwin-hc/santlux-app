@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMessages } from "@/providers/message-provider";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
+import { useState } from "react";
 
 const DataScheme = z.object({
   dia: z.string().refine(
@@ -54,6 +55,9 @@ export function ModalUpdateSelecionadosEntrega() {
   const selectedItems = (modal.data as PedidoData[]) || [];
   const quantidade = selectedItems.length;
 
+  const [processedIds, setProcessedIds] = useState<number[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const dateObj = new Date();
   const dia = String(dateObj.getUTCDate()).padStart(2, "0");
   const mes = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
@@ -73,17 +77,23 @@ export function ModalUpdateSelecionadosEntrega() {
 
   const onSubmit: SubmitHandler<DataFormValues> = async (values) => {
     const dataFormatada = `${values.dia.padStart(2, "0")}/${values.mes.padStart(2, "0")}/${values.ano}`;
+    setIsUpdating(true);
+    setProcessedIds([]);
 
     try {
-      const promises = selectedItems.map((item) =>
-        fetch(`/api/pedidos/entrega/${item.nnota}`, {
+      for (const item of selectedItems) {
+        const response = await fetch(`/api/pedidos/entrega/${item.nnota}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ data: dataFormatada }),
-        }),
-      );
+        });
 
-      await Promise.all(promises);
+        if (response.ok) {
+          setProcessedIds((prev) => [...prev, item.nnota!]);
+        }
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
 
       window.dispatchEvent(new Event("refresh-pedidos"));
       addMessage("success", `${quantidade} Pedidos atualizados!`);
@@ -91,6 +101,8 @@ export function ModalUpdateSelecionadosEntrega() {
     } catch (e) {
       console.error(e);
       addMessage("error", "Erro ao atualizar alguns itens.");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -107,22 +119,26 @@ export function ModalUpdateSelecionadosEntrega() {
         <div className="max-h-48 overflow-y-auto my-1 rounded-md border border-border">
           <Table>
             <TableBody>
-              {selectedItems.map((i) => (
-                <TableRow key={i.nnota} className="hover:bg-transparent [&_tr]:h-8 [&_td]:py-1 [&_td]:px-05">
-                  <TableCell className="py-2">
-                    <div className="flex justify-start">
-                      <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
-                        <CircleCheckBig size={16} className="mr-2 text-emerald-500/50" />
-                        {!i.nnota ? <span>{i?.os}</span> : <span>{i?.nnota}</span>}
-                      </span>
-                      <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
-                        <span className="px-2"> - </span>
-                        {!i.con_nome ? <span>{i?.empresa}</span> : <span>{i?.con_nome}</span>}
-                      </span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {selectedItems.map((i) => {
+                const isDone = processedIds.includes(i.nnota!);
+
+                return (
+                  <TableRow key={i.nnota} className="hover:bg-transparent [&_tr]:h-8 [&_td]:py-1 [&_td]:px-05">
+                    <TableCell className="py-2">
+                      <div className="flex justify-start">
+                        <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
+                          <CircleCheckBig size={16} className={`mr-2 transition-colors duration-300 ${isDone ? "text-emerald-500" : "text-muted"}`} />
+                          {!i.nnota ? <span>{i?.os}</span> : <span>{i?.nnota}</span>}
+                        </span>
+                        <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
+                          <span className="px-2"> - </span>
+                          {!i.con_nome ? <span>{i?.empresa}</span> : <span>{i?.con_nome}</span>}
+                        </span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>

@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMessages } from "@/providers/message-provider";
 import { Table, TableBody, TableCell, TableRow } from "../ui/table";
+import { useState } from "react";
 
 const DataScheme = z.object({
   dia: z.string().refine(
@@ -54,6 +55,9 @@ export function ModalUpdateEntrega() {
   const data = modal.data as PedidoData;
   const notafiscal = data.nnota;
 
+  const [, setIsUpdating] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+
   const dateObj = new Date();
   const dia = String(dateObj.getUTCDate()).padStart(2, "0");
   const mes = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
@@ -71,29 +75,59 @@ export function ModalUpdateEntrega() {
 
   if (!modal) return null;
 
-  const atualizarEntrega = async (notafiscal: number, novaData: string) => {
+  // const atualizarEntrega = async (notafiscal: number, novaData: string) => {
+  //   try {
+  //     const response = await fetch(`/api/pedidos/entrega/${notafiscal}`, {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ data: novaData }),
+  //     });
+
+  //     if (response.ok) {
+  //       window.dispatchEvent(new Event("refresh-pedidos"));
+  //       addMessage("success", "Data Entrega, atualizada!");
+  //       modal.closeModal();
+  //     } else {
+  //       addMessage("error", "Algo deu errado!");
+  //     }
+  //   } catch (error) {
+  //     console.error("Erro na requisição:", error);
+  //   }
+  // };
+
+  // const onSubmit: SubmitHandler<DataFormValues> = async (values) => {
+  //   const data = `${values.dia.padStart(2, "0")}/${values.mes.padStart(2, "0")}/${values.ano}`;
+  //   await atualizarEntrega(notafiscal!, data);
+  // };
+
+  const onSubmit: SubmitHandler<DataFormValues> = async (values) => {
+    const dataFormatada = `${values.dia.padStart(2, "0")}/${values.mes.padStart(2, "0")}/${values.ano}`;
+
+    setIsUpdating(true);
+
     try {
       const response = await fetch(`/api/pedidos/entrega/${notafiscal}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: novaData }),
+        body: JSON.stringify({ data: dataFormatada }),
       });
 
       if (response.ok) {
+        setIsDone(true);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         window.dispatchEvent(new Event("refresh-pedidos"));
-        addMessage("success", "Data Entrega, atualizada!");
+        addMessage("success", "Data Entrega atualizada!");
         modal.closeModal();
       } else {
         addMessage("error", "Algo deu errado!");
       }
     } catch (error) {
       console.error("Erro na requisição:", error);
+      addMessage("error", "Erro de conexão.");
+    } finally {
+      setIsUpdating(false);
     }
-  };
-
-  const onSubmit: SubmitHandler<DataFormValues> = async (values) => {
-    const data = `${values.dia.padStart(2, "0")}/${values.mes.padStart(2, "0")}/${values.ano}`;
-    await atualizarEntrega(notafiscal!, data);
   };
 
   return (
@@ -113,7 +147,7 @@ export function ModalUpdateEntrega() {
                 <TableCell className="py-2">
                   <div className="flex justify-start">
                     <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
-                      <CircleCheckBig size={16} className="mr-2 text-emerald-500/50" />
+                      <CircleCheckBig size={16} className={`mr-2 transition-colors duration-300 ${isDone ? "text-emerald-500" : "text-muted"}`} />
                       {!data.nnota ? <span>{data?.os}</span> : <span>{data?.nnota}</span>}
                     </span>
                     <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">

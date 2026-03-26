@@ -140,56 +140,54 @@
   @apply focus:opacity-100 focus:border-sidebar-ring focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0;
 }
 
+/* Estilos para impressão */
 @media print {
-  @page {
-    size: A4 portrait;
-    margin: 10mm !important;
+  body * {
+    visibility: hidden;
   }
 
-  html,
-  body {
-    height: auto !important;
-    overflow: visible !important;
-    background-color: white !important;
+  body.is-printing,
+  body.is-printing * {
+    visibility: visible !important;
   }
 
-  body > *:not([role="dialog"]),
-  .no-print,
-  button {
-    display: none !important;
-  }
-
-  [role="dialog"],
-  .print-container {
-    display: block !important;
+  body.is-printing .print-container,
+  .print-container * {
+    visibility: visible !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
     width: 100% !important;
-    max-width: none !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
     transform: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
+    z-index: 9999 !important;
     overflow: visible !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
   }
 
-  div[data-state="open"].fixed.inset-0 {
+  /* Remove elementos que não devem imprimir */
+  .no-print,
+  .no-print * {
     display: none !important;
   }
 
-  .bg-muted {
-    background-color: #f3f4f6 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  table {
+  /* Ajusta tabelas para impressão */
+  .print-container table {
+    font-size: 10px !important;
     width: 100% !important;
-    border-collapse: collapse !important;
   }
 
-  td,
-  th {
-    /* border: 1px solid #e5e7eb !important; */
-    padding: 6px !important;
+  .print-container td,
+  .print-container th {
+    border: 1px solid #000 !important;
+    padding: 4px !important;
+    word-break: break-word;
   }
 }
