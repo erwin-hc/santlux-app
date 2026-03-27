@@ -75,31 +75,6 @@ export function ModalUpdateEntrega() {
 
   if (!modal) return null;
 
-  // const atualizarEntrega = async (notafiscal: number, novaData: string) => {
-  //   try {
-  //     const response = await fetch(`/api/pedidos/entrega/${notafiscal}`, {
-  //       method: "PUT",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ data: novaData }),
-  //     });
-
-  //     if (response.ok) {
-  //       window.dispatchEvent(new Event("refresh-pedidos"));
-  //       addMessage("success", "Data Entrega, atualizada!");
-  //       modal.closeModal();
-  //     } else {
-  //       addMessage("error", "Algo deu errado!");
-  //     }
-  //   } catch (error) {
-  //     console.error("Erro na requisição:", error);
-  //   }
-  // };
-
-  // const onSubmit: SubmitHandler<DataFormValues> = async (values) => {
-  //   const data = `${values.dia.padStart(2, "0")}/${values.mes.padStart(2, "0")}/${values.ano}`;
-  //   await atualizarEntrega(notafiscal!, data);
-  // };
-
   const onSubmit: SubmitHandler<DataFormValues> = async (values) => {
     const dataFormatada = `${values.dia.padStart(2, "0")}/${values.mes.padStart(2, "0")}/${values.ano}`;
 
@@ -114,7 +89,7 @@ export function ModalUpdateEntrega() {
 
       if (response.ok) {
         setIsDone(true);
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 400));
 
         window.dispatchEvent(new Event("refresh-pedidos"));
         addMessage("success", "Data Entrega atualizada!");

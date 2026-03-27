@@ -99,6 +99,7 @@ export function DataTable<TData, TValue>({
             onChange={(e) => {
               const value = e.target.value.toUpperCase().replace(/\./g, ",");
               onSearchChange(value);
+              onPageChange(0);
             }}
             onFocus={(e) => (e.target.placeholder = "")}
             onBlur={(e) => (e.target.placeholder = "Procurar...")}
@@ -112,6 +113,7 @@ export function DataTable<TData, TValue>({
                 onSearchChange("");
                 table.resetColumnFilters();
                 table.resetRowSelection();
+                onPageChange(0);
                 setTimeout(() => {
                   window.dispatchEvent(new Event("refresh-pedidos"));
                 }, 0);
@@ -198,18 +200,33 @@ export function DataTable<TData, TValue>({
                   {table.options.meta?.isSearching && table.getFilteredRowModel().rows.length > 1 && (
                     <div className="flex items-center">
                       {table.getFilteredSelectedRowModel().rows.length > 0 && (
-                        <Badge variant={"LG"} className="gap-2 h-8 animate-in fade-in slide-in-from-left-2">
-                          <SwitchEntregue
-                            isChecked={false}
-                            handleClick={() => {
-                              const selectedData = table.getFilteredSelectedRowModel().rows.map((row) => row.original);
-                              table.options.meta?.modal?.openModal("updateEntregaSelecao", selectedData);
-                              onSearchChange("");
-                              table.resetRowSelection();
-                            }}
-                          />
-                          <span className="cursor-default">Marcar {table.getFilteredSelectedRowModel().rows.length} como Entregue?</span>
-                        </Badge>
+                        <div className="flex items-center justify-center gap-2">
+                          <Badge variant={"LG"} className="gap-2 h-8 animate-in fade-in slide-in-from-left-2">
+                            <SwitchEntregue
+                              isChecked={false}
+                              handleClick={() => {
+                                const selectedData = table.getFilteredSelectedRowModel().rows.map((row) => row.original);
+                                table.options.meta?.modal?.openModal("updateEntregaSelecao", selectedData);
+                                onSearchChange("");
+                                table.resetRowSelection();
+                              }}
+                            />
+                            <span className="cursor-default">Marcar Entregue? {table.getFilteredSelectedRowModel().rows.length} selecionados!</span>
+                          </Badge>
+
+                          <Badge variant={"AF"} className="gap-2 h-8 animate-in fade-in slide-in-from-left-2">
+                            <SwitchEntregue
+                              isChecked={false}
+                              handleClick={() => {
+                                const selectedData = table.getFilteredSelectedRowModel().rows.map((row) => row.original);
+                                table.options.meta?.modal?.openModal("updatePrevisaoSelecao", selectedData);
+                                onSearchChange("");
+                                table.resetRowSelection();
+                              }}
+                            />
+                            <span className="cursor-default">Alterar Previsão? {table.getFilteredSelectedRowModel().rows.length} Selecionados!</span>
+                          </Badge>
+                        </div>
                       )}
                     </div>
                   )}

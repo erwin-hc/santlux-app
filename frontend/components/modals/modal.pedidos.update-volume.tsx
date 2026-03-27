@@ -66,7 +66,7 @@ export function ModalUpdateVolume() {
 
       if (response.ok) {
         setIsDone(true);
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 400));
 
         window.dispatchEvent(new Event("refresh-pedidos"));
         addMessage("success", "Volume atualizado!");

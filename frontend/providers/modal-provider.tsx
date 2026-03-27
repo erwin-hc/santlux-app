@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-export type ModalType = "updatePrevisao" | "updateEntrega" | "updateEntregaSelecao" | "updateVolume" | "viewPedido" | null;
+export type ModalType = "updatePrevisao" | "updatePrevisaoSelecao" | "updateEntrega" | "updateEntregaSelecao" | "updateVolume" | "viewPedido" | null;
 
 export interface ModalContextData {
   isOpen: boolean;

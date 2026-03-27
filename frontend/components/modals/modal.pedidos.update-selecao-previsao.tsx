@@ -49,7 +49,7 @@ interface PedidoData {
   empresa?: string;
 }
 
-export function ModalUpdateSelecionadosEntrega() {
+export function ModalUpdateSelecionadosPrevisao() {
   const { addMessage } = useMessages();
   const modal = useModal();
   const selectedItems = (modal.data as PedidoData[]) || [];
@@ -82,7 +82,7 @@ export function ModalUpdateSelecionadosEntrega() {
 
     try {
       for (const item of selectedItems) {
-        const response = await fetch(`/api/pedidos/entrega/${item.nnota}`, {
+        const response = await fetch(`/api/pedidos/previsao/${item.registro}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ data: dataFormatada }),
@@ -91,13 +91,13 @@ export function ModalUpdateSelecionadosEntrega() {
         if (response.ok) {
           setProcessedIds((prev) => [...prev, item.registro!]);
         }
-        await new Promise((resolve) => setTimeout(resolve, 150));
+        await new Promise((resolve) => setTimeout(resolve, 250));
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 250));
 
       window.dispatchEvent(new Event("refresh-pedidos"));
-      addMessage("success", `${quantidade} Pedidos atualizados!`);
+      addMessage("success", `${quantidade} Previsões atualizadas!`);
       modal.closeModal();
     } catch (e) {
       console.error(e);
@@ -113,7 +113,7 @@ export function ModalUpdateSelecionadosEntrega() {
         <DialogHeader>
           <DialogTitle className="flex items-center justify-start ">
             <CalendarCog />
-            <span className="text-2xl font-bold underline underline-offset-8 uppercase">SELEÇÃO ENTREGUE</span>
+            <span className="text-2xl font-bold underline underline-offset-8 uppercase">SELEÇÃO PREVISÃO</span>
           </DialogTitle>
         </DialogHeader>
 
