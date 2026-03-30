@@ -21,8 +21,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
         </header>
 
-        {/* ÁREA DE CONTEÚDO DINÂMICO */}
-        <div className="flex flex-1 flex-col pt-2 tracking-wider">{children}</div>
+        <div className="flex flex-1 flex-col pt-2 px-4 tracking-wider">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

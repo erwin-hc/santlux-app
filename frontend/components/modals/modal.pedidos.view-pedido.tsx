@@ -525,7 +525,7 @@ export function ModalViewPedido() {
             </div>
 
             <div className="my-4">
-              <TextAreaObs variant={currentStatus.variant}>{info.capaobs.toLocaleUpperCase()}</TextAreaObs>
+              {info.capaobs && <TextAreaObs variant={currentStatus.variant}>{info.capaobs.toLocaleUpperCase()}</TextAreaObs>}
             </div>
 
             {persianas && persianas.length > 0 && (
