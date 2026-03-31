@@ -10,7 +10,6 @@ import { Cable, Eye } from "lucide-react";
 import { useModal as useModalHook } from "@/providers/modal-provider";
 import { useIsAdmin } from "@/hooks/use-admin";
 import Link from "next/link";
-import PersianaRolo from "./persianas/rolo";
 
 type StatusKey = keyof typeof statusConfig;
 type TranspKey = keyof typeof transpConfig;
@@ -88,60 +87,84 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                   <CardTitle>{formattedTabDate}</CardTitle>
                   <CardDescription>{uniqueRegistrosIds.length} Pedido(s)</CardDescription>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-4">
                   {uniqueSetor.includes("ESP") && (
-                    <Card className="py-2 ">
-                      <CardHeader className="  ">
-                        <CardTitle className=" ">ESPECIAIS</CardTitle>
+                    <Card className="gap-2 py-2">
+                      <CardHeader className="px-4 py-2 h-8">
+                        <CardTitle className="">ESPECIAIS</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-1 px-2">
                         {totalROLO > 0 && (
-                          <Badge variant={"JT"} className="w-full flex justify-between items-center  ">
-                            ROLÔ(S) <span className="bg-sidebar-accent px-2 py-1 border rounded-md font-bold "> {totalROLO}</span>
-                          </Badge>
+                          <div className=" flex justify-between items-center">
+                            <div className="flex justify-center items-center gap-2">
+                              <Badge variant={"JT"} className="size-5 rounded-full border-none"></Badge>
+                              <span>ROLÔ(S)</span>
+                            </div>
+                            <span className="flex items-center justify-center border size-7 text-sm  rounded-full font-bold "> {totalROLO}</span>
+                          </div>
                         )}
                         {totalROMANA > 0 && (
-                          <Badge variant={"JD"} className="w-full flex justify-between items-center  ">
-                            ROMANA(S) <span className="bg-sidebar-accent px-2 py-1 border rounded-md font-bold "> {totalROMANA}</span>
-                          </Badge>
+                          <div className="flex justify-between items-center">
+                            <div className="flex justify-center items-center gap-2">
+                              <Badge variant={"JD"} className="size-5 rounded-full border-none"></Badge>
+                              <span>ROMANA(S)</span>
+                            </div>
+                            <span className="flex items-center justify-center border size-7 text-sm  rounded-full font-bold "> {totalROMANA}</span>
+                          </div>
                         )}
                         {totalPAINEL > 0 && (
-                          <Badge variant={"aberto"} className="w-full flex justify-between items-center  ">
-                            PAINEL(S) <span className="bg-sidebar-accent px-2 py-1 border rounded-md font-bold "> {totalPAINEL}</span>
-                          </Badge>
+                          <div className="flex justify-between items-center">
+                            <div className="flex justify-center items-center gap-2">
+                              <Badge variant={"AC"} className="size-5 rounded-full border-none"></Badge>
+                              <span>PAINEL(S)</span>
+                            </div>
+                            <span className="flex items-center justify-center border size-7 text-sm  rounded-full font-bold "> {totalPAINEL}</span>
+                          </div>
                         )}
                       </CardContent>
                     </Card>
                   )}
                   {uniqueSetor.includes("HOR") && (
-                    <Card className="py-2  ">
-                      <CardHeader className="  ">
+                    <Card className="gap-2 py-2">
+                      <CardHeader className="px-4 py-2 h-8">
                         <CardTitle className=" ">HORIZONTAIS</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-1 px-2">
                         {total25MM > 0 && (
-                          <Badge variant={"LG"} className="w-full flex justify-between items-center  ">
-                            25MM(S) <span className="bg-sidebar-accent px-2 py-1 border rounded-md font-bold "> {total25MM}</span>
-                          </Badge>
+                          <div className="w-full flex justify-between items-center  ">
+                            <div className="flex justify-center items-center gap-2">
+                              <Badge variant={"LG"} className="size-5 rounded-full border-none"></Badge>
+                              <span>25MM(S)</span>
+                            </div>
+                            <span className="flex items-center justify-center border size-7 text-sm  rounded-full font-bold "> {total25MM}</span>
+                          </div>
                         )}
                         {total50MM > 0 && (
-                          <Badge variant={"RD"} className="w-full flex justify-between items-center  ">
-                            50MM(S) <span className="bg-sidebar-accent px-2 py-1 border rounded-md font-bold "> {total50MM}</span>
-                          </Badge>
+                          <div className="w-full flex justify-between items-center  ">
+                            <div className="flex justify-center items-center gap-2">
+                              <Badge variant={"RD"} className="size-5 rounded-full border-none"></Badge>
+                              <span>50MM(S)</span>
+                            </div>
+                            <span className="flex items-center justify-center border size-7 text-sm  rounded-full font-bold "> {total50MM}</span>
+                          </div>
                         )}
                       </CardContent>
                     </Card>
                   )}
                   {uniqueSetor.includes("VER") && (
-                    <Card className="py-2 ">
-                      <CardHeader className="  ">
+                    <Card className="gap-2 py-2">
+                      <CardHeader className="px-4 py-2 h-8">
                         <CardTitle className=" ">VERTICAIS</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-1 px-2">
                         {totalVERTICAL > 0 && (
-                          <Badge variant={"neutral"} className="w-full flex justify-between items-center  ">
-                            VERTICAL(S) <span className="bg-sidebar-accent px-2 py-1 border rounded-md font-bold "> {totalVERTICAL}</span>
-                          </Badge>
+                          <div className="flex justify-between items-center">
+                            <div className="flex justify-center items-center gap-2">
+                              <Badge variant={"neutral"} className="size-5 rounded-full border-none"></Badge>
+                              <span>VERTICAL(S)</span>
+                            </div>
+                            <span className="flex items-center justify-center border size-7 text-sm  rounded-full font-bold "> {totalVERTICAL}</span>
+                          </div>
                         )}
                       </CardContent>
                     </Card>
@@ -149,7 +172,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                 </div>
               </CardHeader>
               <CardContent className=" text-muted-foreground">
-                <Table>
+                <Table className="text-[12px] font-semibold  border-r">
                   <TableHeader>
                     <TableRow>
                       <TableHead>TRANSP</TableHead>
@@ -158,7 +181,37 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                       <TableHead>OS</TableHead>
                       <TableHead>NFe</TableHead>
                       <TableHead>NFt</TableHead>
-                      <TableHead>VOL</TableHead>
+                      <TableHead>Vol</TableHead>
+                      {totalROLO > 0 && (
+                        <TableHead className="border text-center">
+                          <Badge variant={"JT"}>ROL</Badge>
+                        </TableHead>
+                      )}
+                      {totalROMANA > 0 && (
+                        <TableHead className="border text-center">
+                          <Badge variant={"JD"}>ROM</Badge>
+                        </TableHead>
+                      )}
+                      {totalPAINEL > 0 && (
+                        <TableHead className="border text-center">
+                          <Badge variant={"AC"}>PAI</Badge>
+                        </TableHead>
+                      )}
+                      {total25MM > 0 && (
+                        <TableHead className="border text-center">
+                          <Badge variant={"LG"}>25M</Badge>
+                        </TableHead>
+                      )}
+                      {total50MM > 0 && (
+                        <TableHead className="border text-center">
+                          <Badge variant={"RD"}>50M</Badge>
+                        </TableHead>
+                      )}
+                      {totalVERTICAL > 0 && (
+                        <TableHead className="border text-center">
+                          <Badge variant={"neutral"}>VER</Badge>
+                        </TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -171,6 +224,20 @@ export function TabsProducao({ data }: TabsProducaoProps) {
 
                       if (!pedido) return null;
 
+                      const itensDoPedido = filteredData.filter((item) => item.registro === regId);
+
+                      const getQuant = (termo: string) =>
+                        itensDoPedido
+                          .filter((item) => item.nome?.toLowerCase().includes(termo.toLowerCase()))
+                          .reduce((acc, item) => acc + Number(item.quant || 0), 0);
+
+                      const qRolo = getQuant("rolo");
+                      const qRomana = getQuant("romana");
+                      const qPainel = getQuant("painel");
+                      const q25mm = getQuant("25mm");
+                      const q50mm = getQuant("50mm");
+                      const qVertical = getQuant("vertical");
+
                       return (
                         <TableRow key={index} className=" pb-2 last:border-0">
                           <TableCell className="font-bold text-foreground">
@@ -178,13 +245,14 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                           </TableCell>
                           <TableCell>{!pedido.con_nome ? pedido.empresa : pedido.con_nome}</TableCell>
                           <TableCell className="flex items-center justify-start">
-                            <div
-                              className="flex items-center justify-end mr-2 gap-1 cursor-pointer"
-                              onClick={() => modal?.openModal("viewPedido", pedido.registro)}
-                            >
+                            <div className="flex items-center justify-end mr-2 gap-1 ">
                               <span className="">{pedido.registro}</span>
 
-                              <Badge variant={"neutral"} className="h-6">
+                              <Badge
+                                variant={"neutral"}
+                                className="h-6 cursor-pointer"
+                                onClick={() => modal?.openModal("viewPedido", pedido.registro)}
+                              >
                                 <Eye size={16} />
                               </Badge>
                             </div>
@@ -210,6 +278,78 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                           <TableCell>{pedido.nnota}</TableCell>
                           <TableCell>{pedido.transportadora !== "11845" ? pedido.con_obs : ""}</TableCell>
                           <TableCell>{pedido.volnumero}</TableCell>
+
+                          {totalROLO > 0 && (
+                            <TableCell className="border text-center">
+                              {qRolo > 0 ? (
+                                <Badge className="rounded-full" variant={"JT"}>
+                                  {qRolo}
+                                </Badge>
+                              ) : (
+                                ""
+                              )}
+                            </TableCell>
+                          )}
+
+                          {totalROMANA > 0 && (
+                            <TableCell className="border text-center">
+                              {qRomana > 0 ? (
+                                <Badge className="rounded-full" variant={"JD"}>
+                                  {qRomana}
+                                </Badge>
+                              ) : (
+                                ""
+                              )}
+                            </TableCell>
+                          )}
+
+                          {totalPAINEL > 0 && (
+                            <TableCell className="border text-center">
+                              {qPainel > 0 ? (
+                                <Badge className="rounded-full" variant={"AC"}>
+                                  {qPainel}
+                                </Badge>
+                              ) : (
+                                ""
+                              )}
+                            </TableCell>
+                          )}
+
+                          {total25MM > 0 && (
+                            <TableCell className="border text-center">
+                              {q25mm > 0 ? (
+                                <Badge className="rounded-full" variant={"LG"}>
+                                  {q25mm}
+                                </Badge>
+                              ) : (
+                                ""
+                              )}
+                            </TableCell>
+                          )}
+
+                          {total50MM > 0 && (
+                            <TableCell className="border text-center">
+                              {q50mm > 0 ? (
+                                <Badge className="rounded-full" variant={"RD"}>
+                                  {q50mm}
+                                </Badge>
+                              ) : (
+                                ""
+                              )}
+                            </TableCell>
+                          )}
+
+                          {totalVERTICAL > 0 && (
+                            <TableCell className="border text-center">
+                              {qVertical > 0 ? (
+                                <Badge className="rounded-full" variant={"neutral"}>
+                                  {qVertical}
+                                </Badge>
+                              ) : (
+                                ""
+                              )}
+                            </TableCell>
+                          )}
                         </TableRow>
                       );
                     })}
