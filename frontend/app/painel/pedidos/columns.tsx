@@ -78,7 +78,6 @@ export const columns: ColumnDef<TypePedidos>[] = [
             checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
             aria-label="Select all"
-            className="ml-2"
           />
         </>
       );
@@ -95,7 +94,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       return (
         <>
-          <Checkbox className="ml-2" checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
+          <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
         </>
       );
     },
@@ -106,7 +105,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "status",
     header: () => {
       return (
-        <div className="flex items-center gap-1 ml-2">
+        <div className="flex items-center gap-2">
           <ListTodo size={16} />
           <span>STATUS</span>
         </div>
@@ -116,18 +115,14 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const status = row.getValue("status");
       const statusKey = String(status) as StatusKey;
       const currentStatus = statusConfig[statusKey];
-      return (
-        <Badge className="ml-2" variant={currentStatus.variant}>
-          {currentStatus.label}
-        </Badge>
-      );
+      return <Badge variant={currentStatus.variant}>{currentStatus.label}</Badge>;
     },
   },
   {
     accessorKey: "con_nome",
     header: () => {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <User size={16} />
           <span>NOME</span>
         </div>
@@ -139,14 +134,14 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       if (!nome) {
         return (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <span>{empresa}</span>
           </div>
         );
       }
 
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <span>{nome}</span>
         </div>
       );
@@ -156,7 +151,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "os",
     header: () => {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <ListTodo size={16} />
           <span>OS</span>
         </div>
@@ -174,7 +169,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
         <>
           {isAdmin ? (
             <div className="w-43 flex items-center justify-between">
-              <span className="gap-1">{os}</span>
+              <span className="gap-2">{os}</span>
               <Link
                 className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
                 href={url}
@@ -197,7 +192,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "registro",
     header: () => {
       return (
-        <div className="flex items-center justify-end mr-2 gap-1">
+        <div className="flex items-center justify-end mr-2 gap-2">
           <ListTodo size={16} />
           <span>REGISTRO</span>
         </div>
@@ -211,7 +206,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
       if (!registro) return;
 
       return (
-        <div className="flex items-center justify-end mr-2 gap-1">
+        <div className="flex items-center justify-end mr-2 gap-2">
           <span className="">{registro}</span>
           <Button
             onClick={() => modal?.openModal("viewPedido", registro)}
@@ -229,7 +224,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "nnota",
     header: () => {
       return (
-        <div className="flex items-center justify-end mr-2 gap-1">
+        <div className="flex items-center justify-end mr-2 gap-2">
           <ListTodo size={16} />
           <span>NF</span>
         </div>
@@ -250,7 +245,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "volnumero",
     header: () => {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <Package size={16} />
           <span>VOL</span>
         </div>
@@ -292,7 +287,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "previsao",
     header: () => {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <CalendarCog size={16} />
           <span>PREVISÃO</span>
         </div>
@@ -334,7 +329,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "transportadora",
     header: () => {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <Truck size={16} />
           <span>TRANSP</span>
         </div>
@@ -354,7 +349,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "entdata",
     header: () => {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <CalendarCog size={16} />
           <span>ENTREGUE</span>
         </div>

@@ -125,13 +125,13 @@ export function DataTable<TData, TValue>({
         </InputGroup>
       </div>
       <div className="overflow-hidden rounded-md border">
-        <Table className="bg-sidebar [&_td]:p-1 [&_th]:p-1 [&_tr]:h-10.5">
+        <Table className="bg-sidebar text-[12px] ">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-[12px] font-semibold">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
@@ -160,9 +160,9 @@ export function DataTable<TData, TValue>({
                   </TableRow>
                 ))
               ) : (
-                <TableRow className="">
+                <TableRow className="pointer-events-none">
                   <TableCell colSpan={columns.length} className="w-full ">
-                    <div className="flex justify-start items-center gap-2 min-h-50 px-20">
+                    <div className="flex justify-start items-center gap-2 min-h-103 px-20">
                       <FileX className="text-foreground" strokeWidth={0.75} size={40} />
                       <span>Sem resultados!</span>
                     </div>

@@ -53,7 +53,6 @@ const Producao = () => {
     getProducao();
   }, []);
 
-  console.log(dataProducao);
   return (
     <div className="container mx-auto ">
       {isLoading ? (

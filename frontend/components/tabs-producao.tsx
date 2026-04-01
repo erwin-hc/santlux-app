@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { transpConfig } from "@/app/painel/pedidos/columns";
 import { statusConfig } from "@/app/painel/pedidos/columns";
 import { Badge } from "./ui/badge";
-import { Cable, Eye } from "lucide-react";
+import { Cable, Eye, ListTodo, Package, Truck, User } from "lucide-react";
 import { useModal as useModalHook } from "@/providers/modal-provider";
 import { useIsAdmin } from "@/hooks/use-admin";
 import Link from "next/link";
@@ -28,7 +28,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
     <Tabs defaultValue={formatDate(firstDate)} className="w-full">
       <TabsList className="[&_button]:cursor-pointer max-w-full overflow-x-auto justify-start scrollbar-hide">
         {uniqueDates.map((date) => (
-          <TabsTrigger key={formatDate(date)} value={formatDate(date)}>
+          <TabsTrigger className="data-[state=active]:dark:bg-muted-foreground/30" key={formatDate(date)} value={formatDate(date)}>
             {formatDate(date)}
           </TabsTrigger>
         ))}
@@ -171,44 +171,87 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className=" text-muted-foreground">
-                <Table className="text-[12px] font-semibold  border-r">
+
+              <div className="overflow-hidden rounded-md border mx-6 border-r-0">
+                <Table className="text-[12px] bg-sidebar ">
                   <TableHeader>
                     <TableRow>
-                      <TableHead>TRANSP</TableHead>
-                      <TableHead>NOME</TableHead>
-                      <TableHead className="text-left">REGISTRO</TableHead>
-                      <TableHead>OS</TableHead>
-                      <TableHead>NFe</TableHead>
-                      <TableHead>NFt</TableHead>
-                      <TableHead>Vol</TableHead>
+                      <TableHead className="text-[12px] font-semibold">
+                        <div className="flex items-center gap-2 pl-4">
+                          <Truck size={16} />
+                          <span>TRANSP</span>
+                        </div>
+                      </TableHead>
+
+                      <TableHead className="text-[12px] font-semibold">
+                        <div className="flex items-center gap-2">
+                          <User size={16} />
+                          <span>NOME</span>
+                        </div>
+                      </TableHead>
+
+                      <TableHead className="text-[12px] font-semibold">
+                        <div className="flex items-center justify-start gap-2">
+                          <ListTodo size={16} />
+                          <span>REGISTRO</span>
+                        </div>
+                      </TableHead>
+
+                      <TableHead className="text-[12px] font-semibold">
+                        <div className="flex items-center gap-2">
+                          <ListTodo size={16} />
+                          <span>OS</span>
+                        </div>
+                      </TableHead>
+
+                      <TableHead className="text-[12px] font-semibold">
+                        <div className="flex items-center gap-2">
+                          <ListTodo size={16} />
+                          <span>NFe</span>
+                        </div>
+                      </TableHead>
+
+                      <TableHead className="text-[12px] font-semibold">
+                        <div className="flex items-center gap-2">
+                          <ListTodo size={16} />
+                          <span>NFt</span>
+                        </div>
+                      </TableHead>
+
+                      <TableHead className="text-[12px] font-semibold">
+                        <div className="flex gap-2 ">
+                          <Package size={16} />
+                          <span>VOL</span>
+                        </div>
+                      </TableHead>
+
                       {totalROLO > 0 && (
-                        <TableHead className="border text-center">
+                        <TableHead className="border-x text-center">
                           <Badge variant={"JT"}>ROL</Badge>
                         </TableHead>
                       )}
                       {totalROMANA > 0 && (
-                        <TableHead className="border text-center">
+                        <TableHead className="border-x text-center">
                           <Badge variant={"JD"}>ROM</Badge>
                         </TableHead>
                       )}
                       {totalPAINEL > 0 && (
-                        <TableHead className="border text-center">
+                        <TableHead className="border-x text-center">
                           <Badge variant={"AC"}>PAI</Badge>
                         </TableHead>
                       )}
                       {total25MM > 0 && (
-                        <TableHead className="border text-center">
+                        <TableHead className="border-x text-center">
                           <Badge variant={"LG"}>25M</Badge>
                         </TableHead>
                       )}
                       {total50MM > 0 && (
-                        <TableHead className="border text-center">
+                        <TableHead className="border-x text-center">
                           <Badge variant={"RD"}>50M</Badge>
                         </TableHead>
                       )}
                       {totalVERTICAL > 0 && (
-                        <TableHead className="border text-center">
+                        <TableHead className="border-x text-center">
                           <Badge variant={"neutral"}>VER</Badge>
                         </TableHead>
                       )}
@@ -239,13 +282,13 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                       const qVertical = getQuant("vertical");
 
                       return (
-                        <TableRow key={index} className=" pb-2 last:border-0">
-                          <TableCell className="font-bold text-foreground">
+                        <TableRow key={index} className="">
+                          <TableCell className="font-bold text-foreground pl-4">
                             <Badge variant={currentStatus?.variant ?? "neutral"}>{currentStatus?.label ?? "Não Informado"}</Badge>
                           </TableCell>
                           <TableCell>{!pedido.con_nome ? pedido.empresa : pedido.con_nome}</TableCell>
                           <TableCell className="flex items-center justify-start">
-                            <div className="flex items-center justify-end mr-2 gap-1 ">
+                            <div className="flex items-center justify-end mr-2 gap-2 ">
                               <span className="">{pedido.registro}</span>
 
                               <Badge
@@ -259,8 +302,8 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                           </TableCell>
                           {isAdmin ? (
                             <TableCell>
-                              <div className="w-43 flex items-center justify-between">
-                                <span className="gap-1">{pedido.os}</span>
+                              <div className="w-40 flex items-center justify-between">
+                                <span className="gap-2">{pedido.os}</span>
                                 <Link
                                   className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
                                   href={url}
@@ -355,7 +398,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                     })}
                   </TableBody>
                 </Table>
-              </CardContent>
+              </div>
             </Card>
           </TabsContent>
         );

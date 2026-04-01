@@ -1,22 +1,24 @@
-from fastapi import FastAPI
-from sqlmodel import SQLModel
 from db.db_sqlite import engine
-from routes import pedidos, romaneios, comissao, producao, auth
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes import auth, comissao, pedidos, producao, romaneios
+from sqlmodel import SQLModel
 
 app = FastAPI(title="API SANTLUX")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], # URL do seu Next.js
+    allow_origins=["http://localhost:3000"],  # URL do seu Next.js
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
 @app.on_event("startup")
 def on_startup():
     SQLModel.metadata.create_all(engine)
+
 
 # Incluindo as rotas do projeto
 app.include_router(pedidos.router)

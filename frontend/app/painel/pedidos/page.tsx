@@ -51,8 +51,13 @@ export default function Page() {
   );
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if (!loading) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   useEffect(() => {
     const query = searchTerm.trim();
@@ -91,7 +96,7 @@ export default function Page() {
 
   return (
     <>
-      {data.length === 0 ? (
+      {loading && data.length === 0 ? (
         <div className="flex items-center justify-center h-screen w-full">
           <Spinner className="size-10" />
         </div>
