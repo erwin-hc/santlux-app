@@ -1,24 +1,31 @@
 "use client";
+
 import { FileX } from "lucide-react";
 import { useModal as useModalHook } from "@/providers/modal-provider";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import SkeletonTable from "@/components/skeleton-table";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
+import { DatePickerInput } from "@/components/data-picker";
+import { useState, useEffect } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  date: Date | undefined;
   loading?: boolean;
   isAdmin?: boolean;
+  onDateChange?: (date: Date | undefined) => void;
 }
 
 export function DataTable<TData extends { dtentrega?: string | Date; transportadora?: string }, TValue>({
   columns,
   data,
+  date,
   loading,
   isAdmin,
+  onDateChange,
 }: DataTableProps<TData, TValue>) {
   const modalContext = useModalHook();
 
@@ -30,15 +37,20 @@ export function DataTable<TData extends { dtentrega?: string | Date; transportad
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const dataTitle = data[0]?.dtentrega || formatDate(new Date().toLocaleDateString("pt-BR"));
   const uniqueTransp = Array.from(new Set(data.map((item) => item.transportadora))).sort();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+
+  useEffect(() => {}, [selectedDate, setSelectedDate]);
 
   return (
-    <Card className="px-1">
+    <Card className="px-1 ">
       <CardHeader>
-        <div className="flex items-center justify-start gap-4 border-b pb-4">
-          <CardTitle>{formatDate(dataTitle as string)}</CardTitle>
-          <CardDescription>{data.length} Pedido(s)</CardDescription>
+        <div className="border-b pb-4 flex items-center justify-between w-full">
+          <div className="flex items-center gap-2 flex-col sm:flex-row">
+            <CardTitle>{formatDate(String(date))}</CardTitle>
+            <CardDescription>{data.length} Pedido(s)</CardDescription>
+          </div>
+          <DatePickerInput date={date} onDateChange={onDateChange} />
         </div>
       </CardHeader>
 
@@ -82,7 +94,9 @@ export function DataTable<TData extends { dtentrega?: string | Date; transportad
                   <TableCell colSpan={columns.length} className="w-full">
                     <div className="flex justify-start items-center gap-2 min-h-96 px-20  ">
                       <FileX className="text-foreground" strokeWidth={0.75} size={40} />
-                      <span>Sem resultados!</span>
+                      <span>
+                        Sem romaneio <span className="underline"> {formatDate(String(date))}!</span>
+                      </span>
                     </div>
                   </TableCell>
                 </TableRow>

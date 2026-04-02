@@ -2,53 +2,35 @@
 
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
-
 import { Calendar } from "@/components/ui/calendar";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { formatDate } from "@/lib/utils";
 
-function formatDate(date: Date | undefined) {
-  if (!date) {
-    return "";
-  }
-
-  return date.toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
+interface DatePickerInputProps {
+  date: Date | undefined;
+  onDateChange?: (date: Date | undefined) => void;
 }
 
-function isValidDate(date: Date | undefined) {
-  if (!date) {
-    return false;
-  }
-  return !isNaN(date.getTime());
-}
-
-export function DatePickerInput() {
+export function DatePickerInput({ date, onDateChange }: DatePickerInputProps) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(new Date("2025-06-01"));
-  const [month, setMonth] = React.useState<Date | undefined>(date);
-  const [value, setValue] = React.useState(formatDate(date));
+  const [month, setMonth] = React.useState<Date>(date || new Date());
+
+  React.useEffect(() => {
+    if (date) setMonth(date);
+  }, [date]);
+
+  const value = formatDate(String(date));
 
   return (
-    <Field className="mx-auto w-48">
-      <FieldLabel htmlFor="date-required">Subscription Date</FieldLabel>
+    <Field className="w-34">
       <InputGroup>
         <InputGroupInput
           id="date-required"
           value={value}
-          placeholder="June 01, 2025"
-          onChange={(e) => {
-            const date = new Date(e.target.value);
-            setValue(e.target.value);
-            if (isValidDate(date)) {
-              setDate(date);
-              setMonth(date);
-            }
-          }}
+          readOnly
+          placeholder="DD/MM/AAAA"
           onKeyDown={(e) => {
             if (e.key === "ArrowDown") {
               e.preventDefault();
@@ -70,9 +52,8 @@ export function DatePickerInput() {
                 selected={date}
                 month={month}
                 onMonthChange={setMonth}
-                onSelect={(date) => {
-                  setDate(date);
-                  setValue(formatDate(date));
+                onSelect={(newDate) => {
+                  onDateChange?.(newDate);
                   setOpen(false);
                 }}
               />
