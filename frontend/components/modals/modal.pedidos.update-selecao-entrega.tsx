@@ -91,10 +91,7 @@ export function ModalUpdateSelecionadosEntrega() {
         if (response.ok) {
           setProcessedIds((prev) => [...prev, item.registro!]);
         }
-        await new Promise((resolve) => setTimeout(resolve, 150));
       }
-
-      await new Promise((resolve) => setTimeout(resolve, 150));
 
       window.dispatchEvent(new Event("refresh-pedidos"));
       addMessage("success", `${quantidade} Pedidos atualizados!`);

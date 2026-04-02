@@ -3,16 +3,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PedidosType } from "@/app/painel/producao/page";
 import { formatDate } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { transpConfig } from "@/app/painel/pedidos/columns";
-import { statusConfig } from "@/app/painel/pedidos/columns";
+import { transpConfig, statusConfig, StatusKey, TranspKey } from "@/app/painel/pedidos/columns";
+
 import { Badge } from "./ui/badge";
 import { Cable, Eye, ListTodo, Package, Truck, User } from "lucide-react";
 import { useModal as useModalHook } from "@/providers/modal-provider";
 import { useIsAdmin } from "@/hooks/use-admin";
 import Link from "next/link";
-
-type StatusKey = keyof typeof statusConfig;
-type TranspKey = keyof typeof transpConfig;
 
 interface TabsProducaoProps {
   data: PedidosType[];
@@ -191,16 +188,16 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                       </TableHead>
 
                       <TableHead className="text-[12px] font-semibold">
-                        <div className="flex items-center justify-start gap-2">
+                        <div className="flex items-center gap-2">
                           <ListTodo size={16} />
-                          <span>REGISTRO</span>
+                          <span>OS</span>
                         </div>
                       </TableHead>
 
                       <TableHead className="text-[12px] font-semibold">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-start gap-2">
                           <ListTodo size={16} />
-                          <span>OS</span>
+                          <span>REGISTRO</span>
                         </div>
                       </TableHead>
 
@@ -287,19 +284,6 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                             <Badge variant={currentStatus?.variant ?? "neutral"}>{currentStatus?.label ?? "Não Informado"}</Badge>
                           </TableCell>
                           <TableCell>{!pedido.con_nome ? pedido.empresa : pedido.con_nome}</TableCell>
-                          <TableCell className="flex items-center justify-start">
-                            <div className="flex items-center justify-end mr-2 gap-2 ">
-                              <span className="">{pedido.registro}</span>
-
-                              <Badge
-                                variant={"neutral"}
-                                className="h-6 cursor-pointer"
-                                onClick={() => modal?.openModal("viewPedido", pedido.registro)}
-                              >
-                                <Eye size={16} />
-                              </Badge>
-                            </div>
-                          </TableCell>
                           {isAdmin ? (
                             <TableCell>
                               <div className="w-40 flex items-center justify-between">
@@ -318,6 +302,18 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                           ) : (
                             <TableCell>{pedido.os}</TableCell>
                           )}
+                          <TableCell className="flex items-center justify-start">
+                            <div className="flex items-center justify-end mr-2 gap-2 ">
+                              <span className="">{pedido.registro}</span>
+                              <Badge
+                                variant={"neutral"}
+                                className="h-6 cursor-pointer"
+                                onClick={() => modal?.openModal("viewPedido", pedido.registro)}
+                              >
+                                <Eye size={16} />
+                              </Badge>
+                            </div>
+                          </TableCell>
                           <TableCell>{pedido.nnota}</TableCell>
                           <TableCell>{pedido.transportadora !== "11845" ? pedido.con_obs : ""}</TableCell>
                           <TableCell>{pedido.volnumero}</TableCell>

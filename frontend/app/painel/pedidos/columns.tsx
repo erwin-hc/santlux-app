@@ -58,8 +58,8 @@ export const transpConfig = {
   default: { variant: "neutral", label: "N/A" },
 } as const;
 
-type StatusKey = keyof typeof statusConfig;
-type TranspKey = keyof typeof transpConfig;
+export type StatusKey = keyof typeof statusConfig;
+export type TranspKey = keyof typeof transpConfig;
 
 export const columns: ColumnDef<TypePedidos>[] = [
   {
@@ -118,6 +118,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
       return <Badge variant={currentStatus.variant}>{currentStatus.label}</Badge>;
     },
   },
+
   {
     accessorKey: "con_nome",
     header: () => {
@@ -284,6 +285,26 @@ export const columns: ColumnDef<TypePedidos>[] = [
     },
   },
   {
+    accessorKey: "transportadora",
+    header: () => {
+      return (
+        <div className="flex items-center gap-2">
+          <Truck size={16} />
+          <span>TRANSP</span>
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const transp = row.getValue("transportadora") as string | undefined;
+      const transpKey = (transp?.toUpperCase() || "DEFAULT") as TranspKey;
+      const currentStatus = transpConfig[transpKey];
+
+      if (!transp) return;
+
+      return <Badge variant={currentStatus?.variant ?? "neutral"}>{currentStatus?.label ?? "Não Informado"}</Badge>;
+    },
+  },
+  {
     accessorKey: "previsao",
     header: () => {
       return (
@@ -323,26 +344,6 @@ export const columns: ColumnDef<TypePedidos>[] = [
           )}
         </>
       );
-    },
-  },
-  {
-    accessorKey: "transportadora",
-    header: () => {
-      return (
-        <div className="flex items-center gap-2">
-          <Truck size={16} />
-          <span>TRANSP</span>
-        </div>
-      );
-    },
-    cell: ({ row }) => {
-      const transp = row.getValue("transportadora") as string | undefined;
-      const transpKey = (transp?.toUpperCase() || "DEFAULT") as TranspKey;
-      const currentStatus = transpConfig[transpKey];
-
-      if (!transp) return;
-
-      return <Badge variant={currentStatus?.variant ?? "neutral"}>{currentStatus?.label ?? "Não Informado"}</Badge>;
     },
   },
   {

@@ -4,7 +4,7 @@ import { FileX } from "lucide-react";
 import { useModal as useModalHook } from "@/providers/modal-provider";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import SkeletonTable from "@/components/skeleton-table";
+import SkeletonTableRomaneio from "@/components/skeleton-table-romaneio";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import { DatePickerInput } from "@/components/data-picker";
@@ -73,9 +73,9 @@ export function DataTable<TData extends { dtentrega?: string | Date; transportad
           {loading ? (
             <TableBody className="divide-y divide-border">
               <TableRow>
-                <TableCell colSpan={columns.length} className="m-0">
-                  <SkeletonTable />
-                  <SkeletonTable />
+                <TableCell colSpan={columns.length} className="m-0 ">
+                  <SkeletonTableRomaneio />
+                  <SkeletonTableRomaneio />
                 </TableCell>
               </TableRow>
             </TableBody>

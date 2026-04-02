@@ -1,8 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function SkeletonTable() {
+export default function SkeletonTableRomaneio() {
   return (
-    <div className="w-full mt-2 [&_div]:my-[6px] [&_div]:h-8 [&_div]:w-full [&_div]:px-5">
+    <div className="w-full mt-2 [&_div]:my-[8px] [&_div]:h-7 [&_div]:w-full [&_div]:px-5">
       <div>
         <Skeleton />
       </div>

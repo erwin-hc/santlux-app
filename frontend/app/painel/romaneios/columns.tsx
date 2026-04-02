@@ -1,9 +1,10 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Cable, Eye, ListTodo, Package, Truck, User } from "lucide-react";
+import { Cable, Calendar, Eye, ListTodo, Package, Truck, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { formatDate } from "@/lib/utils";
 
 export type RomaneioType = {
   registro: string;
@@ -99,27 +100,6 @@ export const columns: ColumnDef<RomaneioType>[] = [
     },
   },
   {
-    accessorKey: "nnota",
-    header: () => {
-      return (
-        <div className="flex items-center justify-end mr-2 gap-2">
-          <ListTodo size={16} />
-          <span>NF</span>
-        </div>
-      );
-    },
-    cell: ({ row }) => {
-      const nota = row.original.nnota;
-      if (!nota) return;
-
-      return (
-        <div className="flex items-center justify-end mr-2">
-          <span className="">{nota}</span>
-        </div>
-      );
-    },
-  },
-  {
     accessorKey: "os",
     header: () => {
       return (
@@ -187,6 +167,27 @@ export const columns: ColumnDef<RomaneioType>[] = [
     },
   },
   {
+    accessorKey: "nnota",
+    header: () => {
+      return (
+        <div className="flex items-center justify-end mr-2 gap-2">
+          <ListTodo size={16} />
+          <span>NF</span>
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const nota = row.original.nnota;
+      if (!nota) return;
+
+      return (
+        <div className="flex items-center justify-end mr-2">
+          <span className="">{nota}</span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "volnumero",
     header: () => {
       return (
@@ -208,6 +209,21 @@ export const columns: ColumnDef<RomaneioType>[] = [
           </div>
         </>
       );
+    },
+  },
+
+  {
+    accessorKey: "dtentrega",
+    header: () => {
+      return (
+        <div className="flex items-center justify-start mr-2 gap-2">
+          <Calendar size={16} />
+          <span>ENTREGUE</span>
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      return formatDate(row.original.dtentrega);
     },
   },
 ];
