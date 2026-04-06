@@ -86,7 +86,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-4">
                   {uniqueSetor.includes("ESP") && (
-                    <Card className="gap-2 py-2">
+                    <Card className="gap-2 py-2 bg-sidebar">
                       <CardHeader className="px-4 py-2 h-8">
                         <CardTitle className="">ESPECIAIS</CardTitle>
                       </CardHeader>
@@ -122,7 +122,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                     </Card>
                   )}
                   {uniqueSetor.includes("HOR") && (
-                    <Card className="gap-2 py-2">
+                    <Card className="gap-2 py-2 bg-sidebar">
                       <CardHeader className="px-4 py-2 h-8">
                         <CardTitle className=" ">HORIZONTAIS</CardTitle>
                       </CardHeader>
@@ -153,7 +153,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                       <CardHeader className="px-4 py-2 h-8">
                         <CardTitle className=" ">VERTICAIS</CardTitle>
                       </CardHeader>
-                      <CardContent className="space-y-1 px-2">
+                      <CardContent className="space-y-1 px-2 bg-sidebar">
                         {totalVERTICAL > 0 && (
                           <div className="flex justify-between items-center">
                             <div className="flex justify-center items-center gap-2">
