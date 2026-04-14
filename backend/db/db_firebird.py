@@ -5,7 +5,7 @@ import firebirdsql as fb
 
 # Configurações de conexão
 BD_CONFIG = {
-    "host": "10.0.0.40",
+    "host": "localhost",
     "database": r"C:\TESTE.FDB",
     "port": 3050,
     "user": "sysdba",
