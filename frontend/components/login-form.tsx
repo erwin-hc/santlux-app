@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "./ui/form";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMessages } from "@/providers/message-provider";
 
 export const LoginFormSchema = z.object({
@@ -31,7 +31,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   const [loading, setLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const { addMessage } = useMessages();
-
+  const { status } = useSession();
+  
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
@@ -64,6 +65,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/painel");
+    }
+  }, [status, router]);
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

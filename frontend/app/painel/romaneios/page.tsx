@@ -8,7 +8,9 @@ import { useIsAdmin } from "@/hooks/use-admin";
 
 const Romaneios = () => {
   const [dataRomaneio, setDataRomaneio] = useState<RomaneioType[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date(),
+  );
   const [isLoading, setIsLoading] = useState(true);
   const isAdmin = useIsAdmin();
 
@@ -41,7 +43,9 @@ const Romaneios = () => {
   const handleDateChange = (newDate: Date | undefined) => {
     setSelectedDate(newDate);
     if (newDate) {
-      const formatted = newDate.toLocaleDateString("pt-BR").replaceAll("/", "-");
+      const formatted = newDate
+        .toLocaleDateString("pt-BR")
+        .replaceAll("/", "-");
       getRomaneio(formatted);
     }
   };
@@ -54,7 +58,7 @@ const Romaneios = () => {
   return (
     <div className="container mx-auto">
       {isLoading && dataRomaneio.length === 0 ? (
-        <div className="flex items-center justify-center h-screen w-full">
+        <div className="flex items-center justify-center h-svh w-full">
           <Spinner className="size-10" />
         </div>
       ) : (

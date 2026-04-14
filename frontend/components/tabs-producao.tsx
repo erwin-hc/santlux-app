@@ -20,7 +20,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
   const firstDate = uniqueDates[0] || "no-data";
   const modal = useModalHook();
   const isAdmin = useIsAdmin();
-
+  
   return (
     <Tabs defaultValue={formatDate(firstDate)} className="w-full">
       <TabsList className="[&_button]:cursor-pointer max-w-full overflow-x-auto justify-start scrollbar-hide">
@@ -78,9 +78,9 @@ export function TabsProducao({ data }: TabsProducaoProps) {
 
         return (
           <TabsContent key={formattedTabDate} value={formattedTabDate}>
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-start gap-4 border-b pb-4">
+            <Card >
+              <CardHeader >
+                <div className="flex items-center justify-start gap-4 border-b pb-4 ">
                   <CardTitle>{formattedTabDate}</CardTitle>
                   <CardDescription>{uniqueRegistrosIds.length} Pedido(s)</CardDescription>
                 </div>
@@ -169,7 +169,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                 </div>
               </CardHeader>
 
-              <div className="overflow-hidden rounded-md border mx-6 border-r-0">
+              <div className="overflow-hidden rounded-md border mx-2 border-r-0">
                 <Table className="text-[12px] bg-sidebar ">
                   <TableHeader>
                     <TableRow>

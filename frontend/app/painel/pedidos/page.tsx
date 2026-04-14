@@ -18,7 +18,9 @@ type PedidosResponse = {
 export default function Page() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [data, setData] = useState<TypePedidos[]>([]);
-  const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(null);
+  const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -75,7 +77,8 @@ export default function Page() {
   }, [searchTerm, getPedidos]);
 
   useEffect(() => {
-    const refresh = () => getPedidos(searchTerm.length > 2 ? searchTerm : undefined);
+    const refresh = () =>
+      getPedidos(searchTerm.length > 2 ? searchTerm : undefined);
     window.addEventListener("refresh-pedidos", refresh);
     return () => window.removeEventListener("refresh-pedidos", refresh);
   }, [getPedidos, searchTerm]);
@@ -97,7 +100,7 @@ export default function Page() {
   return (
     <>
       {loading && data.length === 0 ? (
-        <div className="flex items-center justify-center h-screen w-full">
+        <div className="flex items-center justify-center h-svh w-full">
           <Spinner className="size-10" />
         </div>
       ) : (
@@ -113,8 +116,12 @@ export default function Page() {
               pageIndex={pagination.pageIndex}
               pageSize={pagination.pageSize}
               regCount={metadata?.total || 0}
-              onPageChange={(idx) => setPagination((prev) => ({ ...prev, pageIndex: idx }))}
-              onPageSizeChange={(size) => setPagination({ pageIndex: 0, pageSize: size })}
+              onPageChange={(idx) =>
+                setPagination((prev) => ({ ...prev, pageIndex: idx }))
+              }
+              onPageSizeChange={(size) =>
+                setPagination({ pageIndex: 0, pageSize: size })
+              }
               loading={loading}
             />
           </div>

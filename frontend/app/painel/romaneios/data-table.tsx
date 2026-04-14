@@ -2,13 +2,37 @@
 
 import { FileX } from "lucide-react";
 import { useModal as useModalHook } from "@/providers/modal-provider";
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import SkeletonTableRomaneio from "@/components/skeleton-table-romaneio";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 import { DatePickerInput } from "@/components/data-picker";
 import { useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
+import {
+  transpConfig,
+  statusConfig,
+  StatusKey,
+  TranspKey,
+} from "@/app/painel/pedidos/columns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -19,7 +43,10 @@ interface DataTableProps<TData, TValue> {
   onDateChange?: (date: Date | undefined) => void;
 }
 
-export function DataTable<TData extends { dtentrega?: string | Date; transportadora?: string }, TValue>({
+export function DataTable<
+  TData extends { dtentrega?: string | Date; transportadora?: string },
+  TValue,
+>({
   columns,
   data,
   date,
@@ -37,32 +64,90 @@ export function DataTable<TData extends { dtentrega?: string | Date; transportad
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const uniqueTransp = Array.from(new Set(data.map((item) => item.transportadora))).sort();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date(),
+  );
+
+  const stats = data.reduce(
+    (acc, item) => {
+      const nome = item.transportadora || "default";
+      acc[nome] = (acc[nome] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const transportadorasEntries = Object.entries(stats)
+    .map(([id, count]) => {
+      const key = id as TranspKey;
+      const config = transpConfig[key] || transpConfig.default;
+      return {
+        id: key,
+        count,
+        label: config.label,
+        variant: config.variant,
+      };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   useEffect(() => {}, [selectedDate, setSelectedDate]);
 
   return (
-    <Card className="px-1 ">
+    <Card className="px-1">
       <CardHeader>
         <div className="border-b pb-4 flex items-center justify-between w-full">
           <div className="flex items-center gap-2 flex-col sm:flex-row">
             <CardTitle>{formatDate(String(date))}</CardTitle>
-            <CardDescription>{data.length} Pedido(s)</CardDescription>
+            {!loading && (
+              <CardDescription>{data.length} Pedido(s)</CardDescription>
+            )}
           </div>
           <DatePickerInput date={date} onDateChange={onDateChange} />
         </div>
+
+        {!loading && (
+          <div className="grid grid-cols-1 md:grid-cols-4 sm:grid-cols-2 gap-2">
+            {transportadorasEntries.map((transp) => {
+              return (
+                <Card key={transp.id} className="p-2 m-0">
+                  <CardHeader className="p-0 m-0 gap-0">
+                    <div className="flex justify-between items-center">
+                      <div className="flex justify-center items-center gap-2">
+                        <Badge
+                          variant={transp.variant}
+                          className="size-5 rounded-full border-none"
+                        />
+                        <span>{transp.label}</span>
+                      </div>
+                      <span className="flex items-center justify-center border size-7 text-sm rounded-full font-bold">
+                        {transp.count}
+                      </span>
+                    </div>
+                  </CardHeader>
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </CardHeader>
 
-      <div className="overflow-hidden rounded-md border mx-6 bg-sidebar">
+      <div className="overflow-hidden rounded-md border mx-2 bg-sidebar">
         <Table className="text-[12px]">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-[12px] font-semibold ">
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    <TableHead
+                      key={header.id}
+                      className="text-[12px] font-semibold "
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -83,9 +168,17 @@ export function DataTable<TData extends { dtentrega?: string | Date; transportad
             <TableBody>
               {table.getRowModel()?.rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
                     ))}
                   </TableRow>
                 ))
@@ -93,9 +186,17 @@ export function DataTable<TData extends { dtentrega?: string | Date; transportad
                 <TableRow className="pointer-events-none">
                   <TableCell colSpan={columns.length} className="w-full">
                     <div className="flex justify-start items-center gap-2 min-h-96 px-20  ">
-                      <FileX className="text-foreground" strokeWidth={0.75} size={40} />
+                      <FileX
+                        className="text-foreground"
+                        strokeWidth={0.75}
+                        size={40}
+                      />
                       <span>
-                        Sem romaneio <span className="underline"> {formatDate(String(date))}!</span>
+                        Sem romaneio{" "}
+                        <span className="underline">
+                          {" "}
+                          {formatDate(String(date))}!
+                        </span>
                       </span>
                     </div>
                   </TableCell>

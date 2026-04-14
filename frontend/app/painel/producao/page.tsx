@@ -54,9 +54,9 @@ const Producao = () => {
   }, []);
 
   return (
-    <div className="container mx-auto ">
+    <div className="container mx-auto">
       {isLoading ? (
-        <div className="flex items-center justify-center h-screen w-full">
+        <div className="flex items-center justify-center h-svh w-full">
           <Spinner className="size-10" />
         </div>
       ) : (

@@ -26,7 +26,7 @@ export function DatePickerInput({ date, onDateChange }: DatePickerInputProps) {
   const value = formatDate(String(date));
 
   return (
-    <Field className="w-34">
+    <Field className="w-36">
       <InputGroup>
         <InputGroupInput
           id="date-required"
