@@ -3,6 +3,8 @@
 import { TabsProducao } from "@/components/tabs-producao";
 import { useEffect, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { CalendarCog } from "lucide-react";
+import { PageTitle } from "@/components/title-page";
 
 export type PedidosType = {
   dtentrega: string;
@@ -39,7 +41,7 @@ const Producao = () => {
     const getProducao = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch("/api/producao");
+        const response = await fetch("/api/producao/");
         if (!response.ok) throw new Error("Failed to fetch");
         const result = await response.json();
         setDataProducao(result);
@@ -55,6 +57,7 @@ const Producao = () => {
 
   return (
     <div className="container mx-auto">
+      <PageTitle label="PRODUÇÃO" icon={CalendarCog} loading={isLoading} />
       {isLoading ? (
         <div className="flex items-center justify-center h-svh w-full">
           <Spinner className="size-10" />

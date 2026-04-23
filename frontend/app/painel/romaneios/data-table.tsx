@@ -93,7 +93,7 @@ export function DataTable<
   useEffect(() => {}, [selectedDate, setSelectedDate]);
 
   return (
-    <Card className="px-1">
+    <Card className="px-1 border-none shadow-none">
       <CardHeader>
         <div className="border-b pb-4 flex items-center justify-between w-full">
           <div className="flex items-center gap-2 flex-col sm:flex-row">
@@ -115,13 +115,16 @@ export function DataTable<
                       <div className="flex justify-center items-center gap-2">
                         <Badge
                           variant={transp.variant}
-                          className="size-5 rounded-full border-none"
+                          className="size-6 rounded-full border-none"
                         />
                         <span>{transp.label}</span>
                       </div>
-                      <span className="flex items-center justify-center border size-7 text-sm rounded-full font-bold">
+                      <Badge
+                        variant={transp.variant}
+                        className="flex items-center justify-center border size-7 text-sm rounded-full font-bold"
+                      >
                         {transp.count}
-                      </span>
+                      </Badge>
                     </div>
                   </CardHeader>
                 </Card>
@@ -131,8 +134,8 @@ export function DataTable<
         )}
       </CardHeader>
 
-      <div className="overflow-hidden rounded-md border mx-2 bg-sidebar">
-        <Table className="text-[12px]">
+      <div className="overflow-hidden rounded-md border mx-2 mb-4">
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

@@ -3,14 +3,33 @@ import { ArrowLeft, ArrowRight, FileX, Search, Trash2 } from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { useModal as useModalHook } from "@/providers/modal-provider";
 import { useState } from "react";
-import { ColumnDef, flexRender, getCoreRowModel, useReactTable, ColumnFiltersState, getFilteredRowModel } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  ColumnFiltersState,
+  getFilteredRowModel,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import SkeletonTable from "@/components/skeleton-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ComboboxCustomItems } from "@/components/combobox";
 import { SwitchEntregue } from "@/components/switch";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -124,15 +143,23 @@ export function DataTable<TData, TValue>({
           </InputGroupAddon>
         </InputGroup>
       </div>
-      <div className="overflow-hidden rounded-md border">
-        <Table className="bg-sidebar text-[12px] ">
+      <div className="overflow-hidden rounded-md border mb-2">
+        <Table className="">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-[12px] font-semibold">
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    <TableHead
+                      key={header.id}
+                      className="text-[12px] font-semibold"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -153,9 +180,17 @@ export function DataTable<TData, TValue>({
             <TableBody>
               {table.getRowModel()?.rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
                     ))}
                   </TableRow>
                 ))
@@ -163,7 +198,11 @@ export function DataTable<TData, TValue>({
                 <TableRow className="pointer-events-none">
                   <TableCell colSpan={columns.length} className="w-full ">
                     <div className="flex justify-start items-center gap-2 min-h-103 px-20">
-                      <FileX className="text-foreground" strokeWidth={0.75} size={40} />
+                      <FileX
+                        className="text-foreground"
+                        strokeWidth={0.75}
+                        size={40}
+                      />
                       <span>Sem resultados!</span>
                     </div>
                   </TableCell>
@@ -197,39 +236,71 @@ export function DataTable<TData, TValue>({
                   </Button>
                   <Badge variant={"neutral"}>{infoPagina}</Badge>
 
-                  {table.options.meta?.isSearching && table.getFilteredRowModel().rows.length > 1 && (
-                    <div className="flex items-center">
-                      {table.getFilteredSelectedRowModel().rows.length > 0 && (
-                        <div className="flex items-center justify-center gap-2">
-                          <Badge variant={"LG"} className="gap-2 h-8 animate-in fade-in slide-in-from-left-2">
-                            <SwitchEntregue
-                              isChecked={false}
-                              handleClick={() => {
-                                const selectedData = table.getFilteredSelectedRowModel().rows.map((row) => row.original);
-                                table.options.meta?.modal?.openModal("updateEntregaSelecao", selectedData);
-                                onSearchChange("");
-                                table.resetRowSelection();
-                              }}
-                            />
-                            <span className="cursor-default">Marcar Entregue? {table.getFilteredSelectedRowModel().rows.length} selecionados!</span>
-                          </Badge>
+                  {table.options.meta?.isSearching &&
+                    table.getFilteredRowModel().rows.length > 1 && (
+                      <div className="flex items-center">
+                        {table.getFilteredSelectedRowModel().rows.length >
+                          0 && (
+                          <div className="flex items-center justify-center gap-2">
+                            <Badge
+                              variant={"LG"}
+                              className="gap-2 h-8 animate-in fade-in slide-in-from-left-2"
+                            >
+                              <SwitchEntregue
+                                isChecked={false}
+                                handleClick={() => {
+                                  const selectedData = table
+                                    .getFilteredSelectedRowModel()
+                                    .rows.map((row) => row.original);
+                                  table.options.meta?.modal?.openModal(
+                                    "updateEntregaSelecao",
+                                    selectedData,
+                                  );
+                                  onSearchChange("");
+                                  table.resetRowSelection();
+                                }}
+                              />
+                              <span className="cursor-default">
+                                Marcar Entregue?{" "}
+                                {
+                                  table.getFilteredSelectedRowModel().rows
+                                    .length
+                                }{" "}
+                                selecionados!
+                              </span>
+                            </Badge>
 
-                          <Badge variant={"AF"} className="gap-2 h-8 animate-in fade-in slide-in-from-left-2">
-                            <SwitchEntregue
-                              isChecked={false}
-                              handleClick={() => {
-                                const selectedData = table.getFilteredSelectedRowModel().rows.map((row) => row.original);
-                                table.options.meta?.modal?.openModal("updatePrevisaoSelecao", selectedData);
-                                onSearchChange("");
-                                table.resetRowSelection();
-                              }}
-                            />
-                            <span className="cursor-default">Alterar Previsão? {table.getFilteredSelectedRowModel().rows.length} Selecionados!</span>
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                            <Badge
+                              variant={"AF"}
+                              className="gap-2 h-8 animate-in fade-in slide-in-from-left-2"
+                            >
+                              <SwitchEntregue
+                                isChecked={false}
+                                handleClick={() => {
+                                  const selectedData = table
+                                    .getFilteredSelectedRowModel()
+                                    .rows.map((row) => row.original);
+                                  table.options.meta?.modal?.openModal(
+                                    "updatePrevisaoSelecao",
+                                    selectedData,
+                                  );
+                                  onSearchChange("");
+                                  table.resetRowSelection();
+                                }}
+                              />
+                              <span className="cursor-default">
+                                Alterar Previsão?{" "}
+                                {
+                                  table.getFilteredSelectedRowModel().rows
+                                    .length
+                                }{" "}
+                                Selecionados!
+                              </span>
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                    )}
                 </div>
               </TableCell>
 
@@ -238,7 +309,10 @@ export function DataTable<TData, TValue>({
                   <Badge className="h-8" variant={"neutral"}>
                     Pedidos por página
                   </Badge>
-                  <ComboboxCustomItems value={pageSize} onSelect={onPageSizeChange} />
+                  <ComboboxCustomItems
+                    value={pageSize}
+                    onSelect={onPageSizeChange}
+                  />
                 </div>
               </TableCell>
             </TableRow>

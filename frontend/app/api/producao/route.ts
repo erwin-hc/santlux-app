@@ -12,7 +12,7 @@ export async function GET() {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_URLBACKEND;
 
-    const resp = await fetch(`${backendUrl}/producao`, {
+    const resp = await fetch(`${backendUrl}/producao/`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${session.user.accessToken}`,
@@ -29,6 +29,9 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error) {
     console.error("Erro no Route Handler:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

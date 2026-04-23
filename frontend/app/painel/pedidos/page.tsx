@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { TypePedidos, columns } from "./columns";
 import { DataTable } from "./data-table";
 import { Spinner } from "@/components/ui/spinner";
+import { ListTodo } from "lucide-react";
+import { PageTitle } from "@/components/title-page";
 
 type PedidosResponse = {
   data: TypePedidos[];
@@ -16,7 +18,7 @@ type PedidosResponse = {
 };
 
 export default function Page() {
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 25 });
   const [data, setData] = useState<TypePedidos[]>([]);
   const [metadata, setMetadata] = useState<PedidosResponse["metadata"] | null>(
     null,
@@ -99,6 +101,7 @@ export default function Page() {
 
   return (
     <>
+      <PageTitle label="PEDIDOS" icon={ListTodo} loading={loading} />
       {loading && data.length === 0 ? (
         <div className="flex items-center justify-center h-svh w-full">
           <Spinner className="size-10" />

@@ -5,6 +5,8 @@ import { RomaneioType, columns } from "./columns";
 import { DataTable } from "./data-table";
 import { Spinner } from "@/components/ui/spinner";
 import { useIsAdmin } from "@/hooks/use-admin";
+import { PageTitle } from "@/components/title-page";
+import { Truck } from "lucide-react";
 
 const Romaneios = () => {
   const [dataRomaneio, setDataRomaneio] = useState<RomaneioType[]>([]);
@@ -57,6 +59,7 @@ const Romaneios = () => {
 
   return (
     <div className="container mx-auto">
+      <PageTitle label="ROMANEIOS" icon={Truck} loading={isLoading} />
       {isLoading && dataRomaneio.length === 0 ? (
         <div className="flex items-center justify-center h-svh w-full">
           <Spinner className="size-10" />

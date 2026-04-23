@@ -1,7 +1,15 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Cable, Calendar, Eye, ListTodo, Package, Truck, User } from "lucide-react";
+import {
+  Cable,
+  Calendar,
+  Eye,
+  ListTodo,
+  Package,
+  Truck,
+  User,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
@@ -121,7 +129,7 @@ export const columns: ColumnDef<RomaneioType>[] = [
         <>
           {isAdmin ? (
             <div className="w-42 flex items-center justify-between pl-2">
-              <span className="gap-2">{os}</span>
+              <span className="mx-2">{os}</span>
               <Link
                 className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
                 href={url}
@@ -159,7 +167,11 @@ export const columns: ColumnDef<RomaneioType>[] = [
       return (
         <div className="flex items-center justify-start mr-2 gap-2">
           <span className="">{registro}</span>
-          <Badge variant={"neutral"} className="cursor-pointer h-6" onClick={() => modal?.openModal("viewPedido", registro)}>
+          <Badge
+            variant={"neutral"}
+            className="cursor-pointer h-6"
+            onClick={() => modal?.openModal("viewPedido", registro)}
+          >
             <Eye size={16} />
           </Badge>
         </div>
