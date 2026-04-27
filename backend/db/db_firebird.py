@@ -30,22 +30,14 @@ def get_db():
 
 
 def run_query(query: str, params: tuple = ()):
-
+       
     with get_db() as conn:
         cur = conn.cursor()
         cur.execute(query, params)
 
-        upper_query = query.strip().upper()
-        is_modifying = any(
-            upper_query.startswith(word) for word in ["UPDATE", "INSERT", "DELETE"]
-        )
-
-        if is_modifying:
+        if cur.description is None:
             conn.commit()
             return {"rows_affected": cur.rowcount}
 
-        if cur.description:
-            columns = [col[0].lower() for col in cur.description]
-            return [dict(zip(columns, row)) for row in cur.fetchall()]
-
-        return []
+        columns = [col[0].lower() for col in cur.description]
+        return [dict(zip(columns, row)) for row in cur.fetchall()]

@@ -5,8 +5,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session, select
 from db.db_sqlite import User, engine 
+from fastapi import Request
 
-# CONFIGURAÇÕES
 SECRET_KEY = "sua_chave_secreta_aqui"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 10080
@@ -29,32 +29,35 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_access_token(data: dict):
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+
+    to_encode.update({
+        "exp": expire,
+        "email": data.get("sub"),
+        "isAdmin": data.get("isAdmin")
+    })
+
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Putz, não consegui validar suas credenciais!",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
+def get_current_user(
+    request: Request,
+    token: str = Depends(oauth2_scheme)
+):
+    if hasattr(request.state, "user"):
+        return request.state.user
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        # Você definiu como token_data aqui:
-        token_data: str = payload.get("sub") 
-        
-        if token_data is None:
-            raise credentials_exception
-                
+
+        user = {
+            "email": payload.get("email"),
+            "isAdmin": payload.get("isAdmin")
+        }
+
+        if user["email"] is None:
+            raise HTTPException(status_code=401)
+
     except JWTError:
-        raise credentials_exception
+        raise HTTPException(status_code=401)
 
-    with Session(engine) as session:
-        statement = select(User).where(User.email == token_data)
-        user = session.exec(statement).first()
-
-        if user is None:
-            print(f"ERRO: Email '{token_data}' não encontrado no SQLite.")
-            raise credentials_exception
+    request.state.user = user
     return user

@@ -79,13 +79,6 @@ export default function Page() {
   }, [searchTerm, getPedidos]);
 
   useEffect(() => {
-    const refresh = () =>
-      getPedidos(searchTerm.length > 2 ? searchTerm : undefined);
-    window.addEventListener("refresh-pedidos", refresh);
-    return () => window.removeEventListener("refresh-pedidos", refresh);
-  }, [getPedidos, searchTerm]);
-
-  useEffect(() => {
     const refresh = () => {
       getPedidos(searchTerm.length > 2 ? searchTerm : undefined);
 

@@ -1,17 +1,16 @@
 import logging
 from datetime import datetime
-
 from auth_utils import get_current_user
 from db.db_firebird import run_query
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
+from typing import Annotated
 
 router = APIRouter(
-    prefix="/pedidos", tags=["Pedidos"], dependencies=[Depends(get_current_user)]
+    prefix="/pedidos", tags=["Pedidos"]
 )
 
-
-@router.put("/previsao/{registro}")
-async def update_previsao(
+@router.put("/previsao/{registro}", dependencies=[Depends(get_current_user)])
+def update_previsao(
     registro: int = Path(..., description="ID do registro"),
     data: str = Body(..., embed=True),
 ):
@@ -38,9 +37,8 @@ async def update_previsao(
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
 
-
-@router.put("/entrega/{notafiscal}")
-async def update_entrega(
+@router.put("/entrega/{notafiscal}", dependencies=[Depends(get_current_user)])
+def update_entrega(
     notafiscal: int = Path(..., description="ID do NFe"),
     data: str = Body(..., embed=True),
 ):
@@ -86,9 +84,8 @@ async def update_entrega(
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
 
-
-@router.put("/naoentregue/{notafiscal}")
-async def update_nao_entregue(notafiscal: int = Path(..., description="ID do NFe")):
+@router.put("/naoentregue/{notafiscal}", dependencies=[Depends(get_current_user)])
+def update_nao_entregue(notafiscal: int = Path(..., description="ID do NFe")):
     try:
         query1 = """
             UPDATE SKLLPDS PDS
@@ -126,12 +123,12 @@ async def update_nao_entregue(notafiscal: int = Path(..., description="ID do NFe
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
 
-
-@router.get("/")
-async def listar_pedidos(
-    page: int = Query(0, ge=0), limit: int = 10, search: str | None = Query(None)
+@router.get("/", dependencies=[Depends(get_current_user)])
+def listar_pedidos(
+    page: Annotated[int, Query(ge=0)] = 0, 
+    limit: int = 10, 
+    search: Annotated[str | None, Query()] = None
 ):
-
     if search is not None and search.strip() != "":
         search = search.upper()
         search_terms = [term.strip() for term in search.split(",") if term.strip()]
@@ -148,7 +145,6 @@ async def listar_pedidos(
             OR PPC.OS LIKE ?
             )
             """)
-
             params.extend([f"%{term}%", f"%{term}%", f"%{term}%", f"%{term}%"])
 
         where_clause = " OR ".join(search_conditions)
@@ -223,9 +219,8 @@ async def listar_pedidos(
         },
     }
 
-
-@router.get("/view/{registro}")
-async def view_pedido(registro: int = Path(..., description="ID do Registro")):
+@router.get("/view/{registro}", dependencies=[Depends(get_current_user)])
+def view_pedido(registro: int = Path(..., description="ID do Registro")):
     query = """
         SELECT 
             EMP.EMPRESA, 
@@ -264,9 +259,8 @@ async def view_pedido(registro: int = Path(..., description="ID do Registro")):
         "data": dados if dados is not None else [],
     }
 
-
-@router.put("/qtvolume/{pedido}")
-async def update_volume(
+@router.put("/qtvolume/{pedido}", dependencies=[Depends(get_current_user)])
+def update_volume(
     pedido: int = Path(..., description="ID do pedido"),
     volnumero: str = Body(..., embed=True),
 ):

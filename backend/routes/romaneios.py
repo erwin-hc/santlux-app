@@ -6,11 +6,10 @@ from db.db_firebird import run_query
 from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter(
-    prefix="/romaneios", tags=["Romaneio"], dependencies=[Depends(get_current_user)]
+    prefix="/romaneios", tags=["Romaneio"]
 )
 
-
-@router.get("/{data_str}")
+@router.get("/{data_str}",dependencies=[Depends(get_current_user)])
 def get_romaneios(data_str: str):
     try:
         date_obj = datetime.strptime(data_str, "%d-%m-%Y")

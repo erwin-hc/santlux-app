@@ -3,11 +3,11 @@ from db.db_firebird import run_query
 from fastapi import APIRouter, Depends
 
 router = APIRouter(
-    prefix="/producao", tags=["Producao"], dependencies=[Depends(get_current_user)]
+    prefix="/producao", tags=["Producao"]
 )
 
 
-@router.get("/")
+@router.get("/",dependencies=[Depends(get_current_user)])
 def listar_producao():
     query = """
       SELECT 

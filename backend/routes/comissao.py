@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from db.db_firebird import run_query
 from auth_utils import get_current_user
 
-router = APIRouter(prefix="/comissao", tags=["Comissao"],dependencies=[Depends(get_current_user)])
+router = APIRouter(prefix="/comissao", tags=["Comissao"])
 
-@router.get("/")
+@router.get("/",dependencies=[Depends(get_current_user)])
 def listar_comissao():
     sql = """ SELECT FIRST 10 * FROM SKLLPPC """
     
