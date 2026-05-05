@@ -95,34 +95,28 @@ export default function Page() {
   return (
     <>
       <PageTitle label="PEDIDOS" icon={ListTodo} loading={loading} />
-      {loading && data.length === 0 ? (
-        <div className="flex items-center justify-center h-svh w-full">
-          <Spinner className="size-10" />
+      <div className="container mx-auto ">
+        <div className={loading ? "opacity-50 pointer-events-none" : ""}>
+          <DataTable<TypePedidos, unknown>
+            columns={columns}
+            data={data}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            inputRef={inputRef}
+            pageCount={metadata?.total_pages || 0}
+            pageIndex={pagination.pageIndex}
+            pageSize={pagination.pageSize}
+            regCount={metadata?.total || 0}
+            onPageChange={(idx) =>
+              setPagination((prev) => ({ ...prev, pageIndex: idx }))
+            }
+            onPageSizeChange={(size) =>
+              setPagination({ pageIndex: 0, pageSize: size })
+            }
+            loading={loading}
+          />
         </div>
-      ) : (
-        <div className="container mx-auto ">
-          <div className={loading ? "opacity-50 pointer-events-none" : ""}>
-            <DataTable<TypePedidos, unknown>
-              columns={columns}
-              data={data}
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              inputRef={inputRef}
-              pageCount={metadata?.total_pages || 0}
-              pageIndex={pagination.pageIndex}
-              pageSize={pagination.pageSize}
-              regCount={metadata?.total || 0}
-              onPageChange={(idx) =>
-                setPagination((prev) => ({ ...prev, pageIndex: idx }))
-              }
-              onPageSizeChange={(size) =>
-                setPagination({ pageIndex: 0, pageSize: size })
-              }
-              loading={loading}
-            />
-          </div>
-        </div>
-      )}
+      </div>
     </>
   );
 }

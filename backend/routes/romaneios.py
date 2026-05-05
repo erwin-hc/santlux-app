@@ -1,9 +1,8 @@
 import logging
 from datetime import datetime
-
 from auth_utils import get_current_user
 from db.db_firebird import run_query
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException # type: ignore
 
 router = APIRouter(
     prefix="/romaneios", tags=["Romaneio"]

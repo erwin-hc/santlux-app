@@ -61,7 +61,7 @@ const Romaneios = () => {
     <div className="container mx-auto">
       <PageTitle label="ROMANEIOS" icon={Truck} loading={isLoading} />
       {isLoading && dataRomaneio.length === 0 ? (
-        <div className="flex items-center justify-center h-svh w-full">
+        <div className="flex items-center justify-center h-[calc(100svh-200px)] w-full ">
           <Spinner className="size-10" />
         </div>
       ) : (

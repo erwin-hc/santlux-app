@@ -59,7 +59,7 @@ const Producao = () => {
     <div className="container mx-auto">
       <PageTitle label="PRODUÇÃO" icon={CalendarCog} loading={isLoading} />
       {isLoading ? (
-        <div className="flex items-center justify-center h-svh w-full">
+        <div className="flex items-center justify-center  h-[calc(100svh-200px)] w-full">
           <Spinner className="size-10" />
         </div>
       ) : (
