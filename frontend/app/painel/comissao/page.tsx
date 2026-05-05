@@ -2,6 +2,9 @@
 import { PageTitle } from "@/components/title-page";
 import { PiggyBank } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { ChartAreaGradient } from "./chart";
+import { Card } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 
 export type ComissaoType = {
   mes: number;
@@ -46,7 +49,16 @@ const Comissao = () => {
 
   return (
     <div className="container mx-auto">
-      <PageTitle label="COMISSÃO" icon={PiggyBank} loading={true} />
+      <PageTitle label="COMISSÃO" icon={PiggyBank} loading={isLoading} />
+      {isLoading && dataComissao.length === 0 ? (
+        <div className="flex items-center justify-center h-[calc(100svh-200px)] w-full ">
+          <Spinner className="size-10" />
+        </div>
+      ) : (
+        <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
+          <ChartAreaGradient />
+        </div>
+      )}
     </div>
   );
 };
