@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react"; // 1. Importar useState
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import * as React from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, LabelList } from "recharts";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import {
   Card,
@@ -18,141 +19,144 @@ import {
 } from "@/components/ui/chart";
 
 const chartData = [
-  { month: "Janeiro", ESPECIAIS: 250, HORIZONTAIS: 30, VERTICAIS: 5 },
-  { month: "Fevereiro", ESPECIAIS: 305, HORIZONTAIS: 50, VERTICAIS: 4 },
-  { month: "Março", ESPECIAIS: 237, HORIZONTAIS: 70, VERTICAIS: 10 },
-  { month: "Abril", ESPECIAIS: 325, HORIZONTAIS: 50, VERTICAIS: 2 },
-  { month: "Maio", ESPECIAIS: 209, HORIZONTAIS: 65, VERTICAIS: 4 },
+  { mes: 1, especial: 222, horizontal: 150, vertical: 150 },
+  { mes: 2, especial: 242, horizontal: 260, vertical: 150 },
+  { mes: 3, especial: 245, horizontal: 180, vertical: 150 },
+  { mes: 4, especial: 261, horizontal: 190, vertical: 150 },
+  { mes: 5, especial: 342, horizontal: 380, vertical: 150 },
+  { mes: 6, especial: 138, horizontal: 190, vertical: 150 },
+  { mes: 7, especial: 222, horizontal: 150, vertical: 150 },
+  { mes: 8, especial: 242, horizontal: 260, vertical: 150 },
+  { mes: 9, especial: 245, horizontal: 180, vertical: 150 },
+  { mes: 10, especial: 261, horizontal: 190, vertical: 150 },
+  { mes: 11, especial: 342, horizontal: 380, vertical: 150 },
+  { mes: 0, especial: 600, horizontal: 190, vertical: 150 },
 ];
 
 const chartConfig = {
-  ESPECIAIS: { label: "Especiais", color: "var(--chart-1)" },
-  HORIZONTAIS: { label: "Horizontais", color: "var(--chart-2)" },
-  VERTICAIS: { label: "Verticais", color: "var(--chart-4)" },
+  especial: { label: "Especiais", color: "var(--chart-1)" },
+  horizontal: { label: "Horizontais", color: "var(--chart-2)" },
+  vertical: { label: "Verticais", color: "var(--chart-3)" },
 } satisfies ChartConfig;
 
-export function ChartAreaGradient() {
-  const [selectedMonth, setSelectedMonth] = useState("Março");
-  const detailData = chartData.find((d) => d.month === selectedMonth);
+const getMonthName = (monthNumber: number) => {
+  const date = new Date();
+  date.setMonth(monthNumber - 1);
+  return date.toLocaleString("pt-BR", { month: "long" });
+};
+
+export function ChartBarInteractive() {
+  const [activeMonth, setActiveMonth] = React.useState<number>(() => {
+    return new Date().getMonth() + 1;
+  });
+
+  const isMobile = useIsMobile();
+
+  const selectedData = React.useMemo(() => {
+    return chartData.find((d) => d.mes === activeMonth) || chartData[0];
+  }, [activeMonth]);
 
   return (
-    <div className="grid grid-cols-3 gap-3">
-      <Card className="col-span-2 p-3 py-6 shadow-none">
-        <CardHeader>
-          <CardDescription>Comissão Anual</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={chartConfig}>
-            <AreaChart
-              accessibilityLayer
-              data={chartData}
-              margin={{ left: 12, right: 12 }}
-              // 3. Captura o clique no gráfico
-              onClick={(state) => {
-                // Verifica se existe um rótulo ativo (mês) antes de atualizar
-                if (state && state.activeLabel) {
-                  setSelectedMonth(state.activeLabel);
-                }
-              }}
+    <Card className="py-0 mb-4">
+      <CardHeader className="pb-0! flex flex-col items-stretch border-b p-0 sm:flex-row">
+        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-4 sm:py-6">
+          <CardTitle className="uppercase text-2xl text-muted-foreground">
+            {getMonthName(selectedData.mes)}
+          </CardTitle>
+        </div>
+        <div className="flex">
+          {(["especial", "horizontal", "vertical"] as const).map((key) => (
+            <div
+              key={key}
+              className={`relative z-30 
+              flex flex-1 flex-col
+              justify-center 
+              gap-1 
+              px-6 py-4 
+              text-left 
+              border
+              border-y-0
+              border-r-0
+              border-t
+              sm:px-8 sm:py-6 sm:border-t-0              
+              `}
             >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
-              {/* 4. Hover Horizontal (Linha Vertical) */}
-              <ChartTooltip
-                cursor={{
-                  stroke: "rgba(0,0,0,0.1)",
-                  strokeWidth: 25,
-                  opacity: 0.35,
-                  cursor: "pointer",
-                }} // Ativa a linha vertical
-                content={<ChartTooltipContent indicator="dot" />}
-              />
-              <defs>
-                {Object.keys(chartConfig).map((key) => (
-                  <linearGradient
-                    key={key}
-                    id={`fill${key}`}
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="5%"
-                      stopColor={`var(--color-${key})`}
-                      stopOpacity={0.8}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor={`var(--color-${key})`}
-                      stopOpacity={0.1}
-                    />
-                  </linearGradient>
-                ))}
-              </defs>
-
-              <Area
-                dataKey="VERTICAIS"
-                type="natural"
-                fill="url(#fillVERTICAIS)"
-                stroke="var(--color-VERTICAIS)"
-                stackId="a"
-              />
-
-              <Area
-                dataKey="ESPECIAIS"
-                type="natural"
-                fill="url(#fillESPECIAIS)"
-                stroke="var(--color-ESPECIAIS)"
-                stackId="a"
-              />
-
-              <Area
-                dataKey="HORIZONTAIS"
-                type="natural"
-                fill="url(#fillHORIZONTAIS)"
-                stroke="var(--color-HORIZONTAIS)"
-                stackId="a"
-              />
-            </AreaChart>
-          </ChartContainer>
-        </CardContent>
-      </Card>
-
-      {/* 5. Gráfico Lateral Detalhado */}
-      <Card className="shadow-none p-4">
-        <CardHeader>
-          <CardTitle className="text-sm">Detalhes: {selectedMonth}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {detailData ? (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Especiais:</span>
-                <span className="font-bold">{detailData.ESPECIAIS}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Horizontais:</span>
-                <span className="font-bold">{detailData.HORIZONTAIS}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Verticais:</span>
-                <span className="font-bold">{detailData.VERTICAIS}</span>
-              </div>
+              <span className="text-xs text-muted-foreground uppercase">
+                {chartConfig[key].label}
+              </span>
+              <span className="text-lg leading-none font-bold sm:text-3xl text-center p-2">
+                {selectedData[key].toLocaleString()}
+              </span>
             </div>
-          ) : (
-            <p className="text-muted-foreground text-xs">
-              Clique no gráfico para ver detalhes
-            </p>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+          ))}
+        </div>
+      </CardHeader>
+      <CardContent className="px-2 sm:p-6 h-[calc(100svh-250px)] ">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[calc(100svh-300px)] w-full"
+        >
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            margin={{ top: 0, left: 2, right: 2 }}
+            onClick={(state: any) => {
+              if (state?.activePayload?.[0]?.payload) {
+                setActiveMonth(state.activePayload[0].payload.mes);
+              }
+            }}
+            barCategoryGap="10%"
+            barGap={0}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="mes"
+              tickLine={true}
+              axisLine={false}
+              tickMargin={5}
+              tickFormatter={(value) => getMonthName(value).substring(0, 3)}
+            />
+            <ChartTooltip
+              cursor={{ fill: "var(--muted)", opacity: 0.9 }}
+              content={
+                <ChartTooltipContent hideLabel className="w-[250px] text-lg" />
+              }
+            />
+
+            <Bar
+              dataKey="especial"
+              fill={chartConfig.especial.color}
+              radius={[4, 4, 0, 0]}
+              style={{ cursor: "pointer" }}
+              onClick={(data: any) => setActiveMonth(data.payload.mes)}
+            >
+              {/* {!isMobile && (
+                <LabelList
+                  dataKey="especial"
+                  position="top"
+                  offset={10}
+                  fontSize={12}
+                  className="fill-foreground"
+                />
+              )} */}
+            </Bar>
+            <Bar
+              dataKey="horizontal"
+              fill={chartConfig.horizontal.color}
+              radius={[4, 4, 0, 0]}
+              style={{ cursor: "pointer" }}
+              onClick={(data: any) => setActiveMonth(data.payload.mes)}
+            ></Bar>
+            <Bar
+              dataKey="vertical"
+              fill={chartConfig.vertical.color}
+              radius={[4, 4, 0, 0]}
+              style={{ cursor: "pointer" }}
+              onClick={(data: any) => setActiveMonth(data.payload.mes)}
+            ></Bar>
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   );
 }

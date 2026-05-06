@@ -2,7 +2,7 @@
 import { PageTitle } from "@/components/title-page";
 import { PiggyBank } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { ChartAreaGradient } from "./chart";
+import { ChartBarInteractive } from "./chart";
 import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -56,7 +56,7 @@ const Comissao = () => {
         </div>
       ) : (
         <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
-          <ChartAreaGradient />
+          <ChartBarInteractive />
         </div>
       )}
     </div>
