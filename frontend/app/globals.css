@@ -72,6 +72,13 @@
   --chart-3: hsl(197 37% 24%);
   --chart-4: hsl(43 74% 66%);
   --chart-5: hsl(27 87% 67%);
+
+  --chart-6: hsl(27, 96%, 61%);
+  --chart-7: hsl(158, 64%, 52%);
+  --chart-8: hsl(198, 93%, 60%);
+  --chart-9: hsl(12, 6%, 15%);
+  --chart-10: hsl(255, 92%, 76%);
+
   --sidebar: hsl(0 0% 98%);
   --sidebar-foreground: hsl(0 0% 26.1%);
   --sidebar-primary: hsl(0 0% 9%);
@@ -106,6 +113,14 @@
   --chart-3: hsl(30 80% 55%);
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
+
+  --chart-6: hsl(27, 90%, 45%);
+  --chart-7: hsl(158, 55%, 40%);
+  --chart-8: hsl(198, 80%, 45%);
+  --chart-9: hsl(12, 6%, 25%);
+
+  --chart-10: hsl(255, 70%, 50%);
+
   --sidebar: hsl(0 0% 9%);
   --sidebar-foreground: hsl(0 0% 96.1%);
   --sidebar-primary: hsl(0, 0%, 45%);
