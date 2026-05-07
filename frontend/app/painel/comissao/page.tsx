@@ -3,13 +3,19 @@ import { PageTitle } from "@/components/title-page";
 import { PiggyBank } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { ChartBarInteractive } from "./chart";
-import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 
 export type ComissaoType = {
   mes: number;
   setor_ppm: string;
   total_quant: number;
+};
+
+type ChartDataType = {
+  mes: number;
+  especial: number | null;
+  horizontal: number | null;
+  vertical: number | null;
 };
 
 const Comissao = () => {
@@ -45,8 +51,6 @@ const Comissao = () => {
     }
   }, [getComissao]);
 
-  console.log(dataComissao);
-
   return (
     <div className="container mx-auto">
       <PageTitle label="COMISSÃO" icon={PiggyBank} loading={isLoading} />
@@ -56,7 +60,9 @@ const Comissao = () => {
         </div>
       ) : (
         <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
-          <ChartBarInteractive />
+          <ChartBarInteractive
+            chartData={dataComissao as unknown as ChartDataType[]}
+          />
         </div>
       )}
     </div>

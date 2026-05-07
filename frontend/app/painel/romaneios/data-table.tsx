@@ -27,12 +27,7 @@ import { formatDate } from "@/lib/utils";
 import { DatePickerInput } from "@/components/data-picker";
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  transpConfig,
-  statusConfig,
-  StatusKey,
-  TranspKey,
-} from "@/app/painel/pedidos/columns";
+import { transpConfig, TranspKey } from "@/app/painel/pedidos/columns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
