@@ -8,7 +8,6 @@ import {
   XAxis,
   Rectangle,
   YAxis,
-  Customized,
   usePlotArea,
 } from "recharts";
 
@@ -31,7 +30,8 @@ type ChartDataType = {
 };
 
 interface ChartBarInteractiveProps {
-  chartData: ChartDataType[];
+  chartDataCurrentYear: ChartDataType[];
+  onYearChange: (ano: string) => Promise<void>;
 }
 
 const chartConfig = {
@@ -47,32 +47,53 @@ const getMonthName = (monthNumber: number) => {
 };
 
 export function ChartBarInteractive<charDataType>({
-  chartData,
+  chartDataCurrentYear,
+  onYearChange,
 }: ChartBarInteractiveProps) {
+  const [selectedYear, setSelectedYear] = React.useState<Date | undefined>(
+    new Date(),
+  );
   const [activeMonth, setActiveMonth] = React.useState<number>(() => {
     return new Date().getMonth() + 1;
   });
 
   const isMobile = useIsMobile();
-  const [selectedYear, setSelectedYear] = React.useState<Date | undefined>(
-    new Date(),
-  );
+
+  const handleDateChange = async (newDate: Date | undefined) => {
+    if (newDate) {
+      setSelectedYear(newDate);
+      await onYearChange(String(newDate.getFullYear()));
+    }
+  };
 
   const selectedData = React.useMemo(() => {
-    return chartData.find((d) => d.mes === activeMonth) || chartData[0];
-  }, [activeMonth]);
+    const found = chartDataCurrentYear.find((d) => d.mes === activeMonth);
+    if (found) return found;
 
-  const fullData = Array.from({ length: 12 }, (_, i) => {
-    const found = chartData.find((d) => d.mes === i + 1);
-    return (
-      found || {
-        mes: i + 1,
-        especial: null,
-        horizontal: null,
-        vertical: null,
-      }
-    );
-  });
+    if (chartDataCurrentYear.length > 0) return chartDataCurrentYear[0];
+
+    return {
+      mes: activeMonth,
+      especial: 0,
+      horizontal: 0,
+      vertical: 0,
+    };
+  }, [activeMonth, chartDataCurrentYear]);
+
+  const fullData = React.useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => {
+      const found = chartDataCurrentYear.find((d) => d.mes === i + 1);
+
+      return (
+        found || {
+          mes: i + 1,
+          especial: null,
+          horizontal: null,
+          vertical: null,
+        }
+      );
+    });
+  }, [chartDataCurrentYear]);
 
   const CustomCursor = (props: any) => {
     const payload = props.payload?.[0]?.payload;
@@ -85,10 +106,6 @@ export function ChartBarInteractive<charDataType>({
     if (isEmpty) return null;
 
     return <Rectangle {...props} fill="var(--muted)" opacity={1} />;
-  };
-
-  const handleDateChange = (newDate: Date | undefined) => {
-    setSelectedYear(newDate);
   };
 
   function ClickOverlay({
@@ -133,26 +150,47 @@ export function ChartBarInteractive<charDataType>({
     );
   }
 
+  React.useEffect(() => {
+    if (chartDataCurrentYear && chartDataCurrentYear.length > 0) {
+      const mesesComDados = chartDataCurrentYear.filter(
+        (d) =>
+          (d.especial ?? 0) > 0 ||
+          (d.horizontal ?? 0) > 0 ||
+          (d.vertical ?? 0) > 0,
+      );
+
+      if (mesesComDados.length > 0) {
+        const ultimoMesReal = Math.max(...mesesComDados.map((d) => d.mes));
+        setActiveMonth(ultimoMesReal);
+      } else {
+        setActiveMonth(chartDataCurrentYear[0].mes);
+      }
+    }
+  }, [chartDataCurrentYear]);
+
   return (
     <Card className="py-0 mb-4">
       <CardHeader className="pb-0! flex flex-col items-stretch border-b p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 p-4">
-          <CardTitle className="uppercase text-2xl">
-            {selectedData.mes && getMonthName(selectedData.mes)}
-          </CardTitle>
-          <CardTitle>
-            <DatePickerInput
-              date={selectedYear}
-              onDateChange={handleDateChange}
-            />
-          </CardTitle>
+          <div className="flex items-center justify-start gap-4">
+            <CardTitle>
+              <DatePickerInput
+                date={selectedYear}
+                onDateChange={handleDateChange}
+                
+              />
+            </CardTitle>
+            <CardTitle className="uppercase text-2xl">
+              {selectedData.mes && getMonthName(selectedData.mes)}
+            </CardTitle>
+          </div>
         </div>
         <div className="flex justify-center">
           {(["especial", "horizontal", "vertical"] as const).map((key) => (
             <div key={key} className={`relative z-30 py-4 px-2`}>
               <div
                 style={{
-                  backgroundColor: `hsl(from ${chartConfig[key].color} h s l / 0.15)`,
+                  backgroundColor: `hsl(from ${chartConfig[key].color} h s l / 0.20)`,
                   borderColor: `${chartConfig[key].color}`,
                 }}
                 className="flex flex-col 
@@ -190,6 +228,7 @@ export function ChartBarInteractive<charDataType>({
             className="h-[calc(100svh-300px)] w-full"
           >
             <BarChart
+              key={selectedYear?.getFullYear()}
               accessibilityLayer
               data={fullData}
               margin={{ top: 0, left: 0, right: 0 }}

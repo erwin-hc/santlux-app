@@ -1,12 +1,16 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { anoStr: string } },
+  { params }: { params: Promise<{ anoStr: string }> },
 ) {
-  const { anoStr } = params;
+  const resolvedParams = await params;
+  const anoVindoDaUrl = resolvedParams.anoStr;
 
   const session = await getServerSession(authOptions);
 
@@ -18,11 +22,13 @@ export async function GET(
     const backendUrl = process.env.NEXT_PUBLIC_URLBACKEND;
 
     const anoValido =
-      anoStr && anoStr !== "undefined"
-        ? anoStr
+      anoVindoDaUrl && anoVindoDaUrl !== "undefined"
+        ? anoVindoDaUrl
         : new Date().getFullYear().toString();
 
     const url = `${backendUrl}/comissao/${anoValido}`;
+
+    console.log("ANO DEFINITIVO PARA O BACKEND:", anoValido);
 
     const resp = await fetch(url, {
       method: "GET",
@@ -35,29 +41,17 @@ export async function GET(
 
     if (!resp.ok) {
       const errorData = await resp.json();
-
       return NextResponse.json(
-        {
-          error: errorData.detail || "Erro ao buscar comissão",
-        },
+        { error: errorData.detail || "Erro" },
         { status: resp.status },
       );
     }
 
     const data = await resp.json();
 
-    return NextResponse.json({
-      data,
-    });
+    return NextResponse.json({ data });
   } catch (error) {
     console.error("Erro no Route Handler:", error);
-
-    return NextResponse.json(
-      {
-        status: "erro",
-        message: "Falha na comunicação com o servidor",
-      },
-      { status: 500 },
-    );
+    return NextResponse.json({ message: "Falha no servidor" }, { status: 500 });
   }
 }
