@@ -53,7 +53,11 @@ const Comissao = () => {
             <Spinner className="size-10" />
           </div>
         ) : (
-          <div className={isLoading ? "opacity-50 pointer-events-none " : ""}>
+          <div
+            className={
+              isLoading ? "opacity-50 pointer-events-none animate-pulse" : ""
+            }
+          >
             <ChartBarInteractive
               chartDataCurrentYear={chartDataCurrentYear}
               onYearChange={fetchComissao}

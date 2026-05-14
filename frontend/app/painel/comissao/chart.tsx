@@ -9,9 +9,10 @@ import {
   Rectangle,
   YAxis,
   usePlotArea,
+  ReferenceArea,
 } from "recharts";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
@@ -21,6 +22,8 @@ import {
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { DatePickerInput } from "@/components/data-picker-year";
+
+import { Sparkles, AlignEndVertical, AlignStartHorizontal } from "lucide-react";
 
 type ChartDataType = {
   mes: number;
@@ -35,7 +38,7 @@ interface ChartBarInteractiveProps {
 }
 
 const chartConfig = {
-  especial: { label: "Especiais", color: "var(--chart-3)" },
+  especial: { label: "Especiais", color: "var(--chart-12)" },
   horizontal: { label: "Horizontais", color: "var(--chart-13)" },
   vertical: { label: "Verticais", color: "var(--chart-14)" },
 } satisfies ChartConfig;
@@ -105,7 +108,7 @@ export function ChartBarInteractive<charDataType>({
 
     if (isEmpty) return null;
 
-    return <Rectangle {...props} fill="var(--muted)" opacity={1} />;
+    return <Rectangle {...props} fill="var(--muted)" opacity={0.75} />;
   };
 
   function ClickOverlay({
@@ -169,60 +172,124 @@ export function ChartBarInteractive<charDataType>({
   }, [chartDataCurrentYear]);
 
   return (
-    <Card className="py-0 mb-4">
-      <CardHeader className="pb-0! flex flex-col items-stretch border-b p-0 sm:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-1 p-4">
-          <div className="flex items-center justify-start gap-4">
-            <CardTitle>
-              <DatePickerInput
-                date={selectedYear}
-                onDateChange={handleDateChange}
-                
-              />
-            </CardTitle>
-            <CardTitle className="uppercase text-2xl">
-              {selectedData.mes && getMonthName(selectedData.mes)}
-            </CardTitle>
-          </div>
-        </div>
-        <div className="flex justify-center">
-          {(["especial", "horizontal", "vertical"] as const).map((key) => (
-            <div key={key} className={`relative z-30 py-4 px-2`}>
-              <div
-                style={{
-                  backgroundColor: `hsl(from ${chartConfig[key].color} h s l / 0.20)`,
-                  borderColor: `${chartConfig[key].color}`,
-                }}
-                className="flex flex-col 
-                         justify-center items-start 
-                         p-2
-                         border-l-6 border rounded-md 
-                         w-28
-                         "
-              >
-                <span
-                  className="text-xs text-muted-foreground uppercase font-bold"
+    <Card className="p-4">
+      <div className="flex flex-col gap-2 w-full xl:w-auto xl:flex-row xl:justify-between">
+        <div className="flex-col flex gap-2 pb-4 sm:flex-row">
+          {(
+            [
+              {
+                key: "especial",
+                icon: Sparkles,
+              },
+              {
+                key: "horizontal",
+                icon: AlignEndVertical,
+              },
+              {
+                key: "vertical",
+                icon: AlignStartHorizontal,
+              },
+            ] as const
+          ).map(({ key, icon: Icon }) => (
+            <div
+              key={key}
+              style={{
+                backgroundColor: `hsl(from ${chartConfig[key].color} h s l / 0.10)`,
+                borderColor: `hsl(from ${chartConfig[key].color} h s l / 0.15)`,
+              }}
+              className="
+                      group
+                      relative    
+                      rounded-lg
+                      border
+                      p-2
+                      shadow-sm
+                      backdrop-blur-sm
+  w-full
+  xl:w-[300px]
+                     
+                    "
+            >
+              <div className="relative flex items-center gap-4">
+                <div
+                  className="
+                            flex
+                            h-12
+                            w-12
+                            shrink-0
+                            items-center
+                            justify-center
+                            rounded-full
+                            shadow-sm
+                          "
                   style={{
+                    backgroundColor: `hsl(from ${chartConfig[key].color} h s l / 0.12)`,
                     color: `${chartConfig[key].color}`,
                   }}
                 >
-                  {chartConfig[key].label}
-                </span>
-                <span
-                  className="fill-foreground text-4xl font-bold"
-                  style={{
-                    color: `${chartConfig[key].color}`,
-                  }}
-                >
-                  {selectedData[key] && selectedData[key].toLocaleString()}
-                </span>
+                  <Icon className="h-6 w-6 stroke-[2.2]" />
+                </div>
+
+                {/* text */}
+                <div className="flex flex-col">
+                  <span
+                    className="
+                        text-xs
+                        uppercase                        
+                        font-bold
+                      "
+                    style={{
+                      color: `${chartConfig[key].color}`,
+                    }}
+                  >
+                    <span>{chartConfig[key].label}</span>
+                  </span>
+
+                  <div
+                    className="
+                            text-5xl
+                            font-black
+                            leading-none
+                            tracking-tight
+                            mt-1
+                          "
+                    style={{
+                      color: `${chartConfig[key].color}`,
+                    }}
+                  >
+                    {selectedData[key]?.toLocaleString() ?? 0}
+                  </div>
+                  <div
+                    className="text-[12px] pt-1"
+                    style={{
+                      color: `${chartConfig[key].color}`,
+                    }}
+                  >
+                    <span className="capitalize">
+                      {getMonthName(activeMonth)}/
+                    </span>
+                    <span>{selectedYear?.getFullYear()}</span>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
         </div>
-      </CardHeader>
-      <CardContent className="px-2 sm:p-6 h-[calc(100svh-250px)] ">
+
         <div>
+          <CardTitle className="flex gap-4 items-center">
+            <DatePickerInput
+              month={activeMonth && getMonthName(activeMonth)}
+              date={selectedYear}
+              onDateChange={handleDateChange}
+            />
+          </CardTitle>
+        </div>
+      </div>
+
+      {/* barChart*/}
+      <CardContent className="py-0 px-2 sm:p-6 h-[calc(100svh-280px)] ">
+        <div className="">
           <ChartContainer
             config={chartConfig}
             className="h-[calc(100svh-300px)] w-full"
@@ -232,10 +299,17 @@ export function ChartBarInteractive<charDataType>({
               accessibilityLayer
               data={fullData}
               margin={{ top: 0, left: 0, right: 0 }}
-              barCategoryGap="10%"
-              barGap={0}
+              barGap={-8}
               style={{ cursor: "pointer" }}
             >
+              <ReferenceArea
+                x1={activeMonth}
+                x2={activeMonth}
+                fill="var(--muted)"
+                fillOpacity={1}
+                ifOverflow="hidden"
+              />
+
               <CartesianGrid vertical={false} />
               <XAxis
                 dataKey="mes"
@@ -250,7 +324,7 @@ export function ChartBarInteractive<charDataType>({
                 <YAxis
                   tickLine={false}
                   axisLine={true}
-                  tickMargin={8}
+                  tickMargin={4}
                   tickCount={6}
                 />
               )}
@@ -288,28 +362,31 @@ export function ChartBarInteractive<charDataType>({
               <Bar
                 dataKey="especial"
                 fill={chartConfig.especial.color}
-                radius={[4, 4, 0, 0]}
+                radius={[8, 8, 0, 0]}
                 onClick={(data: any) => {
                   setActiveMonth(data.payload.mes);
                 }}
+                barSize={28}
               ></Bar>
 
               <Bar
                 dataKey="horizontal"
                 fill={chartConfig.horizontal.color}
-                radius={[4, 4, 0, 0]}
+                radius={[8, 8, 0, 0]}
                 onClick={(data: any) => {
                   setActiveMonth(data.payload.mes);
                 }}
+                barSize={28}
               ></Bar>
 
               <Bar
                 dataKey="vertical"
                 fill={chartConfig.vertical.color}
-                radius={[4, 4, 0, 0]}
+                radius={[8, 8, 0, 0]}
                 onClick={(data: any) => {
                   setActiveMonth(data.payload.mes);
                 }}
+                barSize={28}
               ></Bar>
 
               <ClickOverlay

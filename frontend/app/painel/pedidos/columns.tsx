@@ -1,6 +1,15 @@
 "use client";
 
-import { Cable, CalendarCog, Eye, ListTodo, Package, Settings2, Truck, User } from "lucide-react";
+import {
+  Cable,
+  CalendarCog,
+  Eye,
+  ListTodo,
+  Package,
+  Settings2,
+  Truck,
+  User,
+} from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
@@ -75,8 +84,13 @@ export const columns: ColumnDef<TypePedidos>[] = [
       return (
         <>
           <Checkbox
-            checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
             aria-label="Select all"
           />
         </>
@@ -94,7 +108,11 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       return (
         <>
-          <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
         </>
       );
     },
@@ -115,7 +133,9 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const status = row.getValue("status");
       const statusKey = String(status) as StatusKey;
       const currentStatus = statusConfig[statusKey];
-      return <Badge variant={currentStatus.variant}>{currentStatus.label}</Badge>;
+      return (
+        <Badge variant={currentStatus.variant}>{currentStatus.label}</Badge>
+      );
     },
   },
 
@@ -123,7 +143,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "con_nome",
     header: () => {
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ">
           <User size={16} />
           <span>NOME</span>
         </div>
@@ -135,7 +155,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       if (!nome) {
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ">
             <span>{empresa}</span>
           </div>
         );
@@ -301,7 +321,11 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       if (!transp) return;
 
-      return <Badge variant={currentStatus?.variant ?? "neutral"}>{currentStatus?.label ?? "Não Informado"}</Badge>;
+      return (
+        <Badge variant={currentStatus?.variant ?? "neutral"}>
+          {currentStatus?.label ?? "Não Informado"}
+        </Badge>
+      );
     },
   },
   {
@@ -366,7 +390,11 @@ export const columns: ColumnDef<TypePedidos>[] = [
       if (!nota) return;
 
       if (!isAdmin) {
-        return data ? formatDate(data) : <Settings2 strokeWidth={1.5} size={16} />;
+        return data ? (
+          formatDate(data)
+        ) : (
+          <Settings2 strokeWidth={1.5} size={16} />
+        );
       }
 
       const entregue = () => {
@@ -375,11 +403,14 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       const naoentregue = async () => {
         try {
-          const response = await fetch(`/api/pedidos/naoentregue/${row.getValue("nnota")}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ data: new Date() }),
-          });
+          const response = await fetch(
+            `/api/pedidos/naoentregue/${row.getValue("nnota")}`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ data: new Date() }),
+            },
+          );
 
           if (response.ok) {
             window.dispatchEvent(new Event("refresh-pedidos"));
@@ -390,9 +421,17 @@ export const columns: ColumnDef<TypePedidos>[] = [
       };
 
       return data ? (
-        <SwitchEntregue handleClick={naoentregue} label={formatDate(data)} isChecked={true} />
+        <SwitchEntregue
+          handleClick={naoentregue}
+          label={formatDate(data)}
+          isChecked={true}
+        />
       ) : (
-        <SwitchEntregue handleClick={entregue} isChecked={false} icon={Settings2} />
+        <SwitchEntregue
+          handleClick={entregue}
+          isChecked={false}
+          icon={Settings2}
+        />
       );
     },
   },

@@ -28,8 +28,6 @@ export async function GET(
 
     const url = `${backendUrl}/comissao/${anoValido}`;
 
-    console.log("ANO DEFINITIVO PARA O BACKEND:", anoValido);
-
     const resp = await fetch(url, {
       method: "GET",
       headers: {

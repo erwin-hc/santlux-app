@@ -1,9 +1,21 @@
 "use client";
 // import * as React from "react";
-import { Truck, CalendarCog, PiggyBank, ListTodo, LayoutDashboard, User } from "lucide-react";
+import {
+  Truck,
+  CalendarCog,
+  PiggyBank,
+  ListTodo,
+  LayoutDashboard,
+  User,
+} from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+} from "@/components/ui/sidebar";
 import { Logo } from "./logo";
 import { useSession } from "next-auth/react";
 import { useIsAdmin } from "@/hooks/use-admin";
@@ -79,8 +91,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </div>
             )}
           </div>
-        ) : isAdmin ? (
-          <NavAdmin items={data.navAdm} />
         ) : null}
       </SidebarContent>
 

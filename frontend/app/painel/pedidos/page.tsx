@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { TypePedidos, columns } from "./columns";
 import { DataTable } from "./data-table";
-import { Spinner } from "@/components/ui/spinner";
 import { ListTodo } from "lucide-react";
 import { PageTitle } from "@/components/title-page";
 
@@ -43,7 +42,6 @@ export default function Page() {
         if (response.ok) {
           setData(result.data || []);
           setMetadata(result.metadata || null);
-          console.log(result.data);
         }
       } catch (error) {
         console.error("Fetch error:", error);

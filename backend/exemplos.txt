@@ -89,7 +89,7 @@ def get_pedido_por_registro(registro):
     query = "SELECT * FROM SKLLPPC WHERE REGISTRO = ?"
     return executar_query(query, (registro))
 
-def get_filtered_pedidos(search, orderby="PPC.REGISTRO", ascdesc="DESC"):
+def get_pedidos(search, orderby="PPC.REGISTRO", ascdesc="DESC"):
     search = search.replace(".", ",").upper()
     search_terms = [term.strip() for term in search.split(",") if term.strip()]
     search_conditions = []

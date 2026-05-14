@@ -18,6 +18,7 @@ import { Button } from "./ui/button";
 interface DatePickerInputProps {
   date: Date | undefined;
   onDateChange?: (date: Date | undefined) => void;
+  month: number | string;
 }
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -69,19 +70,6 @@ function YearPicker({
         </button>
       </div>
 
-      {/* <div className="grid grid-cols-3 gap-2">
-        {years.map((y) => (
-          <button
-            key={y}
-            onClick={() => onSelect(y)}
-            className="py-2 rounded hover:bg-slate-100 text-sm"
-            aria-label={`Select year ${y}`}
-          >
-            {y}
-          </button>
-        ))}
-      </div> */}
-
       <div className="grid grid-cols-3 gap-2">
         {years.map((y) => {
           const isOutOfRange = y < MIN_YEAR || y > CURRENT_YEAR;
@@ -106,7 +94,11 @@ function YearPicker({
   );
 }
 
-export function DatePickerInput({ date, onDateChange }: DatePickerInputProps) {
+export function DatePickerInput({
+  date,
+  onDateChange,
+  month,
+}: DatePickerInputProps) {
   const [open, setOpen] = React.useState(false);
   const [focusedYear, setFocusedYear] = React.useState<number>(
     date ? date.getFullYear() : new Date().getFullYear(),
@@ -119,11 +111,12 @@ export function DatePickerInput({ date, onDateChange }: DatePickerInputProps) {
   const value = date ? String(date.getFullYear()) : "";
 
   return (
-    <Field className="w-24">
+    <Field className="w-[175px]">
       <InputGroup>
         <InputGroupInput
+          className="capitalize font-medium"
           id="date-year"
-          value={value}
+          value={month + "/" + value}
           readOnly
           placeholder="AAAA"
           onKeyDown={(e) => {
