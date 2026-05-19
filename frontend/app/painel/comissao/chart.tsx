@@ -25,6 +25,7 @@ import { DatePickerInput } from "@/components/data-picker-year";
 import { Spinner } from "@/components/ui/spinner";
 
 import { Sparkles, AlignEndVertical, AlignStartHorizontal } from "lucide-react";
+import { getYear } from "date-fns";
 
 type ChartDataType = {
   mes: number;
@@ -296,9 +297,13 @@ export function ChartBarInteractive({
                         hideLabel={false}
                         labelFormatter={(value, payload) => {
                           const monthNumber = payload?.[0]?.payload?.mes;
-                          return getMonthName(monthNumber || value);
+                          return (
+                            getMonthName(monthNumber || value) +
+                            "/" +
+                            selectedYear?.getFullYear()
+                          );
                         }}
-                        className="w-62.5 text-lg uppercase"
+                        className="w-62.5 text-[14px] uppercase "
                       />
                     );
                   }}
