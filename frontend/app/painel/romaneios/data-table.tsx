@@ -91,10 +91,14 @@ export function DataTable<
     <Card className="px-1 border-none shadow-none">
       <CardHeader>
         <div className="border-b pb-4 flex items-center justify-between w-full">
-          <div className="flex items-center gap-2 flex-col sm:flex-row">
+          <div className="flex items-center gap-4 flex-col sm:flex-row">
             <CardTitle>{formatDate(String(date))}</CardTitle>
             {!loading && (
-              <CardDescription>{data.length} Pedido(s)</CardDescription>
+              <CardDescription>
+                <Badge variant={"neutral"} className="text-sm ">
+                  {data.length} Pedido(s)
+                </Badge>
+              </CardDescription>
             )}
           </div>
           <DatePickerInput date={date} onDateChange={onDateChange} />

@@ -1,14 +1,42 @@
 import logging
 from datetime import datetime
-from auth_utils import get_current_user
-from db.db_firebird import run_query
-from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query # type: ignore
 from typing import Annotated
 
+from auth_utils import get_current_user
+from db.db_firebird import get_db, run_query
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query  # type: ignore
 
-router = APIRouter(
-    prefix="/pedidos", tags=["Pedidos"]
-)
+SQL_LISTAGEM = """
+SELECT FIRST ? SKIP ?
+    PPC.STATUS, PPC.DATA, PPC.CON_NOME, PPC.REGISTRO,
+    PPC.OS, PPC.DTENTREGA AS PREVISAO,
+    PPC.TRANSPORTADORA,
+    PDS.NNOTA,
+    PPC.ENTDATA,
+    PDS.VOLNUMERO,
+    PDS.PEDIDO,
+    EMP.EMPRESA
+FROM SKLLPPC PPC
+    LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
+    LEFT JOIN SKLLEMP EMP ON PPC.SIGLA = EMP.SIGLA
+WHERE PPC.OS STARTING WITH '20000'
+ORDER BY PPC.REGISTRO DESC
+"""
+
+
+def listar_pedidos_paginado(limit: int, skip: int):
+    with get_db() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM SKLLPPC WHERE OS STARTING WITH '20000'")
+        total = cur.fetchone()[0]
+        cur.execute(SQL_LISTAGEM, (limit, skip))
+        columns = [col[0].lower() for col in cur.description]
+        dados = [dict(zip(columns, row)) for row in cur.fetchall()]
+    return total, dados
+
+
+router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
+
 
 @router.put("/previsao/{registro}", dependencies=[Depends(get_current_user)])
 def update_previsao(
@@ -37,6 +65,7 @@ def update_previsao(
     except Exception as e:
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
+
 
 @router.put("/entrega/{notafiscal}", dependencies=[Depends(get_current_user)])
 def update_entrega(
@@ -85,6 +114,7 @@ def update_entrega(
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
 
+
 @router.get("/view/{registro}", dependencies=[Depends(get_current_user)])
 def view_pedido(registro: int = Path(..., description="ID do Registro")):
     query = """
@@ -125,6 +155,7 @@ def view_pedido(registro: int = Path(..., description="ID do Registro")):
         "data": dados if dados is not None else [],
     }
 
+
 @router.put("/qtvolume/{pedido}", dependencies=[Depends(get_current_user)])
 def update_volume(
     pedido: int = Path(..., description="ID do pedido"),
@@ -152,6 +183,7 @@ def update_volume(
     except Exception as e:
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
+
 
 @router.put("/naoentregue/{notafiscal}", dependencies=[Depends(get_current_user)])
 def update_nao_entregue(notafiscal: int = Path(..., description="ID do NFe")):
@@ -192,13 +224,13 @@ def update_nao_entregue(notafiscal: int = Path(..., description="ID do NFe")):
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
 
+
 @router.get("/", dependencies=[Depends(get_current_user)])
 def listar_pedidos(
-    page: Annotated[int, Query(ge=0)] = 0, 
-    limit: int = 10, 
-    search: Annotated[str | None, Query()] = None
+    page: Annotated[int, Query(ge=0)] = 0,
+    limit: int = 10,
+    search: Annotated[str | None, Query()] = None,
 ):
-
 
     if search is not None and search.strip() != "":
         search = search.upper()
@@ -213,7 +245,7 @@ def listar_pedidos(
             if term.isdigit():
                 conditions.append("PPC.REGISTRO = ?")
                 params.append(term)
-                
+
                 conditions.append("PDS.NNOTA = ?")
                 params.append(term)
 
@@ -226,15 +258,11 @@ def listar_pedidos(
 
             search_conditions.append(f"({' OR '.join(conditions)})")
 
-
-            print(params)
-            print(search_conditions)
-
         where_clause = " OR ".join(search_conditions)
 
         status_filter = ""
         if len(search_terms) > 1:
-            status_filter = " AND PPC.STATUS NOT LIKE 'E'"
+            status_filter = " AND PPC.STATUS NOT LIKE 'E' AND PPC.REGISTRO > 70000"
 
         sql = f"""
         SELECT
@@ -245,7 +273,7 @@ def listar_pedidos(
             PDS.PEDIDO,
             PDS.VOLNUMERO,
             PPC.ENTDATA,
-            EMP.EMPRESA 
+            EMP.EMPRESA
         FROM SKLLPPC PPC
             LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
             LEFT JOIN SKLLEMP EMP ON PPC.SIGLA = EMP.SIGLA
@@ -267,12 +295,8 @@ def listar_pedidos(
             },
         }
 
-    
     skip = page * limit
-
-    total = run_query(
-        "SELECT COUNT(*) AS total FROM SKLLPPC WHERE OS STARTING WITH '20000'"
-    )[0]["total"]
+    total, dados = listar_pedidos_paginado(limit, skip)
 
     sql = """
     SELECT FIRST ? SKIP ?

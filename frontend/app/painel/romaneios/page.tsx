@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState, useCallback } from "react";
 import { RomaneioType, columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -8,34 +7,32 @@ import { useIsAdmin } from "@/hooks/use-admin";
 import { PageTitle } from "@/components/title-page";
 import { Truck } from "lucide-react";
 
+const formatForApi = (date: Date) =>
+  date.toLocaleDateString("pt-BR").replaceAll("/", "-");
+
 const Romaneios = () => {
   const [dataRomaneio, setDataRomaneio] = useState<RomaneioType[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     new Date(),
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const isAdmin = useIsAdmin();
-
-  const formatForApi = (date: Date) => {
-    return date.toLocaleDateString("pt-BR").replaceAll("/", "-");
-  };
 
   const getRomaneio = useCallback(async (dateString: string) => {
     setIsLoading(true);
+    setError(null);
     try {
-      const request = await fetch(`/api/romaneios/${dateString}`, {
-        method: "GET",
-      });
-
+      const request = await fetch(`/api/romaneios/${dateString}`);
       if (!request.ok) {
         setDataRomaneio([]);
         return;
       }
-
       const resp = await request.json();
       setDataRomaneio(Array.isArray(resp.data) ? resp.data : []);
     } catch (error) {
       console.error("Erro ao buscar romaneios:", error);
+      setError("Erro ao carregar romaneios.");
       setDataRomaneio([]);
     } finally {
       setIsLoading(false);
@@ -44,25 +41,31 @@ const Romaneios = () => {
 
   const handleDateChange = (newDate: Date | undefined) => {
     setSelectedDate(newDate);
-    if (newDate) {
-      const formatted = newDate
-        .toLocaleDateString("pt-BR")
-        .replaceAll("/", "-");
-      getRomaneio(formatted);
-    }
+    if (newDate) getRomaneio(formatForApi(newDate));
   };
 
   useEffect(() => {
-    const hojeFormatado = formatForApi(new Date());
-    getRomaneio(hojeFormatado);
+    getRomaneio(formatForApi(new Date()));
   }, [getRomaneio]);
 
   return (
     <div className="container mx-auto">
       <PageTitle label="ROMANEIOS" icon={Truck} loading={isLoading} />
       {isLoading && dataRomaneio.length === 0 ? (
-        <div className="flex items-center justify-center h-[calc(100svh-200px)] w-full ">
+        <div className="flex items-center justify-center h-[calc(100svh-200px)] w-full">
           <Spinner className="size-10" />
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center h-[calc(100svh-200px)] gap-4">
+          <p className="text-red-500">{error}</p>
+          <button
+            onClick={() =>
+              selectedDate && getRomaneio(formatForApi(selectedDate))
+            }
+            className="px-4 py-2 text-sm rounded-md border hover:bg-muted transition-colors"
+          >
+            Tentar novamente
+          </button>
         </div>
       ) : (
         <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
