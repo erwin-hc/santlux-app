@@ -60,6 +60,7 @@ interface PedidoData {
   registro?: number;
   nnota?: number;
   empresa?: string;
+  pedido?: string;
 }
 
 export function ModalUpdateSelecionadosEntrega() {
@@ -95,7 +96,7 @@ export function ModalUpdateSelecionadosEntrega() {
 
     try {
       for (const item of selectedItems) {
-        const response = await fetch(`/api/pedidos/entrega/${item.nnota}`, {
+        const response = await fetch(`/api/pedidos/entrega/${item.pedido}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ data: dataFormatada }),
@@ -105,20 +106,6 @@ export function ModalUpdateSelecionadosEntrega() {
           setProcessedIds((prev) => [...prev, item.registro!]);
         }
       }
-
-      // await Promise.all(
-      //   selectedItems.map(async (item) => {
-      //     const response = await fetch(`/api/pedidos/entrega/${item.nnota}`, {
-      //       method: "PUT",
-      //       headers: { "Content-Type": "application/json" },
-      //       body: JSON.stringify({ data: dataFormatada }),
-      //     });
-
-      //     if (response.ok) {
-      //       setProcessedIds((prev) => [...prev, item.registro!]);
-      //     }
-      //   }),
-      // );
 
       window.dispatchEvent(new Event("refresh-pedidos"));
       addMessage("success", `${quantidade} Pedidos atualizados!`);

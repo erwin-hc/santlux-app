@@ -67,9 +67,9 @@ def update_previsao(
         raise HTTPException(status_code=500, detail="Erro interno no banco")
 
 
-@router.put("/entrega/{notafiscal}", dependencies=[Depends(get_current_user)])
+@router.put("/entrega/{pedido}", dependencies=[Depends(get_current_user)])
 def update_entrega(
-    notafiscal: int = Path(..., description="ID do NFe"),
+    pedido: int = Path(..., description="ID do Pedido"),
     data: str = Body(..., embed=True),
 ):
     try:
@@ -80,31 +80,27 @@ def update_entrega(
             UPDATE SKLLPDS PDS
             SET PDS.ENTREGUE = 'ENTREGUE', 
                 PDS.DTENTREGA = ?
-            WHERE PDS.NNOTA = ?
+            WHERE PDS.PEDIDO = ?
         """
 
         query2 = """
             UPDATE SKLLPPC PPC
             SET PPC.STATUS = 'E',
                 PPC.ENTDATA = ? 
-            WHERE PPC.PEDIDO IN (
-                SELECT PDS.PEDIDO 
-                FROM SKLLPDS PDS
-                WHERE PDS.NNOTA = ?
-            )
+            WHERE PPC.PEDIDO = ?
         """
 
-        res1 = run_query(query1, (firebird_date, notafiscal))
+        res1 = run_query(query1, (firebird_date, pedido))
         if res1.get("rows_affected") == 0:
-            raise HTTPException(status_code=404, detail="Registro não encontrado")
+            raise HTTPException(status_code=404, detail="Pedido não encontrado")
 
-        res2 = run_query(query2, (firebird_date, notafiscal))
+        res2 = run_query(query2, (firebird_date, pedido))
         if res2.get("rows_affected") == 0:
-            raise HTTPException(status_code=404, detail="Registro não encontrado")
+            raise HTTPException(status_code=404, detail="Pedido não encontrado")
 
         return {
             "status": "sucesso",
-            "notafiscal": notafiscal,
+            "pedido": pedido,
             "nova_data": firebird_date,
         }
 
@@ -185,38 +181,34 @@ def update_volume(
         raise HTTPException(status_code=500, detail="Erro interno no banco")
 
 
-@router.put("/naoentregue/{notafiscal}", dependencies=[Depends(get_current_user)])
-def update_nao_entregue(notafiscal: int = Path(..., description="ID do NFe")):
+@router.put("/naoentregue/{pedido}", dependencies=[Depends(get_current_user)])
+def update_nao_entregue(pedido: int = Path(..., description="ID do Pedido")):
     try:
         query1 = """
             UPDATE SKLLPDS PDS
             SET PDS.ENTREGUE = 'N', 
                 PDS.DTENTREGA = NULL
-            WHERE PDS.NNOTA = ?
+            WHERE PDS.PEDIDO = ?
         """
 
         query2 = """
             UPDATE SKLLPPC PPC
             SET PPC.STATUS = 'F',
                 PPC.ENTDATA = NULL 
-            WHERE PPC.PEDIDO IN (
-                SELECT PDS.PEDIDO 
-                FROM SKLLPDS PDS
-                WHERE PDS.NNOTA = ?
-            )
+            WHERE PPC.PEDIDO = ?
         """
 
-        res1 = run_query(query1, (notafiscal,))
+        res1 = run_query(query1, (pedido,))
         if res1.get("rows_affected") == 0:
-            raise HTTPException(status_code=404, detail="Registro não encontrado")
+            raise HTTPException(status_code=404, detail="Pedido não encontrado")
 
-        res2 = run_query(query2, (notafiscal,))
+        res2 = run_query(query2, (pedido,))
         if res2.get("rows_affected") == 0:
-            raise HTTPException(status_code=404, detail="Registro não encontrado")
+            raise HTTPException(status_code=404, detail="Pedido não encontrado")
 
         return {
             "status": "sucesso",
-            "notafiscal": notafiscal,
+            "pedido": pedido,
             "mensagem": "Entrega estornada com sucesso (campos zerados)",
         }
 

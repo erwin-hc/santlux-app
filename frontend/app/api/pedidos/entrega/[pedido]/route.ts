@@ -2,8 +2,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function PUT(request: Request, { params }: { params: Promise<{ notafiscal: string }> }) {
-  const { notafiscal } = await params;
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ pedido: string }> },
+) {
+  const { pedido } = await params;
 
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -14,9 +17,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ nota
     const body = await request.json();
     const backendUrl = process.env.NEXT_PUBLIC_URLBACKEND;
 
-    const notafiscalID = parseInt(notafiscal);
+    const pedidoID = parseInt(pedido);
 
-    const resp = await fetch(`${backendUrl}/pedidos/naoentregue/${notafiscalID}`, {
+    const resp = await fetch(`${backendUrl}/pedidos/entrega/${pedidoID}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${session.user.accessToken}`,
@@ -34,6 +37,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ nota
     return NextResponse.json(data);
   } catch (error) {
     console.error("Erro no Route Handler:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

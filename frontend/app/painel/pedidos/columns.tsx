@@ -381,13 +381,13 @@ export const columns: ColumnDef<TypePedidos>[] = [
       );
     },
     cell: ({ row, table }) => {
-      const nota = row.original.nnota;
+      const pedido = row.original.pedido;
       const data = row.getValue("entdata") as string;
       const meta = table.options.meta;
       const isAdmin = meta?.isAdmin;
       const modal = meta?.modal;
 
-      if (!nota) return;
+      if (!pedido) return;
 
       if (!isAdmin) {
         return data ? (
@@ -403,14 +403,11 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       const naoentregue = async () => {
         try {
-          const response = await fetch(
-            `/api/pedidos/naoentregue/${row.getValue("nnota")}`,
-            {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ data: new Date() }),
-            },
-          );
+          const response = await fetch(`/api/pedidos/naoentregue/${pedido}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data: new Date() }),
+          });
 
           if (response.ok) {
             window.dispatchEvent(new Event("refresh-pedidos"));
