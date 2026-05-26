@@ -36,9 +36,18 @@ class FirebirdPool:
             self._pool.put(conn)
 
 
+# BD_CONFIG = {
+#     "host": "localhost",
+#     "database": r"C:\TESTE.FDB",
+#     "port": 3050,
+#     "user": "sysdba",
+#     "password": "masterkey",
+#     "charset": "latin1",
+# }
+
 BD_CONFIG = {
     "host": "localhost",
-    "database": r"C:\TESTE.FDB",
+    "database": r"C:\SERKELLB\EMPRESAS\SANTLUX.FDB",
     "port": 3050,
     "user": "sysdba",
     "password": "masterkey",
