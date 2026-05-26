@@ -43,10 +43,11 @@ export function TabsProducao({ data }: TabsProducaoProps) {
 
   return (
     <Tabs defaultValue={formatDate(firstDate)} className="w-full">
-      <TabsList className="[&_button]:cursor-pointer max-w-full overflow-x-auto justify-start scrollbar-hide">
+      <TabsList className="[&_button]:cursor-pointer max-w-full overflow-x-auto overflow-y-hidden justify-start scrollbar-hide">
         {uniqueDates.map((date) => (
           <TabsTrigger
-            className="data-[state=active]:dark:bg-muted-foreground/30"
+            className="data-[state=active]:dark:bg-muted-foreground/50
+            data-[state=active]:bg-muted-foreground/20"
             key={formatDate(date)}
             value={formatDate(date)}
           >

@@ -187,18 +187,18 @@ export function DataTable<
               ) : (
                 <TableRow className="pointer-events-none">
                   <TableCell colSpan={columns.length} className="w-full">
-                    <div className="flex justify-start items-center gap-2 min-h-96 px-20  ">
+                    <div className="flex justify-start items-center  min-h-84 px-20  ">
                       <FileX
                         className="text-foreground"
                         strokeWidth={0.75}
                         size={40}
                       />
                       <span>
-                        Sem romaneio{" "}
+                        Sem romaneio
+                        {/* {" - "}
                         <span className="underline">
-                          {" "}
                           {formatDate(String(date))}!
-                        </span>
+                        </span> */}
                       </span>
                     </div>
                   </TableCell>

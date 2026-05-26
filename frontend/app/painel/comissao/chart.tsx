@@ -25,7 +25,7 @@ import { DatePickerInput } from "@/components/data-picker-year";
 import { Spinner } from "@/components/ui/spinner";
 
 import { Sparkles, AlignEndVertical, AlignStartHorizontal } from "lucide-react";
-import { getYear } from "date-fns";
+import { ChartBarHorizontal } from "./chart-mobile";
 
 type ChartDataType = {
   mes: number;
@@ -168,8 +168,8 @@ export function ChartBarInteractive({
 
   return (
     <Card className="p-4">
-      <div className="flex flex-col gap-2 w-full xl:w-auto xl:flex-row xl:justify-between">
-        <div className="flex-col flex gap-2 pb-4 sm:flex-row">
+      <div className="flex flex-col w-full gap-1 xl:w-auto  xl:justify-between max-w-7xl m-auto">
+        <div className="flex flex-col gap-2 items-center justify-center sm:flex-row ">
           {(
             [
               { key: "especial", icon: Sparkles },
@@ -183,7 +183,7 @@ export function ChartBarInteractive({
                 backgroundColor: `hsl(from ${chartConfig[key].color} h s l / 0.20)`,
                 borderColor: `hsl(from ${chartConfig[key].color} h s l / 0.50)`,
               }}
-              className="group relative rounded-lg border p-2 shadow-sm backdrop-blur-sm w-full xl:w-75"
+              className="group relative rounded-lg border p-2 shadow-sm backdrop-blur-sm w-full xl:w-96"
             >
               <div className="relative flex items-center gap-4">
                 <div
@@ -222,122 +222,138 @@ export function ChartBarInteractive({
             </div>
           ))}
         </div>
-
-        <div>
-          <CardTitle className="flex gap-4 items-center">
-            <DatePickerInput
-              month={activeMonth && getMonthName(activeMonth)}
-              date={selectedYear}
-              onDateChange={handleDateChange}
-            />
-          </CardTitle>
-        </div>
       </div>
 
-      <CardContent className="py-0 px-2 sm:p-6 h-[calc(100svh-280px)]">
-        <div className="relative">
-          {isLoading && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-lg">
-              <Spinner className="size-10" />
-            </div>
-          )}
-          <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
-            <ChartContainer
-              config={chartConfig}
-              className="h-[calc(100svh-300px)] w-full"
-            >
-              <BarChart
-                key={selectedYear?.getFullYear()}
-                accessibilityLayer
-                data={fullData}
-                margin={{ top: 0, left: 0, right: 0 }}
-                barGap={-8}
-                style={{ cursor: "pointer" }}
+      {isMobile ? (
+        <ChartBarHorizontal />
+      ) : (
+        <CardContent className="p-0 h-[calc(100svh-265px)]">
+          <div className="relative">
+            {isLoading && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-lg">
+                <Spinner className="size-10" />
+              </div>
+            )}
+            <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
+              <CardTitle className="flex pb-4  gap-1 max-w-6xl mx-auto -mt-4">
+                <DatePickerInput
+                  month={activeMonth && getMonthName(activeMonth)}
+                  date={selectedYear}
+                  onDateChange={handleDateChange}
+                />
+              </CardTitle>
+
+              <ChartContainer
+                config={chartConfig}
+                className="h-[calc(100svh-300px)] w-full max-w-6xl mx-auto"
               >
-                <ReferenceArea
-                  x1={activeMonth}
-                  x2={activeMonth}
-                  fill={`hsl(from var(--muted-foreground) h s l / 0.25)`}
-                  fillOpacity={1}
-                  ifOverflow="hidden"
-                />
-                <CartesianGrid vertical={false} horizontal={false} />
-                <XAxis
-                  dataKey="mes"
-                  tickLine={true}
-                  axisLine={true}
-                  tickMargin={5}
-                  tickFormatter={(value) => getMonthName(value).substring(0, 3)}
-                  fontSize={isMobile ? 10 : 14}
-                />
-                {!isMobile && (
+                <BarChart
+                  key={selectedYear?.getFullYear()}
+                  accessibilityLayer
+                  data={fullData}
+                  margin={{ top: 0, left: -25, right: 0 }}
+                  barGap={2}
+                  style={{ cursor: "pointer" }}
+                >
+                  <ReferenceArea
+                    x1={activeMonth}
+                    x2={activeMonth}
+                    fill={`hsl(from var(--muted-foreground) h s l / 0.25)`}
+                    stroke="none"
+                    fillOpacity={1}
+                    ifOverflow="hidden"
+                  />
+
+                  <CartesianGrid vertical={false} horizontal={false} />
+
+                  <XAxis
+                    dataKey="mes"
+                    tickLine={false}
+                    axisLine={true}
+                    tickMargin={0}
+                    tickFormatter={(value) =>
+                      getMonthName(value).substring(0, 3)
+                    }
+                    fontSize={isMobile ? 10 : 14}
+                  />
+
                   <YAxis
                     tickLine={false}
                     axisLine={true}
-                    tickMargin={4}
+                    tickMargin={0}
                     tickCount={6}
                   />
-                )}
-                <ChartTooltip
-                  wrapperStyle={{ cursor: "pointer" }}
-                  cursor={<CustomCursor />}
-                  content={({ active, payload, label }) => {
-                    const data = payload?.[0]?.payload;
-                    const isEmpty =
-                      data?.especial == null &&
-                      data?.horizontal == null &&
-                      data?.vertical == null;
-                    if (!active || isEmpty) return null;
-                    return (
-                      <ChartTooltipContent
-                        active={active}
-                        payload={payload}
-                        label={label}
-                        indicator="dot"
-                        hideLabel={false}
-                        labelFormatter={(value, payload) => {
-                          const monthNumber = payload?.[0]?.payload?.mes;
-                          return (
-                            getMonthName(monthNumber || value) +
-                            "/" +
-                            selectedYear?.getFullYear()
-                          );
-                        }}
-                        className="w-62.5 text-[14px] uppercase "
-                      />
-                    );
-                  }}
-                />
-                <Bar
-                  dataKey="especial"
-                  fill={chartConfig.especial.color}
-                  radius={[8, 8, 0, 0]}
-                  onClick={(data: any) => setActiveMonth(data.payload.mes)}
-                  barSize={28}
-                />
-                <Bar
-                  dataKey="horizontal"
-                  fill={chartConfig.horizontal.color}
-                  radius={[8, 8, 0, 0]}
-                  onClick={(data: any) => setActiveMonth(data.payload.mes)}
-                  barSize={28}
-                />
-                <Bar
-                  dataKey="vertical"
-                  fill={chartConfig.vertical.color}
-                  radius={[8, 8, 0, 0]}
-                  onClick={(data: any) => setActiveMonth(data.payload.mes)}
-                  barSize={28}
-                />
-                <ClickOverlay
-                  data={fullData}
-                  onSelect={(mes) => setActiveMonth(mes)}
-                />
-              </BarChart>
-            </ChartContainer>
+
+                  {/* {!isMobile && (
+                  <YAxis
+                    tickLine={false}
+                    axisLine={true}
+                    tickMargin={0}
+                    tickCount={6}
+                  />
+                )} */}
+                  <ChartTooltip
+                    wrapperStyle={{ cursor: "pointer" }}
+                    cursor={<CustomCursor />}
+                    content={({ active, payload, label }) => {
+                      const data = payload?.[0]?.payload;
+                      const isEmpty =
+                        data?.especial == null &&
+                        data?.horizontal == null &&
+                        data?.vertical == null;
+                      if (!active || isEmpty) return null;
+                      return (
+                        <ChartTooltipContent
+                          active={active}
+                          payload={payload}
+                          label={label}
+                          indicator="dot"
+                          hideLabel={false}
+                          labelFormatter={(value, payload) => {
+                            const monthNumber = payload?.[0]?.payload?.mes;
+                            return (
+                              getMonthName(monthNumber || value) +
+                              "/" +
+                              selectedYear?.getFullYear()
+                            );
+                          }}
+                          className="w-62.5 text-[14px] uppercase "
+                        />
+                      );
+                    }}
+                  />
+
+                  <Bar
+                    dataKey="especial"
+                    fill={chartConfig.especial.color}
+                    radius={[8, 8, 0, 0]}
+                    onClick={(data: any) => setActiveMonth(data.payload.mes)}
+                    barSize={15}
+                  />
+                  <Bar
+                    dataKey="horizontal"
+                    fill={chartConfig.horizontal.color}
+                    radius={[8, 8, 0, 0]}
+                    onClick={(data: any) => setActiveMonth(data.payload.mes)}
+                    barSize={15}
+                  />
+                  <Bar
+                    dataKey="vertical"
+                    fill={chartConfig.vertical.color}
+                    radius={[8, 8, 0, 0]}
+                    onClick={(data: any) => setActiveMonth(data.payload.mes)}
+                    barSize={15}
+                  />
+                  <ClickOverlay
+                    data={fullData}
+                    onSelect={(mes) => setActiveMonth(mes)}
+                  />
+                </BarChart>
+              </ChartContainer>
+            </div>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   );
 }

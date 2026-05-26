@@ -22,7 +22,12 @@ export function formatFullName(fullName: string): string {
 }
 
 export function formatDate(data: string): string {
-  return new Date(data).toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  return new Date(data).toLocaleDateString("pt-BR", {
+    timeZone: "UTC",
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  });
 }
 
 export function formatDecimal(number: number): string {
@@ -32,7 +37,9 @@ export function formatDecimal(number: number): string {
   return formatted;
 }
 
-export const formatMedidas = (valor: number | string | null | undefined): string => {
+export const formatMedidas = (
+  valor: number | string | null | undefined,
+): string => {
   const num = Number(valor);
 
   if (isNaN(num)) return "0,00";
