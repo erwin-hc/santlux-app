@@ -111,7 +111,7 @@ export function DatePickerInput({
   const value = date ? String(date.getFullYear()) : "";
 
   return (
-    <Field className="w-[175px]">
+    <Field className="w-full ">
       <InputGroup>
         <InputGroupInput
           className="capitalize font-medium"

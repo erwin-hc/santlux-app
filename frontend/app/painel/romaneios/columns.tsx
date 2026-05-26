@@ -135,7 +135,7 @@ export const columns: ColumnDef<RomaneioType>[] = [
                 href={url}
                 target="_blank"
               >
-                <Badge variant={"ML"} className="h-6">
+                <Badge variant={"ML"} className="h-6 ">
                   <Cable size={16} />
                 </Badge>
               </Link>
@@ -151,7 +151,7 @@ export const columns: ColumnDef<RomaneioType>[] = [
     accessorKey: "registro",
     header: () => {
       return (
-        <div className="flex items-center justify-start mr-2 gap-2">
+        <div className="flex items-center justify-start  ml-4 gap-2 ">
           <ListTodo size={16} />
           <span>REGISTRO</span>
         </div>
@@ -165,7 +165,7 @@ export const columns: ColumnDef<RomaneioType>[] = [
       if (!registro) return;
 
       return (
-        <div className="flex items-center justify-start mr-2 gap-2">
+        <div className="flex items-center justify-start ml-4 gap-2">
           <span className="">{registro}</span>
           <Badge
             variant={"neutral"}

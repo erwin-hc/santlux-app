@@ -12,7 +12,7 @@ import {
   ReferenceArea,
 } from "recharts";
 
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
@@ -61,18 +61,18 @@ export function ChartBarInteractive({
   const [activeMonth, setActiveMonth] = React.useState<number>(
     () => new Date().getMonth() + 1,
   );
-  const [isLoading, setIsLoading] = React.useState(false); // ✅
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const isMobile = useIsMobile();
 
   const handleDateChange = async (newDate: Date | undefined) => {
     if (newDate) {
       setSelectedYear(newDate);
-      setIsLoading(true); // ✅
+      setIsLoading(true);
       try {
         await onYearChange(String(newDate.getFullYear()));
       } finally {
-        setIsLoading(false); // ✅ garante que sempre para
+        setIsLoading(false);
       }
     }
   };
@@ -166,194 +166,261 @@ export function ChartBarInteractive({
     }
   }, [chartDataCurrentYear]);
 
+  const cardKeys = [
+    { key: "especial" as const, icon: Sparkles },
+    { key: "horizontal" as const, icon: AlignEndVertical },
+    { key: "vertical" as const, icon: AlignStartHorizontal },
+  ];
+
   return (
     <Card className="p-4">
-      <div className="flex flex-col w-full gap-1 xl:w-auto  xl:justify-between max-w-7xl m-auto">
-        <div className="flex flex-col gap-2 items-center justify-center sm:flex-row ">
-          {(
-            [
-              { key: "especial", icon: Sparkles },
-              { key: "horizontal", icon: AlignEndVertical },
-              { key: "vertical", icon: AlignStartHorizontal },
-            ] as const
-          ).map(({ key, icon: Icon }) => (
-            <div
-              key={key}
-              style={{
-                backgroundColor: `hsl(from ${chartConfig[key].color} h s l / 0.20)`,
-                borderColor: `hsl(from ${chartConfig[key].color} h s l / 0.50)`,
-              }}
-              className="group relative rounded-lg border p-2 shadow-sm backdrop-blur-sm w-full xl:w-96"
-            >
-              <div className="relative flex items-center gap-4">
-                <div
-                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-sm"
-                  style={{
-                    backgroundColor: `hsl(from ${chartConfig[key].color} h s l / 0.25)`,
-                    color: `${chartConfig[key].color}`,
-                  }}
-                >
-                  <Icon className="h-6 w-6 stroke-2" />
-                </div>
-                <div className="flex flex-col">
-                  <span
-                    className="text-xs uppercase font-bold"
-                    style={{ color: `${chartConfig[key].color}` }}
-                  >
-                    {chartConfig[key].label}
-                  </span>
-                  <div
-                    className="text-5xl font-black leading-none tracking-tight mt-1"
-                    style={{ color: `${chartConfig[key].color}` }}
-                  >
-                    {selectedData[key]?.toLocaleString() ?? 0}
-                  </div>
-                  <div
-                    className="text-[12px] pt-1"
-                    style={{ color: `${chartConfig[key].color}` }}
-                  >
-                    <span className="capitalize">
-                      {getMonthName(activeMonth)}/
-                    </span>
-                    <span>{selectedYear?.getFullYear()}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {isMobile ? (
-        <ChartBarHorizontal />
-      ) : (
-        <CardContent className="p-0 h-[calc(100svh-265px)]">
-          <div className="relative">
-            {isLoading && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-lg">
-                <Spinner className="size-10" />
-              </div>
-            )}
-            <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
-              <CardTitle className="flex pb-4  gap-1 max-w-6xl mx-auto -mt-4">
-                <DatePickerInput
-                  month={activeMonth && getMonthName(activeMonth)}
-                  date={selectedYear}
-                  onDateChange={handleDateChange}
-                />
-              </CardTitle>
-
-              <ChartContainer
-                config={chartConfig}
-                className="h-[calc(100svh-300px)] w-full max-w-6xl mx-auto"
+      <div className="relative">
+        {/* Loading */}
+        <div className="flex  flex-col gap-2 sm:flex-row sm:items-start max-w-7xl m-auto mb-4">
+          {/* Card Especial */}
+          <div
+            style={{
+              backgroundColor: `hsl(from ${chartConfig.especial.color} h s l / 0.20)`,
+              borderColor: `hsl(from ${chartConfig.especial.color} h s l / 0.50)`,
+            }}
+            className="rounded-lg border p-2 shadow-sm backdrop-blur-sm sm:w-1/3 "
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-sm"
+                style={{
+                  backgroundColor: `hsl(from ${chartConfig.especial.color} h s l / 0.25)`,
+                  color: chartConfig.especial.color,
+                }}
               >
-                <BarChart
-                  key={selectedYear?.getFullYear()}
-                  accessibilityLayer
-                  data={fullData}
-                  margin={{ top: 0, left: -25, right: 0 }}
-                  barGap={2}
-                  style={{ cursor: "pointer" }}
+                <Sparkles className="h-6 w-6 stroke-2" />
+              </div>
+              <div className="flex flex-col">
+                <span
+                  className="text-xs uppercase font-bold"
+                  style={{ color: chartConfig.especial.color }}
                 >
-                  <ReferenceArea
-                    x1={activeMonth}
-                    x2={activeMonth}
-                    fill={`hsl(from var(--muted-foreground) h s l / 0.25)`}
-                    stroke="none"
-                    fillOpacity={1}
-                    ifOverflow="hidden"
-                  />
-
-                  <CartesianGrid vertical={false} horizontal={false} />
-
-                  <XAxis
-                    dataKey="mes"
-                    tickLine={false}
-                    axisLine={true}
-                    tickMargin={0}
-                    tickFormatter={(value) =>
-                      getMonthName(value).substring(0, 3)
-                    }
-                    fontSize={isMobile ? 10 : 14}
-                  />
-
-                  <YAxis
-                    tickLine={false}
-                    axisLine={true}
-                    tickMargin={0}
-                    tickCount={6}
-                  />
-
-                  {/* {!isMobile && (
-                  <YAxis
-                    tickLine={false}
-                    axisLine={true}
-                    tickMargin={0}
-                    tickCount={6}
-                  />
-                )} */}
-                  <ChartTooltip
-                    wrapperStyle={{ cursor: "pointer" }}
-                    cursor={<CustomCursor />}
-                    content={({ active, payload, label }) => {
-                      const data = payload?.[0]?.payload;
-                      const isEmpty =
-                        data?.especial == null &&
-                        data?.horizontal == null &&
-                        data?.vertical == null;
-                      if (!active || isEmpty) return null;
-                      return (
-                        <ChartTooltipContent
-                          active={active}
-                          payload={payload}
-                          label={label}
-                          indicator="dot"
-                          hideLabel={false}
-                          labelFormatter={(value, payload) => {
-                            const monthNumber = payload?.[0]?.payload?.mes;
-                            return (
-                              getMonthName(monthNumber || value) +
-                              "/" +
-                              selectedYear?.getFullYear()
-                            );
-                          }}
-                          className="w-62.5 text-[14px] uppercase "
-                        />
-                      );
-                    }}
-                  />
-
-                  <Bar
-                    dataKey="especial"
-                    fill={chartConfig.especial.color}
-                    radius={[8, 8, 0, 0]}
-                    onClick={(data: any) => setActiveMonth(data.payload.mes)}
-                    barSize={15}
-                  />
-                  <Bar
-                    dataKey="horizontal"
-                    fill={chartConfig.horizontal.color}
-                    radius={[8, 8, 0, 0]}
-                    onClick={(data: any) => setActiveMonth(data.payload.mes)}
-                    barSize={15}
-                  />
-                  <Bar
-                    dataKey="vertical"
-                    fill={chartConfig.vertical.color}
-                    radius={[8, 8, 0, 0]}
-                    onClick={(data: any) => setActiveMonth(data.payload.mes)}
-                    barSize={15}
-                  />
-                  <ClickOverlay
-                    data={fullData}
-                    onSelect={(mes) => setActiveMonth(mes)}
-                  />
-                </BarChart>
-              </ChartContainer>
+                  {chartConfig.especial.label}
+                </span>
+                <div
+                  className="text-5xl font-black leading-none tracking-tight mt-1"
+                  style={{ color: chartConfig.especial.color }}
+                >
+                  {selectedData.especial?.toLocaleString() ?? 0}
+                </div>
+                <div
+                  className="text-[12px] pt-1"
+                  style={{ color: chartConfig.especial.color }}
+                >
+                  <span className="capitalize">
+                    {getMonthName(activeMonth)}/
+                  </span>
+                  <span>{selectedYear?.getFullYear()}</span>
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* Card Horizontal */}
+          <div
+            style={{
+              backgroundColor: `hsl(from ${chartConfig.horizontal.color} h s l / 0.20)`,
+              borderColor: `hsl(from ${chartConfig.horizontal.color} h s l / 0.50)`,
+            }}
+            className="rounded-lg border p-2 shadow-sm backdrop-blur-sm sm:w-1/3 "
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-sm"
+                style={{
+                  backgroundColor: `hsl(from ${chartConfig.horizontal.color} h s l / 0.25)`,
+                  color: chartConfig.horizontal.color,
+                }}
+              >
+                <AlignEndVertical className="h-6 w-6 stroke-2" />
+              </div>
+              <div className="flex flex-col">
+                <span
+                  className="text-xs uppercase font-bold"
+                  style={{ color: chartConfig.horizontal.color }}
+                >
+                  {chartConfig.horizontal.label}
+                </span>
+                <div
+                  className="text-5xl font-black leading-none tracking-tight mt-1"
+                  style={{ color: chartConfig.horizontal.color }}
+                >
+                  {selectedData.horizontal?.toLocaleString() ?? 0}
+                </div>
+                <div
+                  className="text-[12px] pt-1"
+                  style={{ color: chartConfig.horizontal.color }}
+                >
+                  <span className="capitalize">
+                    {getMonthName(activeMonth)}/
+                  </span>
+                  <span>{selectedYear?.getFullYear()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card Vertical */}
+          <div
+            style={{
+              backgroundColor: `hsl(from ${chartConfig.vertical.color} h s l / 0.20)`,
+              borderColor: `hsl(from ${chartConfig.vertical.color} h s l / 0.50)`,
+            }}
+            className="rounded-lg border p-2 shadow-sm backdrop-blur-sm sm:w-1/3 "
+          >
+            <div className="flex items-center gap-4">
+              <div
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-sm"
+                style={{
+                  backgroundColor: `hsl(from ${chartConfig.vertical.color} h s l / 0.25)`,
+                  color: chartConfig.vertical.color,
+                }}
+              >
+                <AlignStartHorizontal className="h-6 w-6 stroke-2" />
+              </div>
+              <div className="flex flex-col">
+                <span
+                  className="text-xs uppercase font-bold"
+                  style={{ color: chartConfig.vertical.color }}
+                >
+                  {chartConfig.vertical.label}
+                </span>
+                <div
+                  className="text-5xl font-black leading-none tracking-tight mt-1"
+                  style={{ color: chartConfig.vertical.color }}
+                >
+                  {selectedData.vertical?.toLocaleString() ?? 0}
+                </div>
+                <div
+                  className="text-[12px] pt-1"
+                  style={{ color: chartConfig.vertical.color }}
+                >
+                  <span className="capitalize">
+                    {getMonthName(activeMonth)}/
+                  </span>
+                  <span>{selectedYear?.getFullYear()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* DataPicker */}
+        <div className="pb-4">
+          <DatePickerInput
+            month={activeMonth && getMonthName(activeMonth)}
+            date={selectedYear}
+            onDateChange={handleDateChange}
+          />
+        </div>
+        {/* Gráfico */}
+
+        <CardContent className="p-0 h-[calc(100svh-315px)]">
+          {isLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-lg">
+              <Spinner className="size-10" />
+            </div>
+          )}
+          <div className={isLoading ? "opacity-50 pointer-events-none" : ""}>
+            <ChartContainer
+              config={chartConfig}
+              className="h-[calc(100svh-300px)] w-full max-w-6xl mx-auto"
+            >
+              <BarChart
+                key={selectedYear?.getFullYear()}
+                accessibilityLayer
+                data={fullData}
+                margin={{ top: 0, left: -25, right: 0 }}
+                barGap={-1}
+                style={{ cursor: "pointer" }}
+              >
+                <ReferenceArea
+                  x1={activeMonth}
+                  x2={activeMonth}
+                  fill={`hsl(from var(--muted-foreground) h s l / 0.25)`}
+                  stroke="none"
+                  fillOpacity={1}
+                  ifOverflow="hidden"
+                />
+                <CartesianGrid vertical={false} horizontal={false} />
+                <XAxis
+                  dataKey="mes"
+                  tickLine={false}
+                  axisLine={true}
+                  tickMargin={0}
+                  tickFormatter={(value) => getMonthName(value).substring(0, 3)}
+                  fontSize={isMobile ? 10 : 14}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={true}
+                  tickMargin={0}
+                  tickCount={6}
+                />
+                <ChartTooltip
+                  wrapperStyle={{ cursor: "pointer" }}
+                  cursor={<CustomCursor />}
+                  content={({ active, payload, label }) => {
+                    const data = payload?.[0]?.payload;
+                    const isEmpty =
+                      data?.especial == null &&
+                      data?.horizontal == null &&
+                      data?.vertical == null;
+                    if (!active || isEmpty) return null;
+                    return (
+                      <ChartTooltipContent
+                        active={active}
+                        payload={payload}
+                        label={label}
+                        indicator="dot"
+                        hideLabel={false}
+                        labelFormatter={(value, payload) => {
+                          const monthNumber = payload?.[0]?.payload?.mes;
+                          return (
+                            getMonthName(monthNumber || value) +
+                            "/" +
+                            selectedYear?.getFullYear()
+                          );
+                        }}
+                        className="w-62.5 text-[14px] uppercase"
+                      />
+                    );
+                  }}
+                />
+                <Bar
+                  dataKey="especial"
+                  fill={chartConfig.especial.color}
+                  radius={[0, 0, 0, 0]}
+                  onClick={(data: any) => setActiveMonth(data.payload.mes)}
+                  // barSize={15}
+                />
+                <Bar
+                  dataKey="horizontal"
+                  fill={chartConfig.horizontal.color}
+                  radius={[0, 0, 0, 0]}
+                  onClick={(data: any) => setActiveMonth(data.payload.mes)}
+                  // barSize={15}
+                />
+                <Bar
+                  dataKey="vertical"
+                  fill={chartConfig.vertical.color}
+                  radius={[0, 0, 0, 0]}
+                  onClick={(data: any) => setActiveMonth(data.payload.mes)}
+                  // barSize={15}
+                />
+                <ClickOverlay
+                  data={fullData}
+                  onSelect={(mes) => setActiveMonth(mes)}
+                />
+              </BarChart>
+            </ChartContainer>
+          </div>
         </CardContent>
-      )}
+      </div>
     </Card>
   );
 }
