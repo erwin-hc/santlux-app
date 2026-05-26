@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["10.0.0.137", "localhost:3000"],
+  allowedDevOrigins: ["0.0.0.0"],
   reactStrictMode: false,
+  output: "standalone",
 };
 
 export default nextConfig;
