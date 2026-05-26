@@ -5,10 +5,16 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 
 export function LogoutButton() {
+  async function handleLogout() {
+    await signOut({ redirect: false });
+
+    window.location.href = "/";
+  }
+
   return (
     <Button
       variant="secondary"
-      onClick={() => signOut({ callbackUrl: "/" })}
+      onClick={handleLogout}
       className="cursor-pointer w-full"
     >
       <LogOut />
