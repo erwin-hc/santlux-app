@@ -84,6 +84,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
       return (
         <>
           <Checkbox
+            tabIndex={-1}
             checked={
               table.getIsAllPageRowsSelected() ||
               (table.getIsSomePageRowsSelected() && "indeterminate")
@@ -109,6 +110,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
       return (
         <>
           <Checkbox
+            tabIndex={-1}
             checked={row.getIsSelected()}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             aria-label="Select row"
@@ -230,6 +232,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
         <div className="flex items-center justify-end mr-2 gap-2">
           <span className="">{registro}</span>
           <Button
+            tabIndex={-1}
             onClick={() => modal?.openModal("viewPedido", registro)}
             className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
           >
@@ -286,6 +289,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
             <div className="flex items-center justify-between w-14 mx-2">
               <span>{qtvol}</span>
               <Button
+                tabIndex={-1}
                 onClick={() => modal?.openModal("updateVolume", row.original)}
                 className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
               >
@@ -352,6 +356,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
             <div className="flex items-center justify-start">
               <span className="mr-2">{formatDate(previsao)}</span>
               <Button
+                tabIndex={-1}
                 onClick={() => modal?.openModal("updatePrevisao", row.original)}
                 className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
               >

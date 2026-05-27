@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { CalendarCog } from "lucide-react";
 import { PageTitle } from "@/components/title-page";
+import { useMessages } from "@/providers/message-provider";
 
 export type PedidosType = {
   dtentrega: string;
@@ -36,18 +37,24 @@ const Producao = () => {
   const [dataProducao, setDataProducao] = useState<PedidosType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { addMessage } = useMessages();
 
   const getProducao = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+
     try {
       const response = await fetch("/api/producao/");
-      if (!response.ok) throw new Error("Failed to fetch");
       const result = await response.json();
+
+      if (!response.ok) {
+        setError("Erro ao carregar Produção!");
+        addMessage("error", "Erro ao carregar produção!");
+      }
+
       setDataProducao(result);
     } catch (error) {
       console.error("Error fetching production data:", error);
-      setError("Erro ao carregar dados de produção.");
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +75,7 @@ const Producao = () => {
         <div className="flex flex-col items-center justify-center h-[calc(100svh-200px)] gap-4">
           <p className="text-red-500">{error}</p>
           <button
-            onClick={getProducao}
+            onClick={() => getProducao()}
             className="px-4 py-2 text-sm rounded-md border hover:bg-muted transition-colors"
           >
             Tentar novamente

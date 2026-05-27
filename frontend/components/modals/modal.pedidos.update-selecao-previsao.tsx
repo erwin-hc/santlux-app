@@ -126,7 +126,7 @@ export function ModalUpdateSelecionadosPrevisao() {
       onOpenChange={(open) => !open && modal.closeModal()}
     >
       <DialogContent className="sm:max-w-125 w-[95vw] overflow-hidden">
-        <DialogHeader>
+        <DialogHeader className="mb-2 mt-8">
           <DialogTitle className="flex items-center justify-start ">
             <CalendarCog />
             <span className="text-2xl font-bold underline underline-offset-8 uppercase">

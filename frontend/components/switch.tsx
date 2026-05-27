@@ -9,10 +9,20 @@ interface SwitchEntregueProps {
   handleClick?: (checked: boolean) => void;
 }
 
-export function SwitchEntregue({ label = "", icon: Icon, isChecked, handleClick }: SwitchEntregueProps) {
+export function SwitchEntregue({
+  label = "",
+  icon: Icon,
+  isChecked,
+  handleClick,
+}: SwitchEntregueProps) {
   return (
     <div className="flex items-center space-x-2">
-      <Switch id="entregue-mode" checked={isChecked} onCheckedChange={handleClick} />
+      <Switch
+        tabIndex={-1}
+        id="entregue-mode"
+        checked={isChecked}
+        onCheckedChange={handleClick}
+      />
       <Label htmlFor="entregue-mode">
         {label}
         {Icon && <Icon size={16} strokeWidth={1.5} />}

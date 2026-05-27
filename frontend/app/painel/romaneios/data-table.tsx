@@ -35,6 +35,7 @@ interface DataTableProps<TData, TValue> {
   date: Date | undefined;
   loading?: boolean;
   isAdmin?: boolean;
+  error?: string;
   onDateChange?: (date: Date | undefined) => void;
 }
 

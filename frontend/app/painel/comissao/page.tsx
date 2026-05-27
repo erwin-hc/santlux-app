@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ChartBarInteractive } from "./chart";
 import { Spinner } from "@/components/ui/spinner";
 import { getComissao } from "@/lib/get-comissao";
+import { useMessages } from "@/providers/message-provider";
 
 export type ComissaoType = {
   mes: number;
@@ -19,24 +20,26 @@ type ChartDataType = {
   vertical: number | null;
 };
 
-const CURRENT_YEAR = String(new Date().getFullYear()); // ✅ fora do componente
+const CURRENT_YEAR = String(new Date().getFullYear());
 
 const Comissao = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // ✅
+  const [error, setError] = useState<string | null>(null);
   const [chartDataCurrentYear, setChartDataCurrentYear] = useState<
     ChartDataType[]
   >([]);
 
+  const { addMessage } = useMessages();
+
   const fetchComissao = useCallback(async (anoString: string) => {
     setIsLoading(true);
-    setError(null); // ✅
+    setError(null);
     try {
       const data = await getComissao(anoString);
       setChartDataCurrentYear(data);
     } catch (error) {
-      console.error("Erro ao buscar comissão:", error);
-      setError("Erro ao carregar dados de comissão.");
+      setError("Erro ao carregar comissão!");
+      addMessage("error", "Erro ao carregar comissão!");
       setChartDataCurrentYear([]);
     } finally {
       setIsLoading(false);
@@ -44,7 +47,7 @@ const Comissao = () => {
   }, []);
 
   useEffect(() => {
-    fetchComissao(CURRENT_YEAR); // ✅ usa a constante
+    fetchComissao(CURRENT_YEAR);
   }, [fetchComissao]);
 
   return (

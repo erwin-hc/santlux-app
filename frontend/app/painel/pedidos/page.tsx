@@ -4,6 +4,7 @@ import { TypePedidos, columns } from "./columns";
 import { DataTable } from "./data-table";
 import { ListTodo } from "lucide-react";
 import { PageTitle } from "@/components/title-page";
+import { useMessages } from "@/providers/message-provider";
 
 type PedidosResponse = {
   data: TypePedidos[];
@@ -23,9 +24,12 @@ export default function Page() {
   );
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const paginationRef = useRef(pagination);
+
+  const { addMessage } = useMessages();
 
   useEffect(() => {
     paginationRef.current = pagination;
@@ -33,6 +37,7 @@ export default function Page() {
 
   const getPedidos = useCallback(async (query?: string) => {
     setLoading(true);
+    setError(null);
     try {
       const { pageIndex, pageSize } = paginationRef.current;
       const url =
@@ -47,8 +52,13 @@ export default function Page() {
         setData(result.data ?? []);
         setMetadata(result.metadata ?? null);
       }
+
+      if (!response.ok) {
+        setError("Erro ao carregar pedidos!");
+        addMessage("error", "Erro ao carregar pedidos!");
+      }
     } catch (error) {
-      console.error("Fetch error:", error);
+      console.log("Erro ao carregar pedidos!");
     } finally {
       setLoading(false);
     }
@@ -91,7 +101,19 @@ export default function Page() {
     <>
       <PageTitle label="PEDIDOS" icon={ListTodo} loading={loading} />
       <div className="container mx-auto">
-        <div className={loading ? "opacity-50 pointer-events-none" : ""}>
+        {error ? (
+          <div className={loading ? "opacity-50 pointer-events-none" : ""}>
+            <div className="flex flex-col items-center justify-center h-[calc(100svh-200px)] gap-4">
+              <p className="text-red-500">{error}</p>
+              <button
+                onClick={() => getPedidos()}
+                className="px-4 py-2 text-sm rounded-md border hover:bg-muted transition-colors"
+              >
+                Tentar novamente
+              </button>
+            </div>
+          </div>
+        ) : (
           <DataTable<TypePedidos, unknown>
             columns={columns}
             data={data}
@@ -110,7 +132,7 @@ export default function Page() {
             }
             loading={loading}
           />
-        </div>
+        )}
       </div>
     </>
   );

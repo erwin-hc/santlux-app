@@ -1,10 +1,23 @@
 "use client";
 import { useModal } from "@/providers/modal-provider";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CalendarCog, CircleCheckBig } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -108,28 +121,47 @@ export function ModalUpdatePrevisao() {
   };
 
   return (
-    <Dialog open={modal.isOpen} onOpenChange={(open) => !open && modal.closeModal()}>
+    <Dialog
+      open={modal.isOpen}
+      onOpenChange={(open) => !open && modal.closeModal()}
+    >
       <DialogContent className="sm:max-w-125 w-[95vw] overflow-hidden">
-        <DialogHeader>
+        <DialogHeader className="mb-2 mt-8">
           <DialogTitle className="flex items-center justify-start gap-4">
             <CalendarCog />
-            <span className="text-2xl font-bold underline underline-offset-4 uppercase">PREVISÃO</span>
+            <span className="text-2xl font-bold underline underline-offset-4 uppercase">
+              PREVISÃO
+            </span>
           </DialogTitle>
         </DialogHeader>
 
         <div className="max-h-48 overflow-y-auto my-1 rounded-md border border-border">
           <Table>
             <TableBody>
-              <TableRow key={data?.os} className="hover:bg-transparent [&_tr]:h-8 [&_td]:py-1 [&_td]:px-05">
+              <TableRow
+                key={data?.os}
+                className="hover:bg-transparent [&_tr]:h-8 [&_td]:py-1 [&_td]:px-05"
+              >
                 <TableCell className="py-2">
                   <div className="flex justify-start">
                     <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
-                      <CircleCheckBig size={16} className={`mr-2 transition-colors duration-300 ${isDone ? "text-emerald-500" : "text-muted"}`} />
-                      {!data.nnota ? <span>{data?.os}</span> : <span>{data?.nnota}</span>}
+                      <CircleCheckBig
+                        size={16}
+                        className={`mr-2 transition-colors duration-300 ${isDone ? "text-emerald-500" : "text-muted"}`}
+                      />
+                      {!data.nnota ? (
+                        <span>{data?.os}</span>
+                      ) : (
+                        <span>{data?.nnota}</span>
+                      )}
                     </span>
                     <span className="font-semibold text-sm text-muted-foreground flex items-center justify-start gap-1">
                       <span className="px-2"> - </span>
-                      {!data.con_nome ? <span>{data?.empresa}</span> : <span>{data?.con_nome}</span>}
+                      {!data.con_nome ? (
+                        <span>{data?.empresa}</span>
+                      ) : (
+                        <span>{data?.con_nome}</span>
+                      )}
                     </span>
                   </div>
                 </TableCell>
@@ -146,7 +178,9 @@ export function ModalUpdatePrevisao() {
                 name="dia"
                 render={({ field }) => (
                   <FormItem className="flex-1 min-w-15">
-                    <FormLabel className="font-bold  uppercase block text-center">Dia</FormLabel>
+                    <FormLabel className="font-bold  uppercase block text-center">
+                      Dia
+                    </FormLabel>
                     <FormControl>
                       <Input
                         autoComplete="off"
@@ -174,7 +208,9 @@ export function ModalUpdatePrevisao() {
                 name="mes"
                 render={({ field }) => (
                   <FormItem className="flex-1 min-w-15">
-                    <FormLabel className="font-bold  uppercase block text-center">Mês</FormLabel>
+                    <FormLabel className="font-bold  uppercase block text-center">
+                      Mês
+                    </FormLabel>
                     <FormControl>
                       <Input
                         autoComplete="off"
@@ -202,7 +238,9 @@ export function ModalUpdatePrevisao() {
                 name="ano"
                 render={({ field }) => (
                   <FormItem className="flex-[1.5] min-w-20">
-                    <FormLabel className="font-bold  uppercase block text-center">Ano</FormLabel>
+                    <FormLabel className="font-bold  uppercase block text-center">
+                      Ano
+                    </FormLabel>
                     <FormControl>
                       <Input
                         autoComplete="off"
@@ -230,10 +268,19 @@ export function ModalUpdatePrevisao() {
         </Form>
 
         <DialogFooter className="flex flex-row justify-end gap-3 ">
-          <Button type="submit" form="data-entrega-form" className="w-28 flex-1 sm:flex-none">
+          <Button
+            type="submit"
+            form="data-entrega-form"
+            className="w-28 flex-1 sm:flex-none"
+          >
             Salvar
           </Button>
-          <Button variant="outline" type="button" onClick={modal.closeModal} className="w-28 flex-1 sm:flex-none">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={modal.closeModal}
+            className="w-28 flex-1 sm:flex-none"
+          >
             Cancelar
           </Button>
         </DialogFooter>

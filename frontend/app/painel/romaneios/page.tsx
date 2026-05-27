@@ -6,6 +6,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { PageTitle } from "@/components/title-page";
 import { Truck } from "lucide-react";
+import { useMessages } from "@/providers/message-provider";
 
 const formatForApi = (date: Date) =>
   date.toLocaleDateString("pt-BR").replaceAll("/", "-");
@@ -19,6 +20,8 @@ const Romaneios = () => {
   const [error, setError] = useState<string | null>(null);
   const isAdmin = useIsAdmin();
 
+  const { addMessage } = useMessages();
+
   const getRomaneio = useCallback(async (dateString: string) => {
     setIsLoading(true);
     setError(null);
@@ -26,6 +29,8 @@ const Romaneios = () => {
       const request = await fetch(`/api/romaneios/${dateString}`);
       if (!request.ok) {
         setDataRomaneio([]);
+        setError("Erro ao carregar romaneios!");
+        addMessage("error", "Erro ao carregar romaneios!");
         return;
       }
       const resp = await request.json();

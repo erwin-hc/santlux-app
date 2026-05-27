@@ -125,7 +125,7 @@ export function ModalUpdateEntrega() {
       onOpenChange={(open) => !open && modal.closeModal()}
     >
       <DialogContent className="sm:max-w-125 w-[95vw] overflow-hidden">
-        <DialogHeader>
+        <DialogHeader className="mb-2 mt-8">
           <DialogTitle className="flex items-center justify-start gap-4">
             <CalendarCog />
             <span className="text-2xl font-bold underline underline-offset-4 uppercase">
