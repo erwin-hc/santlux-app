@@ -46,7 +46,7 @@ class FirebirdPool:
 # }
 
 BD_CONFIG = {
-    "host": "localhost",
+    "host": "10.0.0.2",
     "database": r"C:\SERKELLB\EMPRESAS\SANTLUX.FDB",
     "port": 3050,
     "user": "sysdba",
