@@ -223,30 +223,26 @@ def listar_pedidos(
     limit: int = 10,
     search: Annotated[str | None, Query()] = None,
 ):
-
     if search is not None and search.strip() != "":
         search = search.upper()
         search_terms = [term.strip() for term in search.split(",") if term.strip()]
-
         search_conditions = []
         params = []
 
         for term in search_terms:
             conditions = []
 
-            if term.isdigit():
+            if term.isdigit() and term.startswith("2000") and len(term) > 8:
+                conditions.append("PPC.OS LIKE ?")
+                params.append(f"%{term}%")
+            elif term.isdigit():
                 conditions.append("PPC.REGISTRO = ?")
                 params.append(term)
-
                 conditions.append("PDS.NNOTA = ?")
                 params.append(term)
-
             else:
                 conditions.append("PPC.CON_NOME LIKE ?")
                 params.append(f"%{term}%")
-
-                conditions.append("PPC.OS STARTING WITH ?")
-                params.append(term)
 
             search_conditions.append(f"({' OR '.join(conditions)})")
 
@@ -254,7 +250,7 @@ def listar_pedidos(
 
         status_filter = ""
         if len(search_terms) > 1:
-            status_filter = " AND PPC.STATUS NOT LIKE 'E' AND PPC.REGISTRO > 70000"
+            status_filter = "AND PPC.STATUS NOT LIKE 'E'"
 
         sql = f"""
         SELECT
@@ -271,12 +267,10 @@ def listar_pedidos(
             LEFT JOIN SKLLEMP EMP ON PPC.SIGLA = EMP.SIGLA
         WHERE ({where_clause})
             AND PPC.OS STARTING WITH '20000'
-        {status_filter}
+            {status_filter}
         ORDER BY PPC.REGISTRO DESC
         """
-
         dados = run_query(sql, params)
-
         return {
             "data": dados,
             "metadata": {
@@ -289,7 +283,6 @@ def listar_pedidos(
 
     skip = page * limit
     total, dados = listar_pedidos_paginado(limit, skip)
-
     sql = """
     SELECT FIRST ? SKIP ?
         PPC.STATUS, PPC.DATA, PPC.CON_NOME, PPC.REGISTRO,
@@ -306,9 +299,7 @@ def listar_pedidos(
     WHERE PPC.OS STARTING WITH '20000'
     ORDER BY PPC.REGISTRO DESC
     """
-
     dados = run_query(sql, (limit, skip))
-
     return {
         "data": dados,
         "metadata": {
