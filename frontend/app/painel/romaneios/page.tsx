@@ -7,6 +7,7 @@ import { useIsAdmin } from "@/hooks/use-admin";
 import { PageTitle } from "@/components/title-page";
 import { Truck } from "lucide-react";
 import { useMessages } from "@/providers/message-provider";
+import { apiFetch } from "@/lib/api-fetch";
 
 const formatForApi = (date: Date) =>
   date.toLocaleDateString("pt-BR").replaceAll("/", "-");
@@ -26,7 +27,7 @@ const Romaneios = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const request = await fetch(`/api/romaneios/${dateString}`);
+      const request = await apiFetch(`/api/romaneios/${dateString}`);
       if (!request.ok) {
         setDataRomaneio([]);
         setError("Erro ao carregar romaneios!");

@@ -14,7 +14,8 @@ export async function GET(
 
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session || session.user.tokenExpired) {
+    // ← adiciona tokenExpired
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 

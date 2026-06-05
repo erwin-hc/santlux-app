@@ -58,24 +58,50 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  // callbacks: {
+  //   async jwt({ token, user }) {
+  //     if (user) {
+  //       token.accessToken = (user as any).accessToken;
+  //       token.username = (user as any).username;
+  //       token.isAdmin = (user as any).isAdmin;
+  //     }
+  //     return token;
+  //   },
+  //   async session({ session, token }) {
+  //     if (token && session.user) {
+  //       (session.user as any).accessToken = token.accessToken;
+  //       (session.user as any).username = token.username;
+  //       (session.user as any).isAdmin = token.isAdmin;
+  //     }
+  //     return session;
+  //   },
+  // },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = (user as any).accessToken;
-        token.username = (user as any).username;
-        token.isAdmin = (user as any).isAdmin;
+        token.accessToken = user.accessToken;
+        token.username = user.username;
+        token.isAdmin = user.isAdmin;
+        token.expiresAt = Date.now() + 1000 * 60 * 60 * 24 * 7;
       }
+
+      if (Date.now() > (token.expiresAt ?? 0)) {
+        token.tokenExpired = true;
+      }
+
       return token;
     },
+
     async session({ session, token }) {
-      if (token && session.user) {
-        (session.user as any).accessToken = token.accessToken;
-        (session.user as any).username = token.username;
-        (session.user as any).isAdmin = token.isAdmin;
-      }
+      session.user.accessToken = token.accessToken ?? "";
+      session.user.username = token.username ?? undefined;
+      session.user.isAdmin = token.isAdmin;
+      session.user.tokenExpired = token.tokenExpired;
       return session;
     },
   },
+
   pages: {
     signIn: "/",
   },

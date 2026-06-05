@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { apiFetch } from "./api-fetch";
 
 export interface PedidosResponse {
   data: unknown[];
@@ -24,7 +25,7 @@ export async function getPedidos(
     process.env.NEXT_PUBLIC_URLBACKEND || "http://127.0.0.1:8000";
 
   try {
-    const resp = await fetch(
+    const resp = await apiFetch(
       `${backendUrl}/pedidos/?page=${page}&limit=${limit}`,
       {
         headers: {

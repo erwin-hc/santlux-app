@@ -2,11 +2,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request, { params }: { params: Promise<{ dataStr: string }> }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ dataStr: string }> },
+) {
   const { dataStr } = await params;
   const session = await getServerSession(authOptions);
 
-  if (!session) {
+  if (!session || session.user.tokenExpired) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 

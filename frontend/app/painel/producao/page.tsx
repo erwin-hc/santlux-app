@@ -5,6 +5,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { CalendarCog } from "lucide-react";
 import { PageTitle } from "@/components/title-page";
 import { useMessages } from "@/providers/message-provider";
+import { apiFetch } from "@/lib/api-fetch";
 
 export type PedidosType = {
   dtentrega: string;
@@ -44,7 +45,7 @@ const Producao = () => {
     setError(null);
 
     try {
-      const response = await fetch("/api/producao/");
+      const response = await apiFetch("/api/producao/");
       const result = await response.json();
 
       if (!response.ok) {

@@ -1,5 +1,7 @@
+import { apiFetch } from "./api-fetch";
+
 export async function getComissao(anoString: string) {
-  const request = await fetch(`/api/comissao/${anoString}`, {
+  const request = await apiFetch(`/api/comissao/${anoString}`, {
     cache: "no-store",
   });
 

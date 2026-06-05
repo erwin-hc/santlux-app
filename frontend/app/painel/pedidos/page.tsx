@@ -5,6 +5,7 @@ import { DataTable } from "./data-table";
 import { ListTodo } from "lucide-react";
 import { PageTitle } from "@/components/title-page";
 import { useMessages } from "@/providers/message-provider";
+import { apiFetch } from "@/lib/api-fetch";
 
 type PedidosResponse = {
   data: TypePedidos[];
@@ -45,7 +46,7 @@ export default function Page() {
           ? `/api/pedidos?search=${encodeURIComponent(query)}`
           : `/api/pedidos?page=${pageIndex}&limit=${pageSize}`;
 
-      const response = await fetch(url);
+      const response = await apiFetch(url);
       const result = await response.json();
 
       if (response.ok) {
