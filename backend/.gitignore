@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+dist/
+build/
+*.manifest
+*.spec
+
+# Ambientes virtuais
+venv/
+env/
+.venv/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
+# Variáveis de ambiente / segredos
+.env
+.env.*
+!.env.example
+
+# FastAPI / Uvicorn
+*.log
+logs/
+
+# Banco de dados local
+*.db
+*.sqlite
+*.sqlite3
+
+# Alembic (se usar migrations)
+# Descomente se quiser ignorar versões (geralmente NÃO se ignora)
+# alembic/versions/
+
+# Testes / cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.ruff_cache/
+
+# Docker
+*.pid
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Jupyter (caso use notebooks para testes)
+.ipynb_checkpoints/
+
+# Node (caso o frontend Next.js esteja no mesmo repo)
+node_modules/
+.next/
+out/
