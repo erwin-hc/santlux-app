@@ -6,6 +6,7 @@ interface SwitchEntregueProps {
   label?: string;
   icon?: LucideIcon;
   isChecked?: boolean;
+  color?:string;
   handleClick?: (checked: boolean) => void;
 }
 
@@ -13,6 +14,7 @@ export function SwitchEntregue({
   label = "",
   icon: Icon,
   isChecked,
+  color = "",
   handleClick,
 }: SwitchEntregueProps) {
   return (
@@ -22,6 +24,7 @@ export function SwitchEntregue({
         id="entregue-mode"
         checked={isChecked}
         onCheckedChange={handleClick}
+        className={color}
       />
       <Label htmlFor="entregue-mode">
         {label}

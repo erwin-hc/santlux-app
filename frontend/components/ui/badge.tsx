@@ -25,7 +25,7 @@ const badgeVariants = cva(
         producao: "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 dark:bg-emerald-500/35",
         cancelado: "bg-red-500/20 text-red-600 dark:text-red-400 dark:bg-red-500/35",
         aberto: "bg-blue-500/20 text-blue-600 dark:text-blue-400 dark:bg-blue-500/35",
-        suspenso: "bg-amber-500/20 text-amber-600 dark:text-amber-400 dark:bg-amber-500/35",
+        suspenso: "bg-pink-300/35 text-pink-500 dark:text-pink-300 dark:bg-pink-300/35",
         entregue: "bg-sky-500/20 text-sky-600 dark:text-sky-400 dark:bg-sky-500/35",
         neutral: "bg-slate-500/20 text-slate-600 dark:text-slate-400 dark:bg-slate-500/35",
 

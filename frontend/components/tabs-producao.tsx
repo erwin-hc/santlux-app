@@ -40,28 +40,35 @@ export function TabsProducao({ data }: TabsProducaoProps) {
   const firstDate = uniqueDates[0] || "no-data";
   const modal = useModalHook();
   const isAdmin = useIsAdmin();
-
+  const filteredSuspensos = data.filter((reg) => reg.status === 'S')
+ console.log(filteredSuspensos)
   return (
     <Tabs defaultValue={formatDate(firstDate)} className="w-full">
       <TabsList className="[&_button]:cursor-pointer max-w-full overflow-x-auto overflow-y-hidden justify-start scrollbar-hide">
         {uniqueDates.map((date) => (
           <TabsTrigger
-            className="data-[state=active]:dark:bg-muted-foreground/50
-            data-[state=active]:bg-muted-foreground/20"
-            key={formatDate(date)}
-            value={formatDate(date)}
+          className="data-[state=active]:dark:bg-muted-foreground/50
+          data-[state=active]:bg-muted-foreground/20"
+          key={formatDate(date)}
+          value={formatDate(date)}
           >
-            {formatDate(date)}
+            {formatDate(date)}            
           </TabsTrigger>
         ))}
+        {filteredSuspensos.length > 0 &&        
+        <TabsTrigger className="px-2 py-0.5 mx-2 data-[state=active]:dark:bg-muted-foreground/50 data-[state=active]:bg-muted-foreground/20" value="suspenso">SUSPENSOS</TabsTrigger>
+        }
+        
+        
       </TabsList>
 
       {uniqueDates.map((date) => {
         const formattedTabDate = formatDate(date);
-        const filteredData = data.filter((item) => item.dtentrega === date);
+        const filteredData = data.filter((item) => item.dtentrega === date).filter((reg)=> reg.status !== 'S');
+        
         const uniqueRegistrosIds = Array.from(
           new Set(filteredData.map((item) => item.registro)),
-        ).sort();
+        ).sort()
         const uniqueSetor = Array.from(
           new Set(filteredData.map((item) => item.setor_ppm)),
         );
@@ -512,6 +519,439 @@ export function TabsProducao({ data }: TabsProducaoProps) {
           </TabsContent>
         );
       })}
+      {filteredSuspensos.length > 0 && (() => {
+        const uniqueRegistrosIds = Array.from(
+          new Set(filteredSuspensos.map((item) => item.registro)),
+        ).sort()
+        const uniqueSetor = Array.from(
+          new Set(filteredSuspensos.map((item) => item.setor_ppm)),
+        );
+
+        const totalROLO = filteredSuspensos
+          .filter((item) => item.nome?.toLowerCase().includes("rolo"))
+          .reduce((acc, item) => acc + Number(item.quant || 0), 0);
+
+        const totalROMANA = filteredSuspensos
+          .filter((item) => item.nome?.toLowerCase().includes("romana"))
+          .reduce((acc, item) => acc + Number(item.quant || 0), 0);
+
+        const totalPAINEL = filteredSuspensos
+          .filter((item) => item.nome?.toLowerCase().includes("painel"))
+          .reduce((acc, item) => acc + Number(item.quant || 0), 0);
+
+        const total25MM = filteredSuspensos
+          .filter((item) => item.nome?.toLowerCase().includes("25mm"))
+          .reduce((acc, item) => acc + Number(item.quant || 0), 0);
+
+        const total50MM = filteredSuspensos
+          .filter((item) => item.nome?.toLowerCase().includes("50mm"))
+          .reduce((acc, item) => acc + Number(item.quant || 0), 0);
+
+        const totalVERTICAL = filteredSuspensos
+          .filter((item) => item.nome?.toLowerCase().includes("vertical"))
+          .reduce((acc, item) => acc + Number(item.quant || 0), 0);
+
+        return (
+      <TabsContent value="suspenso">
+        <Card className="border-none shadow-none">
+          <CardHeader>
+            <div className="flex items-center justify-start gap-4 border-b pb-2 ">
+              <CardTitle>SUSPENSOS</CardTitle>
+              <CardDescription>
+                <Badge variant={"neutral"} className="text-sm ">
+                  {uniqueRegistrosIds.length} Pedido(s)
+                </Badge>
+              </CardDescription>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-4">
+              {uniqueSetor.includes("ESP") && (
+                <Card className="gap-2 py-2 ">
+                  <CardHeader className="px-4 py-2 h-8">
+                    <CardTitle className="">ESPECIAIS</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-1 px-2">
+                    {totalROLO > 0 && (
+                      <div className=" flex justify-between items-center m-2">
+                        <div className="flex justify-center items-center gap-2">
+                          <Badge
+                            variant={"JT"}
+                            className="size-6 rounded-full border-none"
+                          ></Badge>
+                          <span>ROLÔ(S)</span>
+                        </div>
+                        <Badge
+                          variant={"JT"}
+                          className="size-6 rounded-full font-bold "
+                        >
+                          {totalROLO}
+                        </Badge>
+                      </div>
+                    )}
+                    {totalROMANA > 0 && (
+                      <div className=" flex justify-between items-center m-2">
+                        <div className="flex justify-center items-center gap-2">
+                          <Badge
+                            variant={"JD"}
+                            className="size-6 rounded-full border-none"
+                          ></Badge>
+                          <span>ROMANA(S)</span>
+                        </div>
+                        <Badge
+                          variant={"JD"}
+                          className="size-6 rounded-full font-bold "
+                        >
+                          {totalROMANA}
+                        </Badge>
+                      </div>
+                    )}
+                    {totalPAINEL > 0 && (
+                      <div className=" flex justify-between items-center m-2">
+                        <div className="flex justify-center items-center gap-2">
+                          <Badge
+                            variant={"AC"}
+                            className="size-6 rounded-full border-none"
+                          ></Badge>
+                          <span>PAINEL(S)</span>
+                        </div>
+                        <Badge
+                          variant={"AC"}
+                          className="size-6 rounded-full font-bold "
+                        >
+                          {totalPAINEL}
+                        </Badge>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+              {uniqueSetor.includes("HOR") && (
+                <Card className="gap-2 py-2 ">
+                  <CardHeader className="px-4 py-2 h-8">
+                    <CardTitle className=" ">HORIZONTAIS</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-1 px-2">
+                    {total25MM > 0 && (
+                      <div className=" flex justify-between items-center m-2">
+                        <div className="flex justify-center items-center gap-2">
+                          <Badge
+                            variant={"LG"}
+                            className="size-6 rounded-full border-none"
+                          ></Badge>
+                          <span>25MM(S)</span>
+                        </div>
+                        <Badge
+                          variant={"LG"}
+                          className="size-6 rounded-full font-bold "
+                        >
+                          {total25MM}
+                        </Badge>
+                      </div>
+                    )}
+                    {total50MM > 0 && (
+                      <div className=" flex justify-between items-center m-2">
+                        <div className="flex justify-center items-center gap-2">
+                          <Badge
+                            variant={"RD"}
+                            className="size-6 rounded-full border-none"
+                          ></Badge>
+                          <span>50MM(S)</span>
+                        </div>
+                        <Badge
+                          variant={"RD"}
+                          className="size-6 rounded-full font-bold "
+                        >
+                          {total50MM}
+                        </Badge>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+              {uniqueSetor.includes("VER") && (
+                <Card className="gap-2 py-2">
+                  <CardHeader className="px-4 py-2 h-8">
+                    <CardTitle className=" ">VERTICAIS</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-1 px-2 ">
+                    {totalVERTICAL > 0 && (
+                      <div className=" flex justify-between items-center m-2">
+                        <div className="flex justify-center items-center gap-2">
+                          <Badge
+                            variant={"neutral"}
+                            className="size-6 rounded-full border-none"
+                          ></Badge>
+                          <span>VERTICAL(S)</span>
+                        </div>
+                        <Badge
+                          variant={"neutral"}
+                          className="size-6 rounded-full font-bold "
+                        >
+                          {totalVERTICAL}
+                        </Badge>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </CardHeader>
+          <div className="overflow-hidden rounded-md border mx-2 border-r-0">
+            <Table className="">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-[12px] font-semibold">
+                    <div className="flex items-center gap-2 pl-4">
+                      <Truck size={16} />
+                      <span>TRANSP</span>
+                    </div>
+                  </TableHead>
+
+                  <TableHead className="text-[12px] font-semibold">
+                    <div className="flex items-center gap-2">
+                      <User size={16} />
+                      <span>NOME</span>
+                    </div>
+                  </TableHead>
+
+                  <TableHead className="text-[12px] font-semibold">
+                    <div className="flex items-center gap-2">
+                      <ListTodo size={16} />
+                      <span>OS</span>
+                    </div>
+                  </TableHead>
+
+                  <TableHead className="text-[12px] font-semibold">
+                    <div className="flex items-center justify-start gap-2">
+                      <ListTodo size={16} />
+                      <span>REGISTRO</span>
+                    </div>
+                  </TableHead>
+
+                  <TableHead className="text-[12px] font-semibold">
+                    <div className="flex items-center gap-2">
+                      <ListTodo size={16} />
+                      <span>NFe</span>
+                    </div>
+                  </TableHead>
+
+                  <TableHead className="text-[12px] font-semibold">
+                    <div className="flex items-center gap-2">
+                      <ListTodo size={16} />
+                      <span>NFt</span>
+                    </div>
+                  </TableHead>
+
+                  <TableHead className="text-[12px] font-semibold">
+                    <div className="flex gap-2 ">
+                      <Package size={16} />
+                      <span>VOL</span>
+                    </div>
+                  </TableHead>
+
+                  {totalROLO > 0 && (
+                    <TableHead className="border-x text-center">
+                      <Badge variant={"JT"}>ROL</Badge>
+                    </TableHead>
+                  )}
+                  {totalROMANA > 0 && (
+                    <TableHead className="border-x text-center">
+                      <Badge variant={"JD"}>ROM</Badge>
+                    </TableHead>
+                  )}
+                  {totalPAINEL > 0 && (
+                    <TableHead className="border-x text-center">
+                      <Badge variant={"AC"}>PAI</Badge>
+                    </TableHead>
+                  )}
+                  {total25MM > 0 && (
+                    <TableHead className="border-x text-center">
+                      <Badge variant={"LG"}>25M</Badge>
+                    </TableHead>
+                  )}
+                  {total50MM > 0 && (
+                    <TableHead className="border-x text-center">
+                      <Badge variant={"RD"}>50M</Badge>
+                    </TableHead>
+                  )}
+                  {totalVERTICAL > 0 && (
+                    <TableHead className="border-x text-center">
+                      <Badge variant={"neutral"}>VER</Badge>
+                    </TableHead>
+                  )}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredSuspensos.map((pedido, index) => {
+                  const transpKey = (pedido?.transportadora.toUpperCase() ||
+                    "DEFAULT") as TranspKey;
+                  const currentStatus = transpConfig[transpKey];
+
+                  const url = `https://www.mercadolivre.com.br/vendas/${pedido?.os}/detalhe`;
+
+                  const itensDoPedido = filteredSuspensos.filter(
+                    (item) => item.registro === pedido.registro,
+                  );
+
+                  const getQuant = (termo: string) =>
+                    itensDoPedido
+                      .filter((item) =>
+                        item.nome
+                          ?.toLowerCase()
+                          .includes(termo.toLowerCase()),
+                      )
+                      .reduce(
+                        (acc, item) => acc + Number(item.quant || 0),
+                        0,
+                      );
+
+                  const qRolo = getQuant("rolo");
+                  const qRomana = getQuant("romana");
+                  const qPainel = getQuant("painel");
+                  const q25mm = getQuant("25mm");
+                  const q50mm = getQuant("50mm");
+                  const qVertical = getQuant("vertical");
+
+                  return (
+                    <TableRow key={index} className="">
+                      <TableCell className="font-bold text-foreground pl-4">
+                        <Badge
+                          variant={currentStatus?.variant ?? "neutral"}
+                        >
+                          {currentStatus?.label ?? "Não Informado"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {!pedido.con_nome
+                          ? pedido.empresa
+                          : pedido.con_nome}
+                      </TableCell>
+                      {isAdmin ? (
+                        <TableCell>
+                          <div className="w-42 flex items-center justify-between gap-2">
+                            <span className="gap-2">{pedido.os}</span>
+                            <Link
+                              className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
+                              href={url}
+                              target="_blank"
+                            >
+                              <Badge variant={"ML"} className="h-6">
+                                <Cable size={16} strokeWidth={1.5} />
+                              </Badge>
+                            </Link>
+                          </div>
+                        </TableCell>
+                      ) : (
+                        <TableCell>{pedido.os}</TableCell>
+                      )}
+                      <TableCell className="flex items-center justify-start">
+                        <div className="flex items-center justify-end mr-2 gap-2 ">
+                          <span className="">{pedido.registro}</span>
+                          <Badge
+                            variant={"neutral"}
+                            className="h-6 cursor-pointer"
+                            onClick={() =>
+                              modal?.openModal(
+                                "viewPedido",
+                                pedido.registro,
+                              )
+                            }
+                          >
+                            <Eye size={16} />
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell>{pedido.nnota}</TableCell>
+                      <TableCell>
+                        {pedido.transportadora !== "11845"
+                          ? pedido.con_obs
+                          : ""}
+                      </TableCell>
+                      <TableCell>{pedido.volnumero}</TableCell>
+
+                      {totalROLO > 0 && (
+                        <TableCell className="border text-center">
+                          {qRolo > 0 ? (
+                            <Badge className="rounded-full" variant={"JT"}>
+                              {qRolo}
+                            </Badge>
+                          ) : (
+                            ""
+                          )}
+                        </TableCell>
+                      )}
+
+                      {totalROMANA > 0 && (
+                        <TableCell className="border text-center">
+                          {qRomana > 0 ? (
+                            <Badge className="rounded-full" variant={"JD"}>
+                              {qRomana}
+                            </Badge>
+                          ) : (
+                            ""
+                          )}
+                        </TableCell>
+                      )}
+
+                      {totalPAINEL > 0 && (
+                        <TableCell className="border text-center">
+                          {qPainel > 0 ? (
+                            <Badge className="rounded-full" variant={"AC"}>
+                              {qPainel}
+                            </Badge>
+                          ) : (
+                            ""
+                          )}
+                        </TableCell>
+                      )}
+
+                      {total25MM > 0 && (
+                        <TableCell className="border text-center">
+                          {q25mm > 0 ? (
+                            <Badge className="rounded-full" variant={"LG"}>
+                              {q25mm}
+                            </Badge>
+                          ) : (
+                            ""
+                          )}
+                        </TableCell>
+                      )}
+
+                      {total50MM > 0 && (
+                        <TableCell className="border text-center">
+                          {q50mm > 0 ? (
+                            <Badge className="rounded-full" variant={"RD"}>
+                              {q50mm}
+                            </Badge>
+                          ) : (
+                            ""
+                          )}
+                        </TableCell>
+                      )}
+
+                      {totalVERTICAL > 0 && (
+                        <TableCell className="border text-center">
+                          {qVertical > 0 ? (
+                            <Badge
+                              className="rounded-full"
+                              variant={"neutral"}
+                            >
+                              {qVertical}
+                            </Badge>
+                          ) : (
+                            ""
+                          )}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </Card>
+      </TabsContent>
+        );
+      })()}
     </Tabs>
   );
 }

@@ -98,6 +98,7 @@ export default function Page() {
     return () => window.removeEventListener("refresh-pedidos", refresh);
   }, [getPedidos, searchTerm]);
 
+  
   return (
     <>
       <PageTitle label="PEDIDOS" icon={ListTodo} loading={loading} />

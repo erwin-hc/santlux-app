@@ -23,7 +23,6 @@ WHERE PPC.OS STARTING WITH '20000'
 ORDER BY PPC.REGISTRO DESC
 """
 
-
 def listar_pedidos_paginado(limit: int, skip: int):
     with get_db() as conn:
         cur = conn.cursor()
@@ -34,9 +33,7 @@ def listar_pedidos_paginado(limit: int, skip: int):
         dados = [dict(zip(columns, row)) for row in cur.fetchall()]
     return total, dados
 
-
 router = APIRouter(prefix="/pedidos", tags=["Pedidos"])
-
 
 @router.put("/previsao/{registro}", dependencies=[Depends(get_current_user)])
 def update_previsao(
@@ -65,7 +62,6 @@ def update_previsao(
     except Exception as e:
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
-
 
 @router.put("/entrega/{pedido}", dependencies=[Depends(get_current_user)])
 def update_entrega(
@@ -109,7 +105,41 @@ def update_entrega(
     except Exception as e:
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
+    
+@router.put("/naoentregue/{pedido}", dependencies=[Depends(get_current_user)])
+def update_nao_entregue(pedido: int = Path(..., description="ID do Pedido")):
+    try:
+        query1 = """
+            UPDATE SKLLPDS PDS
+            SET PDS.ENTREGUE = 'N', 
+                PDS.DTENTREGA = NULL
+            WHERE PDS.PEDIDO = ?
+        """
 
+        query2 = """
+            UPDATE SKLLPPC PPC
+            SET PPC.STATUS = 'F',
+                PPC.ENTDATA = NULL 
+            WHERE PPC.PEDIDO = ?
+        """
+
+        res1 = run_query(query1, (pedido,))
+        if res1.get("rows_affected") == 0:
+            raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+        res2 = run_query(query2, (pedido,))
+        if res2.get("rows_affected") == 0:
+            raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+        return {
+            "status": "sucesso",
+            "pedido": pedido,
+            "mensagem": "Entrega estornada com sucesso (campos zerados)",
+        }
+
+    except Exception as e:
+        logging.error(f"Erro ao atualizar: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no banco")
 
 @router.get("/view/{registro}", dependencies=[Depends(get_current_user)])
 def view_pedido(registro: int = Path(..., description="ID do Registro")):
@@ -151,7 +181,6 @@ def view_pedido(registro: int = Path(..., description="ID do Registro")):
         "data": dados if dados is not None else [],
     }
 
-
 @router.put("/qtvolume/{pedido}", dependencies=[Depends(get_current_user)])
 def update_volume(
     pedido: int = Path(..., description="ID do pedido"),
@@ -179,43 +208,6 @@ def update_volume(
     except Exception as e:
         logging.error(f"Erro ao atualizar: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no banco")
-
-
-@router.put("/naoentregue/{pedido}", dependencies=[Depends(get_current_user)])
-def update_nao_entregue(pedido: int = Path(..., description="ID do Pedido")):
-    try:
-        query1 = """
-            UPDATE SKLLPDS PDS
-            SET PDS.ENTREGUE = 'N', 
-                PDS.DTENTREGA = NULL
-            WHERE PDS.PEDIDO = ?
-        """
-
-        query2 = """
-            UPDATE SKLLPPC PPC
-            SET PPC.STATUS = 'F',
-                PPC.ENTDATA = NULL 
-            WHERE PPC.PEDIDO = ?
-        """
-
-        res1 = run_query(query1, (pedido,))
-        if res1.get("rows_affected") == 0:
-            raise HTTPException(status_code=404, detail="Pedido não encontrado")
-
-        res2 = run_query(query2, (pedido,))
-        if res2.get("rows_affected") == 0:
-            raise HTTPException(status_code=404, detail="Pedido não encontrado")
-
-        return {
-            "status": "sucesso",
-            "pedido": pedido,
-            "mensagem": "Entrega estornada com sucesso (campos zerados)",
-        }
-
-    except Exception as e:
-        logging.error(f"Erro ao atualizar: {e}")
-        raise HTTPException(status_code=500, detail="Erro interno no banco")
-
 
 @router.get("/", dependencies=[Depends(get_current_user)])
 def listar_pedidos(
@@ -261,7 +253,8 @@ def listar_pedidos(
             PDS.PEDIDO,
             PDS.VOLNUMERO,
             PPC.ENTDATA,
-            EMP.EMPRESA
+            EMP.EMPRESA,
+            PPC.CON_ESTADO
         FROM SKLLPPC PPC
             LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
             LEFT JOIN SKLLEMP EMP ON PPC.SIGLA = EMP.SIGLA
@@ -292,7 +285,8 @@ def listar_pedidos(
         PPC.ENTDATA,
         PDS.VOLNUMERO,
         PDS.PEDIDO,
-        EMP.EMPRESA
+        EMP.EMPRESA,
+        PPC.CON_ESTADO
     FROM SKLLPPC PPC
         LEFT JOIN SKLLPDS PDS ON PPC.PEDIDO = PDS.PEDIDO
         LEFT JOIN SKLLEMP EMP ON PPC.SIGLA = EMP.SIGLA
@@ -309,3 +303,59 @@ def listar_pedidos(
             "total_pages": (total // limit) + (1 if total % limit else 0),
         },
     }
+
+@router.put("/suspenso/{registro}", dependencies=[Depends(get_current_user)])
+def update_suspenso(registro: int = Path(..., description="ID do registro"),
+                    current_status: str = Body(..., embed=True),
+                    ):
+    try:
+        query = """
+            UPDATE SKLLPPC
+                SET STATUS = 'S', 
+                    CON_ESTADO = ?
+            WHERE REGISTRO = ?
+            """
+
+        res = run_query(query, (current_status, registro,))
+        if res.get("rows_affected") == 0:
+            raise HTTPException(status_code=404, detail="Registro não encontrado")
+
+        return {
+            "status": "sucesso",
+            "registro": registro,
+            "mensagem": "Registro alterado!",
+        }
+
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Erro!")
+    except Exception as e:
+        logging.error(f"Erro ao atualizar: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no banco")
+    
+@router.put("/naosuspenso/{registro}", dependencies=[Depends(get_current_user)])
+def update_naosuspenso(registro: int = Path(..., description="ID do registro"),
+                    current_status: str = Body(..., embed=True),
+                    ):
+    try:
+        query = """
+            UPDATE SKLLPPC
+                SET STATUS = ?, 
+                    CON_ESTADO = NULL
+            WHERE REGISTRO = ?
+            """
+
+        res = run_query(query, (current_status, registro,))
+        if res.get("rows_affected") == 0:
+            raise HTTPException(status_code=404, detail="Registro não encontrado")
+
+        return {
+            "status": "sucesso",
+            "registro": registro,
+            "mensagem": "Registro alterado!",
+        }
+
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Erro!")
+    except Exception as e:
+        logging.error(f"Erro ao atualizar: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no banco")    

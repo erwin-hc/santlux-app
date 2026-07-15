@@ -3,10 +3,13 @@
 import {
   Cable,
   CalendarCog,
+  CircleAlert,
   Eye,
   ListTodo,
   Package,
   Settings2,
+  Snowflake,
+  TriangleAlert,
   Truck,
   User,
 } from "lucide-react";
@@ -43,6 +46,7 @@ export type TypePedidos = {
   empresa: string;
   volnumero: number;
   pedido: string;
+  con_estado: string;
 };
 
 export const statusConfig = {
@@ -132,11 +136,81 @@ export const columns: ColumnDef<TypePedidos>[] = [
       );
     },
     cell: ({ row }) => {
-      const status = row.getValue("status");
+      const status = row.original.status;
       const statusKey = String(status) as StatusKey;
       const currentStatus = statusConfig[statusKey];
       return (
         <Badge variant={currentStatus.variant}>{currentStatus.label}</Badge>
+      );
+    },
+  },
+    {
+    accessorKey: "suspenso",
+    header: ({ table}) => {
+      const meta = table.options.meta;
+      const isAdmin = meta?.isAdmin;
+      if (!isAdmin) return;
+
+      return (
+        <div className="flex items-center">
+          <Snowflake size={16} />          
+        </div>
+      );
+    },
+    cell: ({ row, table }) => {
+      const registro = row.original.registro;
+      const data = row.original.status === "S";
+      const meta = table.options.meta;
+      const isAdmin = meta?.isAdmin;
+      const ultimo_status = row.original.con_estado
+      const status = row.original.status
+
+
+      if (!isAdmin) return;
+
+      const suspenso = async () => {
+        try {
+          const response = await fetch(`/api/pedidos/suspenso/${registro}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ current_status: status }),
+          });
+
+          if (response.ok) {
+            window.dispatchEvent(new Event("refresh-pedidos"));
+          }
+        } catch (error) {
+          console.error("Erro na requisição:", error);
+        }
+      };
+
+      const naosuspenso = async () => {
+        try {
+          const response = await fetch(`/api/pedidos/naosuspenso/${registro}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ current_status: ultimo_status }),
+          });
+
+          if (response.ok) {
+            window.dispatchEvent(new Event("refresh-pedidos"));
+          }
+        } catch (error) {
+          console.error("Erro na requisição:", error);
+        }
+      };
+
+      return data ? (
+        <SwitchEntregue
+          handleClick={naosuspenso}          
+          isChecked={true}
+          color="data-[state=checked]:bg-pink-300/70"
+        />
+      ) : (
+        <SwitchEntregue
+          handleClick={suspenso}
+          isChecked={false}          
+        />
       );
     },
   },
@@ -145,7 +219,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
     accessorKey: "con_nome",
     header: () => {
       return (
-        <div className="flex items-center gap-2 ">
+        <div className="flex items-center">
           <User size={16} />
           <span>NOME</span>
         </div>
@@ -157,7 +231,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       if (!nome) {
         return (
-          <div className="flex items-center gap-2 ">
+          <div className="flex items-center ">
             <span>{empresa}</span>
           </div>
         );
@@ -319,9 +393,9 @@ export const columns: ColumnDef<TypePedidos>[] = [
       );
     },
     cell: ({ row }) => {
-      const transp = row.getValue("transportadora") as string | undefined;
+      const transp = row.original.transportadora as string | undefined;
       const transpKey = (transp?.toUpperCase() || "DEFAULT") as TranspKey;
-      const currentStatus = transpConfig[transpKey];
+      const currentStatus = transpConfig[transpKey] ?? statusConfig["*"];
 
       if (!transp) return;
 
@@ -437,13 +511,5 @@ export const columns: ColumnDef<TypePedidos>[] = [
       );
     },
   },
-  // {
-  //   accessorKey: "pedido",
-  //   header: () => {
-  //     return "PEDIDO";
-  //   },
-  //   cell: ({ row }) => {
-  //     return row.original.pedido;
-  //   },
-  // },
+
 ];
