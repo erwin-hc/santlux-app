@@ -35,7 +35,9 @@ interface TabsProducaoProps {
 
 export function TabsProducao({ data }: TabsProducaoProps) {
   const uniqueDates = Array.from(
-    new Set(data.map((item) => item.dtentrega)),
+    new Set(data
+      .filter((item) => item.status !== 'S')
+      .map((item) => item.dtentrega)),
   ).sort();
   const firstDate = uniqueDates[0] || "no-data";
   const modal = useModalHook();
