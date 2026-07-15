@@ -56,7 +56,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
           </TabsTrigger>
         ))}
         {filteredSuspensos.length > 0 &&        
-        <TabsTrigger className="px-2 py-0.5 mx-2 data-[state=active]:dark:bg-muted-foreground/50 data-[state=active]:bg-muted-foreground/20" value="suspenso">SUSPENSOS</TabsTrigger>
+        <TabsTrigger className="px-2 py-0.5 mx-2 data-[state=active]:dark:bg-muted-foreground/50 data-[state=active]:bg-muted-foreground/20" value="suspenso">PARALISADOS</TabsTrigger>
         }
         
         
@@ -556,7 +556,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
         <Card className="border-none shadow-none">
           <CardHeader>
             <div className="flex items-center justify-start gap-4 border-b pb-2 ">
-              <CardTitle>SUSPENSOS</CardTitle>
+              <CardTitle>PARALISADOS</CardTitle>
               <CardDescription>
                 <Badge variant={"neutral"} className="text-sm ">
                   {uniqueRegistrosIds.length} Pedido(s)

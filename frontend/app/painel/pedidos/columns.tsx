@@ -56,7 +56,7 @@ export const statusConfig = {
   "8": { variant: "producao", label: "PRODUÇÃO" },
   E: { variant: "entregue", label: "ENTREGUE" },
   A: { variant: "cancelado", label: "CANCELADO" },
-  S: { variant: "suspenso", label: "SUSPENSO" },
+  S: { variant: "suspenso", label: "PARALISADOS" },
 } as const;
 
 export const transpConfig = {
@@ -204,7 +204,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
         <SwitchEntregue
           handleClick={naosuspenso}          
           isChecked={true}
-          color="data-[state=checked]:bg-pink-300/70"
+          color="data-[state=checked]:bg-amber-500/50"
         />
       ) : (
         <SwitchEntregue
@@ -231,15 +231,15 @@ export const columns: ColumnDef<TypePedidos>[] = [
 
       if (!nome) {
         return (
-          <div className="flex items-center ">
-            <span>{empresa}</span>
+          <div className="flex items-center gap-2 w-56">
+            <span className="truncate" >{empresa}</span>
           </div>
         );
       }
 
       return (
-        <div className="flex items-center gap-2">
-          <span>{nome}</span>
+        <div className="flex items-center gap-2 w-56 ">
+          <span className="truncate" >{nome}</span>
         </div>
       );
     },
@@ -266,7 +266,7 @@ export const columns: ColumnDef<TypePedidos>[] = [
         <>
           {isAdmin ? (
             <div className="w-43 flex items-center justify-between">
-              <span className="gap-2">{os}</span>
+              <span className="gap-2 ">{os}</span>
               <Link
                 className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
                 href={url}
