@@ -43,7 +43,6 @@ export function TabsProducao({ data }: TabsProducaoProps) {
   const modal = useModalHook();
   const isAdmin = useIsAdmin();
   const filteredSuspensos = data.filter((reg) => reg.status === 'S')
- console.log(filteredSuspensos)
   return (
     <Tabs defaultValue={formatDate(firstDate)} className="w-full">
       <TabsList className="[&_button]:cursor-pointer max-w-full overflow-x-auto overflow-y-hidden justify-start scrollbar-hide">
@@ -529,6 +528,21 @@ export function TabsProducao({ data }: TabsProducaoProps) {
           new Set(filteredSuspensos.map((item) => item.setor_ppm)),
         );
 
+        const sortedRegistrosIds = uniqueRegistrosIds.sort((a, b) => {
+          const pedidoA = filteredSuspensos.find((p) => p.registro === a);
+          const pedidoB = filteredSuspensos.find((p) => p.registro === b);
+
+          const transpA = pedidoA?.transportadora || "";
+          const transpB = pedidoB?.transportadora || "";
+          const regA = Number(pedidoA?.registro) || 0;
+          const regB = Number(pedidoB?.registro) || 0;
+
+          if (transpA < transpB) return -1;
+          if (transpA > transpB) return 1;
+
+          return regA - regB;
+        });
+
         const totalROLO = filteredSuspensos
           .filter((item) => item.nome?.toLowerCase().includes("rolo"))
           .reduce((acc, item) => acc + Number(item.quant || 0), 0);
@@ -783,15 +797,20 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredSuspensos.map((pedido, index) => {
+                {sortedRegistrosIds.map((regId, index) => {
+                  const pedido = filteredSuspensos.find(
+                    (p) => p.registro === regId,
+                  );
                   const transpKey = (pedido?.transportadora.toUpperCase() ||
                     "DEFAULT") as TranspKey;
                   const currentStatus = transpConfig[transpKey];
 
                   const url = `https://www.mercadolivre.com.br/vendas/${pedido?.os}/detalhe`;
 
+                  if (!pedido) return null;
+
                   const itensDoPedido = filteredSuspensos.filter(
-                    (item) => item.registro === pedido.registro,
+                    (item) => item.registro === regId,
                   );
 
                   const getQuant = (termo: string) =>
