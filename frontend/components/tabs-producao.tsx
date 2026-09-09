@@ -24,7 +24,7 @@ import {
 } from "@/app/painel/pedidos/columns";
 
 import { Badge } from "./ui/badge";
-import { Cable, Eye, ListTodo, Package, Truck, User } from "lucide-react";
+import { Cable, CalendarCog, Eye, ListTodo, Package, Truck, User } from "lucide-react";
 import { useModal as useModalHook } from "@/providers/modal-provider";
 import { useIsAdmin } from "@/hooks/use-admin";
 import Link from "next/link";
@@ -764,6 +764,13 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                     </div>
                   </TableHead>
 
+                  <TableHead className="text-[12px] font-semibold">
+                    <div className="flex gap-2 ">
+                      <CalendarCog size={16} />
+                      <span>PREVISÃO</span>
+                    </div>
+                  </TableHead>
+
                   {totalROLO > 0 && (
                     <TableHead className="border-x text-center">
                       <Badge variant={"JT"}>ROL</Badge>
@@ -888,6 +895,7 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                           : ""}
                       </TableCell>
                       <TableCell>{pedido.volnumero}</TableCell>
+                      <TableCell>{formatDate(pedido.dtentrega)}</TableCell>
 
                       {totalROLO > 0 && (
                         <TableCell className="border text-center">
