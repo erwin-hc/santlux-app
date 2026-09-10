@@ -422,7 +422,21 @@ export const columns: ColumnDef<TypePedidos>[] = [
       const modal = meta?.modal;
       const previsao = row.original.previsao;
 
-      if (!previsao) return;
+      if (!previsao) {
+        return (
+            <div className="flex items-center justify-start">
+              <span className="mr-2 w-15"></span>
+              <Button
+                tabIndex={-1}
+                onClick={() => modal?.openModal("updatePrevisao", row.original)}
+                className="rounded-md cursor-pointer focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring focus-visible:ring-offset-0"
+              >
+                <Badge variant={"neutral"} className="h-6">
+                  <CalendarCog strokeWidth={2} />
+                </Badge>
+              </Button>
+            </div>
+        )}
 
       return (
         <>
