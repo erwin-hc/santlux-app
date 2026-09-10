@@ -1,9 +1,32 @@
+import os
 from contextlib import contextmanager
 from queue import Empty, Queue
 from threading import Lock
+from dotenv import load_dotenv
+import firebirdsql as fb
 
-import firebirdsql as fb  # pyright: ignore[reportMissingImports]
+load_dotenv()
 
+ENV = os.getenv("ENV", "dev").lower()
+
+if ENV == "prod":
+    db_host = os.getenv("DB_HOST_PROD", "10.0.0.2")
+    db_path = os.getenv("DB_PATH_PROD", r"C:\SERKELLB\EMPRESAS\SANTLUX.FDB")
+    print("\n🟢 [PRODUÇÃO] Conectando ao Firebird na rede:", db_host, "BD", db_path,"\n")
+else:
+    db_host = os.getenv("DB_HOST_DEV", "localhost")
+    db_path = os.getenv("DB_PATH_DEV", r"C:\TESTE.FDB")
+    print("\n🟡 [DESENVOLVIMENTO] Conectando ao Firebird Local:", db_host, "BD", db_path,"\n")
+
+
+BD_CONFIG = {
+    "host": db_host,
+    "database": db_path,
+    "port": int(os.getenv("DB_PORT", 3050)),
+    "user": os.getenv("DB_USER", "sysdba"),
+    "password": os.getenv("DB_PASSWORD", "masterkey"),
+    "charset": os.getenv("DB_CHARSET", "latin1"),
+}    
 
 class FirebirdPool:
     def __init__(self, config: dict, size: int = 5):
@@ -24,8 +47,7 @@ class FirebirdPool:
             raise RuntimeError("Pool esgotado")
         try:
             yield conn
-        except Exception:
-            # Conexão pode estar corrompida — descarta e cria nova
+        except Exception:            
             try:
                 conn.close()
             except:  # noqa: E722
@@ -35,24 +57,6 @@ class FirebirdPool:
         finally:
             self._pool.put(conn)
 
-
-# BD_CONFIG = {
-#     "host": "localhost",
-#     "database": r"C:\TESTE.FDB",
-#     "port": 3050,
-#     "user": "sysdba",
-#     "password": "masterkey",
-#     "charset": "latin1",
-# }
-
-BD_CONFIG = {
-    "host": "10.0.0.2",
-    "database": r"C:\SERKELLB\EMPRESAS\SANTLUX.FDB",
-    "port": 3050,
-    "user": "sysdba",
-    "password": "masterkey",
-    "charset": "latin1",
-}
 
 _pool = FirebirdPool(BD_CONFIG, size=5)
 
