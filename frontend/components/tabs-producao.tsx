@@ -18,8 +18,6 @@ import {
 } from "./ui/table";
 import {
   transpConfig,
-  statusConfig,
-  StatusKey,
   TranspKey,
 } from "@/app/painel/pedidos/columns";
 
@@ -91,27 +89,37 @@ export function TabsProducao({ data }: TabsProducaoProps) {
 
         const totalROLO = filteredData
           .filter((item) => item.nome?.toLowerCase().includes("rolo"))
+          .filter((item) => item.setor_ppm?.toLocaleLowerCase("esp"))
           .reduce((acc, item) => acc + Number(item.quant || 0), 0);
 
         const totalROMANA = filteredData
           .filter((item) => item.nome?.toLowerCase().includes("romana"))
+          .filter((item) => item.setor_ppm?.toLocaleLowerCase("esp"))
           .reduce((acc, item) => acc + Number(item.quant || 0), 0);
 
         const totalPAINEL = filteredData
           .filter((item) => item.nome?.toLowerCase().includes("painel"))
+          .filter((item) => item.setor_ppm?.toLocaleLowerCase("esp"))
           .reduce((acc, item) => acc + Number(item.quant || 0), 0);
 
         const total25MM = filteredData
           .filter((item) => item.nome?.toLowerCase().includes("25mm"))
+          .filter((item) => item.setor_ppm?.toLocaleLowerCase("hor"))
           .reduce((acc, item) => acc + Number(item.quant || 0), 0);
 
         const total50MM = filteredData
           .filter((item) => item.nome?.toLowerCase().includes("50mm"))
+          .filter((item) => item.setor_ppm?.toLocaleLowerCase("hor"))
           .reduce((acc, item) => acc + Number(item.quant || 0), 0);
 
         const totalVERTICAL = filteredData
           .filter((item) => item.nome?.toLowerCase().includes("vertical"))
+          .filter((item) => item.setor_ppm?.toLocaleLowerCase("ver"))
           .reduce((acc, item) => acc + Number(item.quant || 0), 0);
+
+        const totalAcessorios = filteredData
+          .filter((item) => item.tp?.toUpperCase().includes("B") || item.tp?.toUpperCase().includes("C"))
+          .reduce((acc, item) => acc + Number(item.quant || 0), 0)  
 
         return (
           <TabsContent key={formattedTabDate} value={formattedTabDate}>
@@ -255,6 +263,34 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                       </CardContent>
                     </Card>
                   )}
+                  {totalAcessorios > 0 && (
+                    <Card className="gap-2 py-2">
+                      <CardHeader className="px-4 py-2 h-8">
+                        <CardTitle className=" ">ACESSÓRIOS</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-1 px-2 ">
+                        {totalAcessorios > 0 && (
+                          <div className=" flex justify-between items-center m-2">
+                            <div className="flex justify-center items-center gap-2">
+                              <Badge
+                                variant={"neutral"}
+                                className="size-6 rounded-full border-none"
+                              ></Badge>
+                              <span>ACESSÓRIO(S)</span>
+                            </div>
+                            <Badge
+                              variant={"neutral"}
+                              className="size-6 rounded-full font-bold "
+                            >
+                              {totalAcessorios}
+                            </Badge>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
+
+
                 </div>
               </CardHeader>
 
@@ -341,6 +377,11 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                           <Badge variant={"neutral"}>VER</Badge>
                         </TableHead>
                       )}
+                      {totalAcessorios > 0 && (
+                        <TableHead className="border-x text-center">
+                          <Badge variant={"ML"}>AC</Badge>
+                        </TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -372,12 +413,29 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                             0,
                           );
 
+                      const getQuantAcessorios = () =>
+                        itensDoPedido
+                          .filter((item) =>
+                            item.tp
+                              ?.toUpperCase()
+                              .includes("B")
+                              ||
+                              item.tp
+                              ?.toUpperCase()
+                              .includes("C"),
+                          )
+                          .reduce(
+                            (acc, item) => acc + Number(item.quant || 0),
+                            0,
+                          );    
+
                       const qRolo = getQuant("rolo");
                       const qRomana = getQuant("romana");
                       const qPainel = getQuant("painel");
                       const q25mm = getQuant("25mm");
                       const q50mm = getQuant("50mm");
                       const qVertical = getQuant("vertical");
+                      const qAcessorios = getQuantAcessorios();
 
                       return (
                         <TableRow key={index} className="">
@@ -504,6 +562,21 @@ export function TabsProducao({ data }: TabsProducaoProps) {
                                   variant={"neutral"}
                                 >
                                   {qVertical}
+                                </Badge>
+                              ) : (
+                                ""
+                              )}
+                            </TableCell>
+                          )}
+
+                          {totalAcessorios > 0 && (
+                            <TableCell className="border text-center">
+                              {qAcessorios > 0 ? (
+                                <Badge
+                                  className="rounded-full"
+                                  variant={"ML"}
+                                >
+                                  {qAcessorios}
                                 </Badge>
                               ) : (
                                 ""
